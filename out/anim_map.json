@@ -1,0 +1,3896 @@
+{
+  "version": 1,
+  "allowed": [
+    "moon",
+    "mountain",
+    "spring",
+    "autumn",
+    "love",
+    "hope",
+    "festival",
+    "distant",
+    "rain"
+  ],
+  "map": {
+    "jingyesi": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "xiangsi": {
+      "anim": "spring",
+      "why": "保留原值"
+    },
+    "dengguanque": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "chunxiao": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "minnong": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "luzhai": {
+      "anim": "mountain",
+      "why": "保留原值"
+    },
+    "zhulinguan": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "songyuaner": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "jiuyuejiu": {
+      "anim": "festival",
+      "why": "意象：佳节、茱萸"
+    },
+    "huanghelou": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "zengwanglun": {
+      "anim": "spring",
+      "why": "意象：花、桃"
+    },
+    "wanglushan": {
+      "anim": "mountain",
+      "why": "保留原值"
+    },
+    "zaofa": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "fengqiao": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "liangzhou": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "chusai": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "furonglou": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "qingming": {
+      "anim": "rain",
+      "why": "意象：雨、清明"
+    },
+    "shanxing": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "jiangnanchun": {
+      "anim": "rain",
+      "why": "意象：雨、烟雨"
+    },
+    "leyuanyuan": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "yeyujibei": {
+      "anim": "rain",
+      "why": "意象：雨、夜雨"
+    },
+    "chunyexiyu": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "jueju": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "wangyue": {
+      "anim": "mountain",
+      "why": "保留原值"
+    },
+    "denggao": {
+      "anim": "autumn",
+      "why": "保留原值"
+    },
+    "shanju": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "chunwang": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "songdu": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "shuidiao": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "rumeng": {
+      "anim": "rain",
+      "why": "意象：雨、夜雨"
+    },
+    "qingyu": {
+      "anim": "festival",
+      "why": "保留原值"
+    },
+    "niannujiao": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "shengshengman": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "yijianmei": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "zuihuayin": {
+      "anim": "festival",
+      "why": "意象：重阳、佳节"
+    },
+    "yulinling": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "pozhenzi": {
+      "anim": "hope",
+      "why": "意象：志、豪、壮"
+    },
+    "yongyule": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "xijiangyue": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "jiangchengzi": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "busuanzi": {
+      "anim": "distant",
+      "why": "意象：边"
+    },
+    "yujiaao": {
+      "anim": "autumn",
+      "why": "保留原值"
+    },
+    "tianjingsha": {
+      "anim": "autumn",
+      "why": "保留原值"
+    },
+    "shantang": {
+      "anim": "mountain",
+      "why": "意象：山、峰"
+    },
+    "tianjingqiu": {
+      "anim": "autumn",
+      "why": "保留原值"
+    },
+    "chenzui": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "sikuaiyu": {
+      "anim": "mountain",
+      "why": "保留原值"
+    },
+    "dadege": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "shouyangqu": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "maihuasheng": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "zouyu": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "fengqiuhuang": {
+      "anim": "love",
+      "why": "保留原值"
+    },
+    "qiufengci": {
+      "anim": "autumn",
+      "why": "保留原值"
+    },
+    "gaixia": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "guiyi": {
+      "anim": "mountain",
+      "why": "保留原值"
+    },
+    "cishi": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "pengniao": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "diaoquyuan": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "qifa": {
+      "anim": "love",
+      "why": "意象：蛾眉"
+    },
+    "jiaru": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "woonce": {
+      "anim": "love",
+      "why": "保留原值"
+    },
+    "sonnet18": {
+      "anim": "love",
+      "why": "意象：爱情"
+    },
+    "sonnet116": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "odewest": {
+      "anim": "autumn",
+      "why": "意象：西风"
+    },
+    "whenold": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "freeandlove": {
+      "anim": "love",
+      "why": "意象：爱情"
+    },
+    "tagore": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "heine": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "whitman": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "dickinson": {
+      "anim": "hope",
+      "why": "保留原值"
+    },
+    "neruda": {
+      "anim": "love",
+      "why": "保留原值"
+    },
+    "borges": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "h_yinma": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "h_shangshan": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "h_zhanchengnan": {
+      "anim": "hope",
+      "why": "意象：豪"
+    },
+    "h_yousuosi": {
+      "anim": "love",
+      "why": "保留原值"
+    },
+    "h_shangye": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "h_moshangsang": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "h_changgexing": {
+      "anim": "hope",
+      "why": "意象：壮"
+    },
+    "h_jiangnan": {
+      "anim": "spring",
+      "why": "保留原值"
+    },
+    "h_shiwu": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "h_baitouyin": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "h_dafeng": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "h_yuangexing": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "h_liubieqi": {
+      "anim": "distant",
+      "why": "意象：别"
+    },
+    "h_yulinlang": {
+      "anim": "mountain",
+      "why": "意象：林"
+    },
+    "h_beifengshi": {
+      "anim": "hope",
+      "why": "意象：志"
+    },
+    "h_sichoushi": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "h_jiaren": {
+      "anim": "love",
+      "why": "保留原值"
+    },
+    "h_yongshi": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "h_tongsheng": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "h_zengfu": {
+      "anim": "distant",
+      "why": "意象：赠"
+    },
+    "h_jixieshi": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "h_guge": {
+      "anim": "autumn",
+      "why": "保留原值"
+    },
+    "h_xingxing": {
+      "anim": "distant",
+      "why": "意象：别"
+    },
+    "h_qingqing": {
+      "anim": "spring",
+      "why": "保留原值"
+    },
+    "h_shejiang": {
+      "anim": "spring",
+      "why": "意象：芳草"
+    },
+    "h_tiaotiao": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "h_mingyue": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "w_prometheus": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_zhongde": {
+      "anim": "mountain",
+      "why": "意象：峰"
+    },
+    "w_huanlesong": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "w_beihai": {
+      "anim": "distant",
+      "why": "意象：边"
+    },
+    "w_mianbao": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_duyino": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_siwangfu": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_adonis": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_guxuan": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_harold": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_duke": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_reading": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_second": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_byzantium": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_prufrock": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_fireice": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_subway": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "w_chicago": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_loadgun": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_france": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_venus": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_crow": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_dahai": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_demo": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_chenmo": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_damen": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_gemao": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_yun": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_eryue": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "w_yueni": {
+      "anim": "festival",
+      "why": "意象：灯火"
+    },
+    "w_zuihou": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "w_yuanding": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_xinyue": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "w_yanlei": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_kezhan": {
+      "anim": "distant",
+      "why": "意象：客"
+    },
+    "w_hafei": {
+      "anim": "spring",
+      "why": "意象：莺"
+    },
+    "w_qiangwei": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_bike": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "w_migong": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_taiyang": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_huayuan": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "w_xingzhe": {
+      "anim": "distant",
+      "why": "意象：别"
+    },
+    "w_xin": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_yingxiong": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "w_zhuanzhe": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_liwu": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_liangye": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_yemeigui": {
+      "anim": "love",
+      "why": "保留原值"
+    },
+    "w_yeman": {
+      "anim": "mountain",
+      "why": "意象：峰"
+    },
+    "w_chengge": {
+      "anim": "love",
+      "why": "保留原值"
+    },
+    "w_luolei": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "w_zhiyunque": {
+      "anim": "distant",
+      "why": "意象：边"
+    },
+    "w_shelimei": {
+      "anim": "love",
+      "why": "保留原值"
+    },
+    "w_yeying": {
+      "anim": "spring",
+      "why": "意象：莺"
+    },
+    "w_qiuri": {
+      "anim": "autumn",
+      "why": "保留原值"
+    },
+    "w_bao": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "w_wozenyang": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_feiniao": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "w_zuiyaoyuan": {
+      "anim": "love",
+      "why": "保留原值"
+    },
+    "w_xianzhi": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_shayumo": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_zuizhou": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "w_huanghun": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "w_qingchun": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "w_mengyou": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_haitao": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "w_chunti": {
+      "anim": "spring",
+      "why": "保留原值"
+    },
+    "w_zhikai": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "w_ziyou": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_fan": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "w_jiliu": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "w_rensheng": {
+      "anim": "hope",
+      "why": "保留原值"
+    },
+    "w_weixuanze": {
+      "anim": "mountain",
+      "why": "意象：林"
+    },
+    "w_ziwo": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_sini": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "w_liuyue": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "w_yueguang": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "w_haibin": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "w_ershi": {
+      "anim": "love",
+      "why": "保留原值"
+    },
+    "w_laohu": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_dianxing": {
+      "anim": "distant",
+      "why": "意象：寄"
+    },
+    "w_bolatu": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "w_eluosi": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "w_maowu": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "w_qiusong": {
+      "anim": "autumn",
+      "why": "保留原值"
+    },
+    "w_wuyue": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "w_shengming": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "东皇太一_先秦_屈原": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "云中君_先秦_屈原": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "湘君_先秦_屈原": {
+      "anim": "mountain",
+      "why": "意象：隐"
+    },
+    "湘夫人_先秦_屈原": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "大司命_先秦_屈原": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "少司命_先秦_屈原": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "东君_先秦_屈原": {
+      "anim": "hope",
+      "why": "意象：青云"
+    },
+    "河伯_先秦_屈原": {
+      "anim": "love",
+      "why": "意象：美人"
+    },
+    "山鬼_先秦_屈原": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "国殇_先秦_屈原": {
+      "anim": "hope",
+      "why": "意象：凌"
+    },
+    "礼魂_先秦_屈原": {
+      "anim": "autumn",
+      "why": "意象：秋、菊"
+    },
+    "惜往日_先秦_屈原": {
+      "anim": "spring",
+      "why": "意象：芳草"
+    },
+    "悲回风_先秦_屈原": {
+      "anim": "mountain",
+      "why": "意象：隐"
+    },
+    "九辩_先秦_宋玉": {
+      "anim": "autumn",
+      "why": "意象：秋、雁"
+    },
+    "惜誓_先秦_贾谊": {
+      "anim": "mountain",
+      "why": "意象：山、松、隐"
+    },
+    "招隐士_先秦_淮南小山": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "初放_先秦_东方朔": {
+      "anim": "spring",
+      "why": "意象：桃"
+    },
+    "沉江_先秦_东方朔": {
+      "anim": "autumn",
+      "why": "意象：秋、霜"
+    },
+    "怨世_先秦_东方朔": {
+      "anim": "hope",
+      "why": "意象：志"
+    },
+    "怨思_先秦_东方朔": {
+      "anim": "mountain",
+      "why": "意象：林、隐"
+    },
+    "自悲_先秦_东方朔": {
+      "anim": "autumn",
+      "why": "意象：霜"
+    },
+    "哀命_先秦_东方朔": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "谬谏_先秦_东方朔": {
+      "anim": "mountain",
+      "why": "意象：山、隐、钓"
+    },
+    "哀时命_先秦_庄忌": {
+      "anim": "mountain",
+      "why": "意象：山、隐"
+    },
+    "匡机_先秦_王褒": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "通路_先秦_王褒": {
+      "anim": "mountain",
+      "why": "意象：泉、岭"
+    },
+    "危俊_先秦_王褒": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "昭世_先秦_王褒": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "尊嘉_先秦_王褒": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "蓄英_先秦_王褒": {
+      "anim": "autumn",
+      "why": "意象：秋、霜"
+    },
+    "思忠_先秦_王褒": {
+      "anim": "mountain",
+      "why": "意象：岭"
+    },
+    "陶壅_先秦_王褒": {
+      "anim": "distant",
+      "why": "意象：友"
+    },
+    "株昭_先秦_王褒": {
+      "anim": "mountain",
+      "why": "意象：林"
+    },
+    "逢纷_先秦_刘向": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "离世_先秦_刘向": {
+      "anim": "hope",
+      "why": "意象：志"
+    },
+    "怨思_先秦_刘向": {
+      "anim": "mountain",
+      "why": "意象：林"
+    },
+    "远逝_先秦_刘向": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "惜贤_先秦_刘向": {
+      "anim": "mountain",
+      "why": "意象：山、林、隐"
+    },
+    "忧苦_先秦_刘向": {
+      "anim": "mountain",
+      "why": "意象：山、隐"
+    },
+    "愍命_先秦_刘向": {
+      "anim": "mountain",
+      "why": "意象：林、隐"
+    },
+    "思古_先秦_刘向": {
+      "anim": "mountain",
+      "why": "意象：山、林"
+    },
+    "逢尤_先秦_王逸": {
+      "anim": "mountain",
+      "why": "意象：林"
+    },
+    "怨上_先秦_王逸": {
+      "anim": "love",
+      "why": "意象：鸳鸯"
+    },
+    "疾世_先秦_王逸": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "悯上_先秦_王逸": {
+      "anim": "autumn",
+      "why": "意象：霜"
+    },
+    "遭厄_先秦_王逸": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "悼乱_先秦_王逸": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "伤时_先秦_王逸": {
+      "anim": "rain",
+      "why": "意象：清明"
+    },
+    "哀岁_先秦_王逸": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "守志_先秦_王逸": {
+      "anim": "mountain",
+      "why": "意象：泉"
+    },
+    "t_shizhi": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "t_guren": {
+      "anim": "festival",
+      "why": "意象：重阳"
+    },
+    "t_cibei": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "t_wenwang": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "t_xinglu": {
+      "anim": "moon",
+      "why": "意象：玉盘"
+    },
+    "t_youzi": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t_gucao": {
+      "anim": "spring",
+      "why": "保留原值"
+    },
+    "t_qiantang": {
+      "anim": "spring",
+      "why": "保留原值"
+    },
+    "t_wenliu": {
+      "anim": "distant",
+      "why": "意象：友"
+    },
+    "t_chibi": {
+      "anim": "spring",
+      "why": "意象：春、东风"
+    },
+    "t_qinhuai": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t_wuti": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t_huanghe": {
+      "anim": "spring",
+      "why": "意象：芳草"
+    },
+    "t_wangmen": {
+      "anim": "mountain",
+      "why": "保留原值"
+    },
+    "t_qiupu": {
+      "anim": "autumn",
+      "why": "意象：秋、霜"
+    },
+    "t_ziyue": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "t_guanshan": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "t_yueduo": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "t_yueyang": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "t_wenguan": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t_shihao": {
+      "anim": "mountain",
+      "why": "意象：村"
+    },
+    "t_lvye": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t_yewang": {
+      "anim": "autumn",
+      "why": "保留原值"
+    },
+    "t_zhongnan": {
+      "anim": "mountain",
+      "why": "保留原值"
+    },
+    "t_niaoming": {
+      "anim": "moon",
+      "why": "意象：月、桂花"
+    },
+    "t_xinyi": {
+      "anim": "spring",
+      "why": "保留原值"
+    },
+    "t_hanshi": {
+      "anim": "festival",
+      "why": "意象：寒食"
+    },
+    "t_chuzhou": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t_saiwu": {
+      "anim": "mountain",
+      "why": "意象：林"
+    },
+    "t_xunyin": {
+      "anim": "mountain",
+      "why": "保留原值"
+    },
+    "t_zaochun": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t_wuyi": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "t_wangdong": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t_zhuzhi": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t_xisai": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t_jiangxue": {
+      "anim": "mountain",
+      "why": "意象：山、钓"
+    },
+    "t_doucheng": {
+      "anim": "spring",
+      "why": "意象：春、花、桃"
+    },
+    "t_jinlv": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "t_geshu": {
+      "anim": "mountain",
+      "why": "意象：牧"
+    },
+    "t_songbie": {
+      "anim": "spring",
+      "why": "保留原值"
+    },
+    "t_zashi": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "t_lianhuawu": {
+      "anim": "spring",
+      "why": "保留原值"
+    },
+    "t_zhongshan": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s_yumeiren": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s_xiangjian": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s_langtao": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s_zaokou": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "s_moer": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s_chounuer": {
+      "anim": "autumn",
+      "why": "保留原值"
+    },
+    "s_qingping": {
+      "anim": "mountain",
+      "why": "意象：溪、田、村"
+    },
+    "s_caisang": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s_shengcha": {
+      "anim": "festival",
+      "why": "保留原值"
+    },
+    "s_dielian": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s_yulou": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s_sumu": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s_tasha": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s_queqiao": {
+      "anim": "autumn",
+      "why": "意象：金风"
+    },
+    "s_huanxi": {
+      "anim": "spring",
+      "why": "保留原值"
+    },
+    "s_dielian2": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s_linjiang": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s_zhigucai": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s_dielian3": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "s_basheng": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s_wanghai": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s_shuilong": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s_dingfeng": {
+      "anim": "rain",
+      "why": "意象：雨、烟雨"
+    },
+    "s_linjiang2": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "s_jiangcheng": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s_xingxiang": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "s_manting": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "s_dianjiang": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s_yujiac": {
+      "anim": "mountain",
+      "why": "意象：山、渔"
+    },
+    "s_wuling": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "y_tianjingchun": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "y_tianjingsha": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "y_tianjingdong": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "y_yangchun": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "y_shanpo2": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "y_dianqian": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "y_shuixian": {
+      "anim": "rain",
+      "why": "意象：雨、夜雨"
+    },
+    "y_shuixian2": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "y_pinglan": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "y_qingjiang": {
+      "anim": "autumn",
+      "why": "保留原值"
+    },
+    "y_zhegui": {
+      "anim": "festival",
+      "why": "意象：重阳"
+    },
+    "y_saihong": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "y_putian": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "y_luomei": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "y_xiangfei": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "guanjv": {
+      "anim": "love",
+      "why": "保留原值"
+    },
+    "jianjia": {
+      "anim": "autumn",
+      "why": "意象：霜"
+    },
+    "taoyao": {
+      "anim": "spring",
+      "why": "意象：桃"
+    },
+    "shuoshu": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "fatang": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "caiwei": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "luming": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "jingnv": {
+      "anim": "mountain",
+      "why": "意象：牧"
+    },
+    "baizhou": {
+      "anim": "mountain",
+      "why": "意象：隐"
+    },
+    "meng": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "lisao": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "jusong": {
+      "anim": "hope",
+      "why": "意象：志"
+    },
+    "guancanghai": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "duangedxing": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "guishishou": {
+      "anim": "hope",
+      "why": "保留原值"
+    },
+    "haolixing": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "mulanshi": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "kongque": {
+      "anim": "love",
+      "why": "意象：爱情、妾"
+    },
+    "yinjiu": {
+      "anim": "autumn",
+      "why": "意象：菊"
+    },
+    "guiyuantian": {
+      "anim": "mountain",
+      "why": "意象：山、林、隐"
+    },
+    "jiangjinjiu": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "shudaonan": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "pipaxing": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "changhenge": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "maowu": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "baixuege": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "chunjiang": {
+      "anim": "moon",
+      "why": "保留原值"
+    },
+    "dengyouzhoutai": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "zaibiekangqiao": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "ouran_xzm": {
+      "anim": "distant",
+      "why": "保留原值"
+    },
+    "yuxiang_dws": {
+      "anim": "rain",
+      "why": "保留原值"
+    },
+    "sishui_lyd": {
+      "anim": "rain",
+      "why": "意象：现代诗题（特判）"
+    },
+    "zichao_lx": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "jiaowo_lbn": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "jinsehua_tge": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "zhichuan_tge": {
+      "anim": "mountain",
+      "why": "意象：溪、村"
+    },
+    "xf_b989d270": {
+      "anim": "love",
+      "why": "意象：关雎、淑女"
+    },
+    "xf_dd6ab68a": {
+      "anim": "spring",
+      "why": "意象：桃"
+    },
+    "xf_b5eaff80": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "xf_6880996c": {
+      "anim": "mountain",
+      "why": "意象：牧"
+    },
+    "xf_553bf515": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "xf_4e86f72b": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "xf_e2d91b7c": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "xf_d99252da": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "xf_7fd993ce": {
+      "anim": "autumn",
+      "why": "意象：霜"
+    },
+    "xf_d8b95f34": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "xf_8065f6a3": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "xf_850f0c8f": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "xf_707edff8": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "xf_29ebe6e0": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "xf_a3cfa98d": {
+      "anim": "mountain",
+      "why": "意象：泉"
+    },
+    "xf_01eb95fe": {
+      "anim": "spring",
+      "why": "意象：春、东风"
+    },
+    "xf_c2820f9d": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "xf_2a228666": {
+      "anim": "spring",
+      "why": "意象：春、杏"
+    },
+    "xf_6e18a5a2": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "xf_cb911de7": {
+      "anim": "festival",
+      "why": "意象：元日、爆竹、屠苏"
+    },
+    "xf_dd148971": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "xf_3d27081c": {
+      "anim": "mountain",
+      "why": "意象：山、峰"
+    },
+    "xf_bb9bd4af": {
+      "anim": "mountain",
+      "why": "意象：山、林、岭"
+    },
+    "xf_d79bd93b": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "xf_51e5da6e": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "xf_4b0caed5": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "xf_8031123e": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "xf_91209af2": {
+      "anim": "spring",
+      "why": "意象：春、花、桃"
+    },
+    "xf_c71f8b3d": {
+      "anim": "hope",
+      "why": "意象：壮"
+    },
+    "xf_79284513": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "xf_8160616e": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "xf_5545de42": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "xf_78273082": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_43f1c3b4": {
+      "anim": "distant",
+      "why": "意象：客"
+    },
+    "t3_c69e9258": {
+      "anim": "love",
+      "why": "意象：凤"
+    },
+    "t3_dc62f7f3": {
+      "anim": "spring",
+      "why": "意象：春、柳"
+    },
+    "t3_b0efcc24": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_27557e65": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "t3_3861559c": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_ba1fce0e": {
+      "anim": "distant",
+      "why": "意象：故园"
+    },
+    "t3_38451acf": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "t3_3c2e40bd": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_d03d3ba7": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_df729760": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "t3_3f391efa": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_ed1b2594": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t3_6d4b2d3b": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_93bab9fb": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_895239ec": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "t3_cdce2135": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t3_d2189c05": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_46d2e29e": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_202a993c": {
+      "anim": "moon",
+      "why": "意象：中秋"
+    },
+    "t3_84afc9a4": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_158d8a30": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_2d53aeb8": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t3_14405de5": {
+      "anim": "autumn",
+      "why": "意象：落叶"
+    },
+    "t3_14c03185": {
+      "anim": "spring",
+      "why": "意象：春、东风"
+    },
+    "t3_76e90bfd": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_69c0863a": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_e16ce8f7": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_55fac93d": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_fc9aaffa": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_830665e1": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_ee654ae8": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_ae7812cf": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_1ba3d9a5": {
+      "anim": "spring",
+      "why": "意象：春、莺"
+    },
+    "t3_423b203a": {
+      "anim": "autumn",
+      "why": "意象：落叶"
+    },
+    "t3_bdbffd42": {
+      "anim": "distant",
+      "why": "意象：送"
+    },
+    "t3_7a67c6f3": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_d4508568": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_334d0e56": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_a77fc58e": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_99f6c067": {
+      "anim": "spring",
+      "why": "意象：花、桃"
+    },
+    "t3_63004a54": {
+      "anim": "festival",
+      "why": "意象：寒食"
+    },
+    "t3_5f438fa9": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "t3_686e152e": {
+      "anim": "mountain",
+      "why": "意象：隐、牧、田"
+    },
+    "t3_2647722a": {
+      "anim": "mountain",
+      "why": "意象：溪"
+    },
+    "t3_37bc755f": {
+      "anim": "spring",
+      "why": "意象：柳"
+    },
+    "t3_46249f8b": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_89bd9227": {
+      "anim": "spring",
+      "why": "意象：春、花、柳"
+    },
+    "t3_45d977f8": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_3b386e82": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_865b9c0e": {
+      "anim": "rain",
+      "why": "意象：雨、夜雨"
+    },
+    "t3_34b00a57": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_10b89ddf": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_4de7e319": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_7b9ca3b5": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_eecadf85": {
+      "anim": "love",
+      "why": "意象：爱情"
+    },
+    "t3_2179142b": {
+      "anim": "moon",
+      "why": "意象：婵娟"
+    },
+    "t3_d1b370ba": {
+      "anim": "love",
+      "why": "意象：夫婿"
+    },
+    "t3_2e4db7f5": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_f52004c7": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_08c4619b": {
+      "anim": "distant",
+      "why": "意象：别、赠"
+    },
+    "t3_33b79ba2": {
+      "anim": "spring",
+      "why": "意象：江南"
+    },
+    "t3_090049fa": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_d97747ca": {
+      "anim": "spring",
+      "why": "意象：春、花、东风"
+    },
+    "t3_6a8414d0": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_0ff80e5d": {
+      "anim": "autumn",
+      "why": "意象：秋、雁、西风"
+    },
+    "t3_1ac3a9ac": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_d58b482f": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_9c19da7d": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t3_66781da6": {
+      "anim": "love",
+      "why": "意象：红颜"
+    },
+    "t3_3773313c": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_555f8640": {
+      "anim": "spring",
+      "why": "意象：江南"
+    },
+    "t3_45d39d6f": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_0135f27e": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_8c303944": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_05fb4ed1": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_689e2e1f": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_5f4f021e": {
+      "anim": "mountain",
+      "why": "意象：松"
+    },
+    "t3_91adaeb2": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "t3_df98a391": {
+      "anim": "mountain",
+      "why": "意象：山、林"
+    },
+    "t3_259f8ab0": {
+      "anim": "spring",
+      "why": "意象：春、柳"
+    },
+    "t3_85ba5ff1": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_80cbbb87": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_f97bcc93": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t3_ae39893d": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_ae313072": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_1f9fe6fc": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_54f45922": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_25f89e8e": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_4963f502": {
+      "anim": "festival",
+      "why": "意象：重阳"
+    },
+    "t3_621e1719": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_7c7b6034": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_c0f1306f": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_5292ae62": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_bd57de04": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_0a68d672": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_ab76a0f2": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "t3_672a309b": {
+      "anim": "spring",
+      "why": "意象：芳草"
+    },
+    "t3_4e8dd720": {
+      "anim": "rain",
+      "why": "意象：清明"
+    },
+    "t3_b89f2e76": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "t3_5abd3c11": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_31bbbd0b": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t3_459a9438": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_4a01cc26": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_b48bbdb4": {
+      "anim": "distant",
+      "why": "意象：塞"
+    },
+    "t3_3bde5608": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_7137e7db": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "t3_7ad6c407": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_5ca5c506": {
+      "anim": "distant",
+      "why": "意象：送、别、友"
+    },
+    "t3_259779de": {
+      "anim": "mountain",
+      "why": "意象：山、泉、松"
+    },
+    "t3_6830ec5d": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_8aaaf26c": {
+      "anim": "mountain",
+      "why": "意象：山、樵、峰"
+    },
+    "t3_9bac056c": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "t3_645f72d3": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_0b5a1fb5": {
+      "anim": "love",
+      "why": "意象：凤"
+    },
+    "t3_58fdd064": {
+      "anim": "spring",
+      "why": "意象：柳、桃"
+    },
+    "t3_e4af51a8": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_89a87d0f": {
+      "anim": "spring",
+      "why": "意象：桃"
+    },
+    "t3_ec87be1a": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_58d7d7c7": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_e0bf0b55": {
+      "anim": "love",
+      "why": "意象：妾"
+    },
+    "t3_4a7e5681": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_902b9637": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_7022e5f8": {
+      "anim": "mountain",
+      "why": "意象：林、岭"
+    },
+    "t3_4af79974": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_63042e1a": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_4cf4fc0c": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_ca2a6916": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_6f9c6ce2": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_0073d473": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_35b7e1eb": {
+      "anim": "autumn",
+      "why": "意象：雁、霜"
+    },
+    "t3_30779021": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_b4313838": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_b55cf09d": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_209c9b92": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_c9873ed9": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_72575a2c": {
+      "anim": "spring",
+      "why": "意象：春、柳"
+    },
+    "t3_2b62f405": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_3a3d1026": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_32a4f74a": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_04b773cd": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_018494a6": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "t3_11ea1a17": {
+      "anim": "distant",
+      "why": "意象：客"
+    },
+    "t3_0f405d20": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_5d717e7c": {
+      "anim": "spring",
+      "why": "意象：柳"
+    },
+    "t3_0665a088": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_ad9242ac": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "t3_2a591dd4": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_052925bb": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t3_56464468": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_960dc03f": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_52c652ac": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t3_cf7310ae": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_e9a4fb5d": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_a50ad067": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "t3_78a8e3b4": {
+      "anim": "love",
+      "why": "意象：蛾眉"
+    },
+    "t3_cbb034e6": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_accd3454": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "t3_0379c2ae": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_863f94b8": {
+      "anim": "moon",
+      "why": "意象：桂魄"
+    },
+    "t3_c608ec69": {
+      "anim": "mountain",
+      "why": "意象：松"
+    },
+    "t3_5f79d506": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_63af8f20": {
+      "anim": "mountain",
+      "why": "意象：山、林、溪"
+    },
+    "t3_cbe1be7b": {
+      "anim": "mountain",
+      "why": "意象：山、渔"
+    },
+    "t3_964300b8": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_089895bd": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_b0ed253b": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_acf259e2": {
+      "anim": "love",
+      "why": "意象：凤"
+    },
+    "t3_35297b56": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_2463a20d": {
+      "anim": "autumn",
+      "why": "意象：秋、雁"
+    },
+    "t3_e24cc69f": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t3_ec6e3b20": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "t3_af660515": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "t3_7541113a": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_d736463f": {
+      "anim": "spring",
+      "why": "意象：花、莺"
+    },
+    "t3_bb758b1d": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "t3_369d5d1d": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_167ca55a": {
+      "anim": "autumn",
+      "why": "意象：霜"
+    },
+    "t3_0b43ff15": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_367331fc": {
+      "anim": "mountain",
+      "why": "意象：山、溪"
+    },
+    "t3_702b85ad": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_cd3fe3cb": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_b0d3b327": {
+      "anim": "mountain",
+      "why": "意象：山、空山、松"
+    },
+    "t3_d444b2a2": {
+      "anim": "hope",
+      "why": "意象：志"
+    },
+    "t3_e2028920": {
+      "anim": "spring",
+      "why": "意象：花、江南"
+    },
+    "t3_0d0ec75d": {
+      "anim": "love",
+      "why": "意象：蛾眉"
+    },
+    "t3_225a8f2f": {
+      "anim": "moon",
+      "why": "意象：月、中秋"
+    },
+    "t3_a649c79c": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_9491df4d": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t3_9fca23d5": {
+      "anim": "spring",
+      "why": "意象：春、柳"
+    },
+    "t3_0450e7af": {
+      "anim": "spring",
+      "why": "意象：春、柳"
+    },
+    "t3_dc110fa2": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_3ea7527d": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_ecba9946": {
+      "anim": "rain",
+      "why": "意象：雨、夜雨"
+    },
+    "t3_5651a527": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_7f6fa4a4": {
+      "anim": "spring",
+      "why": "意象：春、花、柳"
+    },
+    "t3_e0874b76": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_423465a0": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "t3_aecbebf6": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_57b9e698": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_bf1b2c0a": {
+      "anim": "autumn",
+      "why": "意象：霜"
+    },
+    "t3_875834fa": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "t3_69ee1e3c": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_ccd26ada": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_b1fa0165": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_64e70632": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_71265f23": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "t3_c7d4edff": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_ef912621": {
+      "anim": "festival",
+      "why": "意象：佳节"
+    },
+    "t3_36824e61": {
+      "anim": "mountain",
+      "why": "意象：林"
+    },
+    "t3_bd6f045a": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_1ed50fbd": {
+      "anim": "spring",
+      "why": "意象：江南、桃"
+    },
+    "t3_80ca9e1f": {
+      "anim": "autumn",
+      "why": "意象：秋、菊"
+    },
+    "t3_a2ee7794": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "t3_c31f549d": {
+      "anim": "love",
+      "why": "意象：鸳鸯、妾"
+    },
+    "t3_d4bdb243": {
+      "anim": "spring",
+      "why": "意象：花、桃"
+    },
+    "t3_94c490d5": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_395091c8": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_d53dba6b": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_dbd6764d": {
+      "anim": "mountain",
+      "why": "意象：山、林、泉"
+    },
+    "t3_2fed8b4d": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "t3_cd57e56a": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_cb2cf919": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_76d11885": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_9d185915": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_dc24e0af": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_1c26451b": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_c5991dc0": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_daa2c4df": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_19856b2e": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "t3_edb98de8": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_14207ce8": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_efc79b0d": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "t3_261c744a": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "t3_a0e78463": {
+      "anim": "spring",
+      "why": "意象：春、花、柳"
+    },
+    "t3_0c26a26a": {
+      "anim": "distant",
+      "why": "意象：边、塞、故园"
+    },
+    "t3_0d94fd1d": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_ab2af5af": {
+      "anim": "distant",
+      "why": "意象：长安"
+    },
+    "t3_4e3a052c": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_374563d2": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_02471371": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_a067710f": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_6425d3f5": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t3_e316db98": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t3_1c476fe6": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_854d475d": {
+      "anim": "distant",
+      "why": "意象：寄"
+    },
+    "t3_0e12ab49": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_bf2f7b1f": {
+      "anim": "mountain",
+      "why": "意象：山、峰"
+    },
+    "t3_cf296cec": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_ef6fa30f": {
+      "anim": "spring",
+      "why": "意象：花、柳"
+    },
+    "t3_15a9b3a9": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_5a47b080": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "t3_b93dccd6": {
+      "anim": "autumn",
+      "why": "意象：秋、雁"
+    },
+    "t3_cc84b8fb": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_e42357d1": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "t3_d0109c65": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_0c1102f1": {
+      "anim": "autumn",
+      "why": "意象：秋、霜"
+    },
+    "t3_c7f65a55": {
+      "anim": "love",
+      "why": "意象：蛾眉、美人"
+    },
+    "t3_8479dec4": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "t3_ec8a1b57": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_42e9455b": {
+      "anim": "distant",
+      "why": "意象：别、寄"
+    },
+    "t3_655d27fc": {
+      "anim": "spring",
+      "why": "意象：江南"
+    },
+    "t3_e0c8affb": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "t3_7abee077": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_9a10fc22": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_1d59c178": {
+      "anim": "moon",
+      "why": "意象：玉盘"
+    },
+    "t3_ed856dfe": {
+      "anim": "love",
+      "why": "意象：妾"
+    },
+    "t3_f733737d": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "t3_9f8703cd": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_84da0ac0": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_9c033cc6": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "t3_75e15eb4": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "t3_df0b05f0": {
+      "anim": "spring",
+      "why": "意象：春、柳"
+    },
+    "t3_382ce427": {
+      "anim": "spring",
+      "why": "意象：春、花、柳"
+    },
+    "t3_63f93575": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "t3_dbc02a9d": {
+      "anim": "distant",
+      "why": "意象：送、别、友"
+    },
+    "t3_8b7e91b2": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_39c1c4b1": {
+      "anim": "rain",
+      "why": "意象：清明"
+    },
+    "s3_fc2c25c3": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "s3_1c71b710": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_2206b762": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_473dca8e": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_12e58362": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s3_09bb4727": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_843aa754": {
+      "anim": "rain",
+      "why": "意象：雨、清明"
+    },
+    "s3_799d60fb": {
+      "anim": "rain",
+      "why": "意象：雨、清明"
+    },
+    "s3_b9b8463f": {
+      "anim": "autumn",
+      "why": "意象：秋、霜"
+    },
+    "s3_55453fc2": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_36448950": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_e6ad04c5": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_34855308": {
+      "anim": "spring",
+      "why": "意象：春、花、芳草"
+    },
+    "s3_d0252f66": {
+      "anim": "autumn",
+      "why": "意象：秋、西风"
+    },
+    "s3_159dea22": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_6748dfc8": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_a24baf62": {
+      "anim": "spring",
+      "why": "意象：春、花、莺"
+    },
+    "s3_58f90c3a": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "s3_a3051321": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_67a2b5d2": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_a8a96b1b": {
+      "anim": "autumn",
+      "why": "意象：秋、雁"
+    },
+    "s3_123928d2": {
+      "anim": "spring",
+      "why": "意象：春、花、东风"
+    },
+    "s3_549acfcd": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s3_80ac5d77": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_d5873a57": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_e907c175": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_39c0ac1a": {
+      "anim": "spring",
+      "why": "意象：春、江南"
+    },
+    "s3_b5cd1c44": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s3_b51916c2": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "s3_ec3731fc": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_4a54ca1f": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s3_c101976b": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_fc0f6675": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_d452f509": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_72c1ec8d": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_e7e75c34": {
+      "anim": "rain",
+      "why": "意象：雨、清明"
+    },
+    "s3_172b1e97": {
+      "anim": "love",
+      "why": "意象：相思"
+    },
+    "s3_9bedc793": {
+      "anim": "spring",
+      "why": "意象：春、江南"
+    },
+    "s3_efd5c511": {
+      "anim": "spring",
+      "why": "意象：春、花、东风"
+    },
+    "s3_71b77371": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_96487d47": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_a984893c": {
+      "anim": "spring",
+      "why": "意象：春、花、东风"
+    },
+    "s3_05278334": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_850a2511": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "s3_e6dc0842": {
+      "anim": "spring",
+      "why": "意象：春、花、杏"
+    },
+    "s3_e57a691f": {
+      "anim": "spring",
+      "why": "意象：春、东风、桃"
+    },
+    "s3_30200eb7": {
+      "anim": "autumn",
+      "why": "意象：雁、霜"
+    },
+    "s3_cd2a9c69": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_05e89f2c": {
+      "anim": "autumn",
+      "why": "意象：金风"
+    },
+    "s3_76efdfe9": {
+      "anim": "rain",
+      "why": "意象：清明"
+    },
+    "s3_3f17c6ac": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_b59f0421": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_cb8f4f69": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_bfab731a": {
+      "anim": "festival",
+      "why": "意象：灯火"
+    },
+    "s3_cb2dd6c1": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_58c66c15": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_f287e290": {
+      "anim": "festival",
+      "why": "意象：寒食"
+    },
+    "s3_9f1b770c": {
+      "anim": "rain",
+      "why": "意象：雨、清明"
+    },
+    "s3_ccaaa182": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "s3_7acd2028": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_2044d002": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_b9c82cad": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_6ebb169a": {
+      "anim": "spring",
+      "why": "意象：春、花、东风"
+    },
+    "s3_35edd111": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_e29d4f00": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "s3_10c38203": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s3_4689198b": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_654ee81e": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_802a3a02": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_6280245d": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_09f92f77": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_bf2d6a06": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_5bb87fa8": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_1880efd6": {
+      "anim": "autumn",
+      "why": "意象：秋、雁"
+    },
+    "s3_89adcd1b": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_d4626d93": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_7778f206": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_a20a530f": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_b7b2c361": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_2faa0ec2": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_c32121e7": {
+      "anim": "festival",
+      "why": "意象：寒食"
+    },
+    "s3_b2d23baf": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_7a211e50": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_061b5f96": {
+      "anim": "rain",
+      "why": "意象：雨、烟雨"
+    },
+    "s3_3f9c53ae": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_41b7dcbd": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_f5ef0827": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_92df35b4": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_7e454033": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_b0b35480": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_8dd7e1bb": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_dd8feee0": {
+      "anim": "rain",
+      "why": "意象：清明"
+    },
+    "s3_bdc5e944": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_b49b2c35": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_155ed2cc": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_7c5214c7": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_76acf982": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "s3_7ef4179d": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_18ab7646": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_2cb5b4ba": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_264e214a": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_61b10e86": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_71904a82": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_7a294c64": {
+      "anim": "moon",
+      "why": "意象：桂花、中秋"
+    },
+    "s3_99fc933d": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_4962e9dd": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "s3_9fd3c035": {
+      "anim": "spring",
+      "why": "意象：春、花、芳草"
+    },
+    "s3_9bcd1d83": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_bbf584c2": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_d4b35975": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_afd8b842": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_8867d8de": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "s3_a21598aa": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_f0ed5b22": {
+      "anim": "spring",
+      "why": "意象：春、花、柳"
+    },
+    "s3_c2a3522f": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_79fb0888": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_a21c4628": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "s3_35afb963": {
+      "anim": "festival",
+      "why": "意象：寒食"
+    },
+    "s3_ccd2107a": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_24e1277d": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_7279cd9f": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_bcaf6510": {
+      "anim": "spring",
+      "why": "意象：春、花、芳草"
+    },
+    "s3_e37fb09a": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_01288664": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_802eab97": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_c5cbb32d": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "s3_0a2afaf9": {
+      "anim": "rain",
+      "why": "意象：雨、夜雨"
+    },
+    "s3_2868a390": {
+      "anim": "spring",
+      "why": "意象：春、花、柳"
+    },
+    "s3_a3f3d55e": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s3_b2c5981a": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_b74ec746": {
+      "anim": "autumn",
+      "why": "意象：霜"
+    },
+    "s3_d04e1502": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_69148d12": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_4044c52e": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "s3_baf141c3": {
+      "anim": "spring",
+      "why": "意象：春、花、柳"
+    },
+    "s3_80978b0d": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_56316521": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_308a25ba": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_27886ab3": {
+      "anim": "rain",
+      "why": "意象：雨、清明"
+    },
+    "s3_7b74c991": {
+      "anim": "autumn",
+      "why": "意象：金风"
+    },
+    "s3_940330bc": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s3_6402d5dc": {
+      "anim": "mountain",
+      "why": "意象：林"
+    },
+    "s3_d806fcd1": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_7ee0d801": {
+      "anim": "spring",
+      "why": "意象：春、花、杏"
+    },
+    "s3_583054b4": {
+      "anim": "autumn",
+      "why": "意象：霜"
+    },
+    "s3_bec03a73": {
+      "anim": "spring",
+      "why": "意象：春、柳"
+    },
+    "s3_a522e63d": {
+      "anim": "spring",
+      "why": "意象：花、东风"
+    },
+    "s3_07e6e062": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s3_b19f1bfc": {
+      "anim": "spring",
+      "why": "意象：春、花、柳"
+    },
+    "s3_170279f4": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_8bc37508": {
+      "anim": "spring",
+      "why": "意象：春、柳、东风"
+    },
+    "s3_0a5c5189": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_6e7d219e": {
+      "anim": "spring",
+      "why": "意象：花、柳、东风"
+    },
+    "s3_78e38024": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_1666a8e0": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_9911b92e": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_0862e1c3": {
+      "anim": "autumn",
+      "why": "意象：秋、雁"
+    },
+    "s3_ec657254": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_77aff2bd": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "s3_5d78b49a": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_1baea05c": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_b28c82c2": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_bfa7c9ac": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_9fe5c7fa": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "s3_dc292a24": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_5f2b05c3": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_16781596": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_b2b6151f": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_0e62d42b": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s3_58f2183d": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_f3d1739e": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_eb87ec66": {
+      "anim": "autumn",
+      "why": "意象：雁、西风"
+    },
+    "s3_3c15d230": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_46f99eae": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_ad11484e": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s3_7e27b65a": {
+      "anim": "moon",
+      "why": "意象：月、中秋"
+    },
+    "s3_5dde91ec": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_1b68dbed": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_db66ff25": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_8402fac7": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_059c37db": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_33be0b12": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_42c6a42b": {
+      "anim": "spring",
+      "why": "意象：花、柳、桃"
+    },
+    "s3_55b2339e": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s3_b7f62071": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_040abf01": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_5e63d12b": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_2e439003": {
+      "anim": "festival",
+      "why": "意象：寒食"
+    },
+    "s3_84bb2b02": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_6e5898ed": {
+      "anim": "spring",
+      "why": "意象：春、花、东风"
+    },
+    "s3_194806f1": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_499d6366": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_a9469867": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_4fb450c7": {
+      "anim": "festival",
+      "why": "意象：灯火"
+    },
+    "s3_7f75a86b": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "s3_9228c539": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_beceb385": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "s3_058baff3": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_32d12486": {
+      "anim": "festival",
+      "why": "意象：寒食"
+    },
+    "s3_5165f10e": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_0701ea1a": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "s3_562b476a": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_44d39eb6": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_b07ee2bc": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_bd93eaab": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_4df1e4f1": {
+      "anim": "autumn",
+      "why": "意象：秋、雁"
+    },
+    "s3_ad465174": {
+      "anim": "festival",
+      "why": "意象：灯火"
+    },
+    "s3_fbb05428": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_531262fe": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_facea345": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_eb1b23e0": {
+      "anim": "moon",
+      "why": "意象：桂花"
+    },
+    "s3_e5ee56a9": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_32748344": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "s3_b4acb49e": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_0b7c48c5": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "s3_a484ef9e": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_ea993afb": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_1574eee3": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_76ab1984": {
+      "anim": "autumn",
+      "why": "意象：雁、霜"
+    },
+    "s3_45e422ff": {
+      "anim": "autumn",
+      "why": "意象：秋、落叶"
+    },
+    "s3_3c76d391": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_2aca938b": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_cf12a30d": {
+      "anim": "rain",
+      "why": "意象：雨、夜雨"
+    },
+    "s3_8a784b2f": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_dec83fed": {
+      "anim": "rain",
+      "why": "意象：雨、烟雨"
+    },
+    "s3_779a4bb6": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_dce0287d": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_9523b187": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_9bfb4a20": {
+      "anim": "rain",
+      "why": "意象：雨、清明"
+    },
+    "s3_dfbf72d9": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_34544fe7": {
+      "anim": "spring",
+      "why": "意象：花、柳"
+    },
+    "s3_ce4045b8": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "s3_c939a77a": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "s3_15359f44": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_9309af28": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "s3_c4ea8a20": {
+      "anim": "spring",
+      "why": "意象：春、花、东风"
+    },
+    "s3_5f470216": {
+      "anim": "autumn",
+      "why": "意象：霜"
+    },
+    "s3_0b9f21ec": {
+      "anim": "moon",
+      "why": "意象：月、中秋"
+    },
+    "yq_50738c93": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "yq_225b5e9d": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "yq_f7484c59": {
+      "anim": "festival",
+      "why": "意象：寒食"
+    },
+    "yq_1f79c98d": {
+      "anim": "distant",
+      "why": "无明显意象，归通用场景"
+    },
+    "yq_52e79e7a": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "yq_2827e52e": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "yq_038b626c": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "yq_7ef4e65c": {
+      "anim": "distant",
+      "why": "意象：客"
+    },
+    "yq_bb429d79": {
+      "anim": "spring",
+      "why": "意象：莺"
+    },
+    "yq_591a4d1c": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "yq_032c9cc1": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "yq_2536e222": {
+      "anim": "autumn",
+      "why": "意象：雁"
+    },
+    "yq_7ab45eb1": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "yq_80720a07": {
+      "anim": "spring",
+      "why": "意象：春、花、柳"
+    },
+    "yq_b294ceed": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "yq_2737882a": {
+      "anim": "love",
+      "why": "意象：相思"
+    },
+    "yq_c3aa9034": {
+      "anim": "spring",
+      "why": "意象：花、桃、杨花"
+    },
+    "yq_4d46bade": {
+      "anim": "distant",
+      "why": "意象：送、客"
+    },
+    "yq_4cde9faa": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "yq_637b3985": {
+      "anim": "distant",
+      "why": "意象：别、阳关"
+    },
+    "yq_71f0dc77": {
+      "anim": "mountain",
+      "why": "意象：山"
+    },
+    "yq_f9edbe1b": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "yq_bb487b42": {
+      "anim": "spring",
+      "why": "意象：春、花、桃"
+    },
+    "yq_5d5853c8": {
+      "anim": "spring",
+      "why": "意象：花"
+    },
+    "yq_47fb35e5": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "yq_345f8901": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "yq_b322145f": {
+      "anim": "spring",
+      "why": "意象：春、花、柳"
+    },
+    "yq_846feec7": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "yq_b7c46d81": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "yq_559bda0e": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "yq_3ce0dacc": {
+      "anim": "autumn",
+      "why": "意象：秋、霜"
+    },
+    "yq_a31db44b": {
+      "anim": "mountain",
+      "why": "意象：山、樵、溪"
+    },
+    "yq_8d7cae46": {
+      "anim": "autumn",
+      "why": "意象：秋"
+    },
+    "yq_0c4b4b6e": {
+      "anim": "spring",
+      "why": "意象：桃"
+    },
+    "yq_dd4a919d": {
+      "anim": "spring",
+      "why": "意象：春、花"
+    },
+    "yq_a3c673f1": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "yq_4cd62a79": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "yq_433e682e": {
+      "anim": "love",
+      "why": "意象：鸳鸯"
+    },
+    "yq_c69de3e2": {
+      "anim": "autumn",
+      "why": "意象：秋、霜、西风"
+    },
+    "yq_4cba6d39": {
+      "anim": "spring",
+      "why": "意象：花、柳、桃"
+    },
+    "yq_7fa3af82": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "yq_8d6626a6": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "yq_be95e933": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "yq_b39e7036": {
+      "anim": "spring",
+      "why": "意象：春、花、桃"
+    },
+    "yq_19413186": {
+      "anim": "autumn",
+      "why": "意象：秋、西风"
+    },
+    "yq_626a5e0e": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "yq_3cd45f5f": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "yq_974c56b6": {
+      "anim": "spring",
+      "why": "意象：春、花、柳"
+    },
+    "yq_3dd325d0": {
+      "anim": "spring",
+      "why": "意象：春"
+    },
+    "yq_803ccf33": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "yq_00b8eac7": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "yq_51e8e76b": {
+      "anim": "rain",
+      "why": "意象：雨"
+    },
+    "yq_8fcba2a3": {
+      "anim": "spring",
+      "why": "意象：花、柳"
+    },
+    "yq_9bc1d6d9": {
+      "anim": "moon",
+      "why": "意象：月、中秋"
+    },
+    "yq_9282b2d6": {
+      "anim": "mountain",
+      "why": "意象：田"
+    },
+    "yq_c22cbad6": {
+      "anim": "love",
+      "why": "意象：美人"
+    },
+    "yq_38dad4a1": {
+      "anim": "spring",
+      "why": "意象：花、柳、桃"
+    },
+    "yq_63ba05d6": {
+      "anim": "moon",
+      "why": "意象：月"
+    },
+    "yq_ca1f6a33": {
+      "anim": "spring",
+      "why": "意象：柳"
+    },
+    "yq_0669e969": {
+      "anim": "moon",
+      "why": "意象：月"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+# 后端运行时数据
+backend/data.sqlite*
+*.sqlite-journal
+
+# 本地工具产物
+.mimosa/

@@ -399,12 +399,13 @@
       </div>
       <div class="login-box card">
         <input class="lb-input" id="phoneInput" placeholder="请输入手机号" inputmode="numeric" maxlength="11">
-        <button class="lb-btn" onclick="loginPhone()">手机号快捷登录</button>
+        <input class="lb-input" id="codeInput" placeholder="6 位验证码" inputmode="numeric" maxlength="6" style="display:none">
+        <button class="lb-btn" id="phoneBtn" onclick="loginPhone()">手机号快捷登录</button>
         <div class="login-third">
           <div class="lt lt-wx" onclick="loginThird('微信')"><div class="lic"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M9 4C4.9 4 1.5 6.8 1.5 10.2c0 1.9 1.1 3.6 2.8 4.7L3.5 17l2.6-1.3c.9.2 1.8.4 2.8.4h.6a5.6 5.6 0 01-.2-1.5c0-3.3 3.2-5.9 7.1-5.9.3 0 .6 0 .9.1C16.4 6 13.1 4 9 4z"/><path d="M22.5 15.2c0-2.8-2.8-5.1-6.2-5.1s-6.2 2.3-6.2 5.1 2.8 5.1 6.2 5.1c.8 0 1.5-.1 2.2-.3l2 1-.5-1.7c1.6-.9 2.5-2.3 2.5-3.9z"/></svg></div>微信登录</div>
           <div class="lt lt-qq" onclick="loginThird('QQ')"><div class="lic"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 3c3.3 0 5.5 2.6 5.5 6 0 2 .9 3.3 1.6 4.3.5.7.4 1.6-.2 2-.9.6-2-.1-2.9-.9-.7.3-1.6.5-2.5.5-3.3 0-5.5-2.6-5.5-6S8.7 3 12 3z"/><circle cx="9.5" cy="10" r="1" fill="#12B7F5"/><circle cx="14.5" cy="10" r="1" fill="#12B7F5"/></svg></div>QQ登录</div>
         </div>
-        <div class="login-tip">网页演示版未接入短信与真实授权，输入合规手机号即可体验<br>小程序端将接入验证码与微信 / QQ 授权登录</div>
+        <div class="login-tip">验证码登录后，学习进度与打卡记录云端同步<br>微信 / QQ 授权将在小程序端接入</div>
         <div class="login-back" onclick="goHome()">← 返回</div>
       </div>
     </section>
@@ -69334,6 +69335,7 @@ function toggleCheckin(key){
     localStorage.setItem(LS_PROGRESS, JSON.stringify(progress));
   }
   localStorage.setItem(LS_CHECKIN, JSON.stringify(checkin));
+  syncPush();
   renderCheckin();
   toast(checkin.done[key]?"已打卡 ✦":"已取消");
 }
@@ -69362,7 +69364,7 @@ function renderMe(){
     const ini = currentUser.name? currentUser.name[0] : (currentUser.phone? currentUser.phone.slice(-1):"诗");
     $("#meHead").innerHTML = `<div class="avatar">${ini}</div>
       <div><div class="mn">${currentUser.name||currentUser.phone||currentUser.type+"用户"}</div>
-      <div class="md">${currentUser.type}登录 · 学诗 ${progress.streak} 天</div></div>
+      <div class="md">${currentUser.type}登录 · 学诗 ${progress.streak} 天${API_BASE ? (progress._lastSync?" · 已同步云端":" · 待同步云端") : ""}</div></div>
       <div class="login-pill" onclick="logout()">退出</div>`;
   }else{
     $("#meHead").innerHTML = `<div class="avatar">诗</div>
@@ -69380,32 +69382,94 @@ function renderMe(){
     <div class="mi" onclick="toast('西江阅·诗笺 · 边学边教，读懂千年')"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 013.5 2.3c-.8.4-1 .9-1 1.7M12 16.5v.5"/></svg></span><span class="mi-t">关于西江阅</span><span class="mi-ar">›</span></div>`;
 }
 
-/* ============ 登录 ============ */
-function goLogin(){ showView("view-login"); }
-/* 后端登录地址：部署后端后填这里（如 "https://你的域名"），留空则用本地登录兜底 */
-const API_BASE = "";
-async function apiLogin(path, payload){
+/* ============ 登录与云同步 ============ */
+function goLogin(){ smsSent=false; $("#codeInput").style.display="none"; $("#phoneBtn").textContent="手机号快捷登录"; showView("view-login"); }
+/* 后端地址：留空=纯本地模式（现状不变）；部署后端后可
+   1) 直接改这里，或 2) 各设备 localStorage.setItem("xjy_api_base","https://你的域名") 覆盖 */
+const API_BASE = localStorage.getItem("xjy_api_base") || "";
+
+async function api(path, method="GET", body){
   if(!API_BASE) return null;
   try{
-    const r = await fetch(API_BASE+path, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)});
-    const d = await r.json();
-    return d && d.ok ? d : null;
+    const r = await fetch(API_BASE+path, {
+      method,
+      headers: { "Content-Type": "application/json", ...(currentUser&&currentUser.token ? {"Authorization":"Bearer "+currentUser.token} : {}) },
+      body: body ? JSON.stringify(body) : undefined
+    });
+    if(r.status===401){ currentUser=null; localStorage.removeItem(LS_USER); renderMe(); toast("登录已过期，请重新登录"); return null; }
+    return await r.json();
   }catch(e){ return null; }
 }
+
 function setLogin(user, token){
   currentUser = user;
   if(token){ currentUser.token = token; }
   localStorage.setItem(LS_USER, JSON.stringify(currentUser));
 }
-function loginPhone(){
+
+/* 本地进度 → 云端（登录后立即推，日常打卡防抖推） */
+let syncTimer=null;
+async function syncPush(now){
+  if(!API_BASE || !currentUser || !currentUser.token) return;
+  const put = async ()=>{
+    await api("/api/progress","PUT",{learned:progress.learned, streak:progress.streak});
+    const t=new Date().toISOString().slice(0,10);
+    await api("/api/checkin","PUT",{date:t, done:(checkin&&checkin.done)||{}, counted:(checkin&&checkin.counted)||{}});
+    progress._lastSync = new Date().toISOString();
+    localStorage.setItem(LS_PROGRESS, JSON.stringify(progress));
+    renderMe();
+  };
+  if(now){ clearTimeout(syncTimer); await put(); }
+  else { clearTimeout(syncTimer); syncTimer=setTimeout(put, 800); }
+}
+
+/* 云端 → 本地（启动时拉，云端较新才采纳；打卡只接受不早于本地的日期） */
+async function syncPull(){
+  const d = await api("/api/me");
+  if(!d || !d.ok) return;
+  const srv = d.progress || {};
+  if(srv.updated_at && srv.updated_at > (progress._lastSync||"")){
+    progress.learned = srv.learned||0; progress.streak = srv.streak||0;
+    progress._lastSync = srv.updated_at;
+  }
+  if(d.checkin && d.checkin.date){
+    const localDate = (checkin&&checkin.date)||"";
+    if(d.checkin.date >= localDate){
+      checkin = { date:d.checkin.date, done:JSON.parse(d.checkin.done||"{}"), counted:JSON.parse(d.checkin.counted||"{}") };
+      localStorage.setItem(LS_CHECKIN, JSON.stringify(checkin));
+    }
+  }
+  localStorage.setItem(LS_PROGRESS, JSON.stringify(progress));
+  if($("#view-learn").classList.contains("active")) renderLearn();
+  renderMe();
+}
+
+let smsSent=false;
+async function loginPhone(){
   const phone = ($("#phoneInput").value||"").trim();
   if(!/^1\d{10}$/.test(phone)){ toast("请输入正确的 11 位手机号"); return; }
-  apiLogin("/api/phonelogin", {phone}).then(d=>{
-    if(d){ setLogin({type:"手机号", phone, name:phone.slice(-4)+"诗友", openid:d.openid, provider:d.provider}, d.token); }
-    else { setLogin({type:"手机号", phone, name:phone.slice(-4)+"诗友"}); }
-    toast("登录成功");
-    goHome(); switchTab("me");
-  });
+  if(!API_BASE){ // 无后端：本地演示账号兜底，行为与旧版一致
+    setLogin({type:"手机号", phone, name:phone.slice(-4)+"诗友"});
+    toast("登录成功（本地演示账号）"); goHome(); switchTab("me"); return;
+  }
+  const btn=$("#phoneBtn");
+  if(!smsSent){
+    const d = await api("/api/auth/phone/request","POST",{phone});
+    if(!d || !d.ok){ toast((d&&d.error)||"验证码发送失败"); return; }
+    smsSent=true;
+    $("#codeInput").style.display="block"; btn.textContent="验证码登录";
+    if(d.dev_code){ $("#codeInput").value=d.dev_code; toast("演示验证码 "+d.dev_code+"，已自动填入"); }
+    else toast("验证码已发送，5 分钟内有效");
+    setTimeout(()=>$("#codeInput").focus(),100);
+    return;
+  }
+  const code = ($("#codeInput").value||"").trim();
+  const d = await api("/api/auth/phone/verify","POST",{phone, code});
+  if(!d || !d.ok){ toast((d&&d.error)||"验证码错误"); return; }
+  setLogin(d.user, d.token);
+  await syncPush(true);
+  toast("登录成功，学习进度已同步 ✦");
+  goHome(); switchTab("me");
 }
 function loginThird(type){
   // 浏览器端微信/QQ 需跳转授权，静态页用本地兜底；小程序端由原生 wx.login 接入后端
@@ -69598,6 +69662,7 @@ function closeFeihua(){ clearInterval(fhState.timer); $("#feihuaOverlay").classL
 
 
 renderHome(); renderMe();
+if(API_BASE && currentUser && currentUser.token) syncPull();
 </script>
 </body>
 </html>

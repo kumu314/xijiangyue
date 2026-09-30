@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
   :root{
     /* —— 配色（严格遵循方案：宣纸暖白 + 墨黑 + 朱砂红）—— */
@@ -18,6 +20,7 @@
     /* —— 圆角 / 间距（严格遵循方案）—— */
     --r-card:18px; --r-pill:999px; --r-sm:12px; --gap:14px; --pad:20px;
     --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",serif;
+    --kai:"LXGW WenKai","LXGW WenKai GB","Kaiti SC","STKaiti","KaiTi","DFKai-SB",var(--serif);
     --sans:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -36,7 +39,7 @@
   @keyframes viewIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 
   .page-head{display:flex;align-items:flex-end;justify-content:space-between;margin:6px 0 18px;}
-  .page-head .title{font-family:var(--serif);font-weight:900;font-size:28px;letter-spacing:2px;}
+  .page-head .title{font-family:var(--kai);font-weight:700;font-size:28px;letter-spacing:2px;}
   .page-head .sub{font-size:12px;color:var(--ink-3);margin-top:4px;letter-spacing:1px;}
   .page-head .seal{width:46px;height:46px;border-radius:10px;background:var(--cinnabar);color:#fff;font-family:var(--serif);font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1.05;text-align:center;box-shadow:0 4px 12px rgba(178,58,46,.35);transform:rotate(-3deg);}
   .searchbar{display:flex;align-items:center;gap:8px;background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-pill);padding:10px 16px;color:var(--ink-3);font-size:13px;margin-bottom:18px;cursor:text;}
@@ -44,19 +47,30 @@
   .card{background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:0 6px 18px rgba(110,90,55,.08);}
 
   /* 今日一诗 Hero */
-  .hero{position:relative;overflow:hidden;padding:22px 20px 20px;margin-bottom:var(--gap);
+  .hero{position:relative;overflow:hidden;padding:26px 22px 22px;margin-bottom:var(--gap);
     background:radial-gradient(120% 90% at 88% 8%,rgba(178,58,46,.10),transparent 60%),linear-gradient(160deg,#FCF8EE 0%,#F6EEDC 100%);
-    border:1px solid var(--line);border-radius:var(--r-card);box-shadow:0 10px 28px rgba(110,90,55,.12);}
-  .hero .tag{display:inline-block;font-size:11px;color:var(--cinnabar-deep);border:1px solid rgba(178,58,46,.35);border-radius:var(--r-pill);padding:3px 10px;letter-spacing:1px;margin-bottom:14px;}
-  .hero .poem-title{font-family:var(--serif);font-weight:700;font-size:20px;letter-spacing:1px;}
-  .hero .poem-author{font-size:12px;color:var(--ink-3);margin:4px 0 14px;}
-  .hero .verse{font-family:var(--serif);font-size:17px;line-height:2;letter-spacing:1px;}
+    border:1px solid var(--line);border-radius:4px;box-shadow:0 10px 28px rgba(110,90,55,.12);}
+  .hero::before{content:"";position:absolute;inset:6px;border:1px solid rgba(178,58,46,.30);border-radius:2px;pointer-events:none;}
+  .hero .hero-bg{position:absolute;inset:0;opacity:.15;pointer-events:none;filter:saturate(.75);}
+  .hero .hero-bg svg{position:absolute;inset:0;width:100%;height:100%;}
+  .hero>*:not(.hero-bg){position:relative;}
+  .hero .tag{position:absolute;top:-1px;right:20px;transform:rotate(2deg);transform-origin:top center;
+    font-size:11px;color:var(--cinnabar-deep);background:var(--paper-card-2);border:1px solid rgba(178,58,46,.35);border-top:none;
+    border-radius:0 0 8px 8px;padding:5px 12px;letter-spacing:1px;}
+  .hero .poem-title{font-family:var(--kai);font-weight:700;font-size:22px;letter-spacing:2px;}
+  .hero .poem-author{font-size:12px;color:var(--ink-3);margin:5px 0 14px;}
+  .hero .verse{font-family:var(--kai);font-size:17.5px;line-height:2.1;letter-spacing:1.5px;}
   .hero .actions{display:flex;gap:10px;margin-top:16px;}
+  .hero .signoff{position:absolute;right:22px;bottom:20px;writing-mode:vertical-rl;font-family:var(--kai);
+    font-size:10px;color:var(--ink-3);letter-spacing:2px;opacity:.85;}
+  .hero .seal{position:absolute;right:16px;bottom:16px;width:30px;height:30px;border-radius:6px;background:var(--cinnabar);color:#fff;
+    font-family:var(--kai);font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 3px 10px rgba(178,58,46,.35);transform:rotate(-4deg);}
   .btn{border:none;cursor:pointer;font-family:var(--sans);font-weight:600;border-radius:var(--r-pill);padding:10px 18px;font-size:13px;display:inline-flex;align-items:center;gap:6px;}
   .btn-primary{background:var(--cinnabar);color:#fff;box-shadow:0 6px 16px rgba(178,58,46,.32);}
   .btn-ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line);}
 
-  .section-title{font-family:var(--serif);font-weight:700;font-size:16px;letter-spacing:1px;margin:22px 0 12px;display:flex;align-items:center;gap:8px;}
+  .section-title{font-family:var(--kai);font-weight:700;font-size:16px;letter-spacing:1px;margin:22px 0 12px;display:flex;align-items:center;gap:8px;}
   .section-title::before{content:"";width:4px;height:16px;background:var(--cinnabar);border-radius:2px;display:inline-block;}
   .section-title .more{margin-left:auto;font-family:var(--sans);font-size:12px;font-weight:400;color:var(--ink-3);cursor:pointer;}
 
@@ -88,13 +102,22 @@
   /* 详情页 */
   .detail-head{display:flex;align-items:center;gap:12px;margin:4px 0 16px;}
   .back{width:36px;height:36px;border-radius:50%;background:var(--paper-card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);flex:0 0 auto;}
-  .detail-head .dt{font-family:var(--serif);font-weight:900;font-size:24px;letter-spacing:2px;}
+  .detail-head .dt{font-family:var(--kai);font-weight:700;font-size:24px;letter-spacing:2px;}
   .detail-head .da{font-size:12px;color:var(--ink-3);margin-top:2px;}
   .detail-head .read-btn{margin-left:auto;}
-  .original{background:radial-gradient(100% 70% at 10% 0%,rgba(178,58,46,.07),transparent 55%),var(--paper-card-2);border:1px solid var(--line);border-radius:var(--r-card);padding:22px 20px;margin-bottom:var(--gap);}
-  .original .line{font-family:var(--serif);font-size:19px;line-height:2.1;letter-spacing:1.5px;color:var(--ink);display:flex;align-items:baseline;gap:10px;}
-  .original .line .idx{font-size:11px;color:var(--cinnabar);font-family:var(--sans);font-weight:600;flex:0 0 18px;}
-  .original .note{margin-top:14px;font-size:12px;color:var(--ink-3);border-top:1px dashed var(--line);padding-top:12px;}
+  .original{background:radial-gradient(100% 70% at 10% 0%,rgba(178,58,46,.07),transparent 55%),var(--paper-card-2);border:1px solid var(--line);border-radius:4px;padding:18px 16px 16px;margin-bottom:var(--gap);}
+  .original::before{content:"";display:block;height:1px;background:rgba(178,58,46,.25);margin:0 4px 12px;box-shadow:0 3px 0 rgba(178,58,46,.12);}
+  .vpoem{display:flex;flex-direction:row-reverse;gap:12px;align-items:stretch;}
+  .vtitle{writing-mode:vertical-rl;flex:0 0 auto;background:var(--cinnabar);color:#FBF6EA;border-radius:4px;
+    padding:12px 5px;display:flex;gap:5px;align-items:flex-start;justify-content:flex-start;box-shadow:0 3px 10px rgba(178,58,46,.30);}
+  .vtitle .vt-name{font-family:var(--kai);font-weight:700;font-size:16px;letter-spacing:4px;}
+  .vtitle .vt-author{font-family:var(--kai);font-size:10px;letter-spacing:2px;opacity:.88;margin-top:6px;}
+  .vscroll{flex:1 1 auto;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .vscroll::-webkit-scrollbar{display:none;}
+  .vbody{writing-mode:vertical-rl;height:300px;display:inline-block;padding:6px 2px;}
+  .vline{font-family:var(--kai);font-size:18px;letter-spacing:2.5px;color:var(--ink);line-height:2;
+    border-block-start:1px solid rgba(178,58,46,.18);padding:0 9px;}
+  .original .note{margin-top:12px;font-size:12px;color:var(--ink-3);border-top:1px dashed var(--line);padding-top:12px;}
 
   .tabs{display:flex;gap:6px;overflow-x:auto;padding:4px;margin-bottom:14px;background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-pill);}
   .tabs::-webkit-scrollbar{display:none;}
@@ -147,7 +170,7 @@
   /* 分类列表 */
   .cat-head{display:flex;align-items:center;gap:12px;margin:4px 0 16px;}
   .cat-hero{padding:20px;margin-bottom:var(--gap);background:radial-gradient(120% 90% at 90% 0%,rgba(178,58,46,.12),transparent 60%),linear-gradient(160deg,#FCF8EE,#F4EBD8);border:1px solid var(--line);border-radius:var(--r-card);}
-  .cat-hero .cn{font-family:var(--serif);font-weight:900;font-size:24px;letter-spacing:2px;}
+  .cat-hero .cn{font-family:var(--kai);font-weight:700;font-size:24px;letter-spacing:2px;}
   .cat-hero .cd{font-size:12px;color:var(--ink-2);margin-top:8px;line-height:1.6;}
 
   /* 搜索 */
@@ -69064,16 +69087,21 @@ function renderHot(){
 function hotMore(){ hotOffset=(hotOffset+4)%POEMS.length; renderHot(); toast("已换一批"); }
 function renderHome(){
   const today = POEMS[dayIndex()%POEMS.length];
+  const d=new Date();
+  const dateStr=(d.getMonth()+1)+"月"+d.getDate()+"日";
   $("#homeToday").innerHTML = `
     <div class="hero">
+      <div class="hero-bg" aria-hidden="true">${renderVizSvg(today.anim)}</div>
       <span class="tag">今日一诗 · ${today.tags[0]||""}</span>
       <div class="poem-title">${today.title}</div>
-      <div class="poem-author">${today.author}</div>
-      <div class="verse">${today.lines.map(l=>l.o).join("<br>")}</div>
+      <div class="poem-author">${today.author} · ${dateStr}</div>
+      <div class="verse">${today.lines.slice(0,4).map(l=>l.o).join("<br>")}</div>
       <div class="actions">
         <button class="btn btn-primary" onclick="openDetail('${today.id}')">开始学习 →</button>
         <button class="btn btn-ghost" onclick="readPoem('${today.id}')">听朗读</button>
       </div>
+      <div class="signoff">每日一诗</div>
+      <div class="seal">阅</div>
     </div>`;
   $("#homeCats").innerHTML = CATS.map(c=>`
     <div class="cat" onclick="goCategory('${c.name}')">
@@ -69140,8 +69168,11 @@ function openDetail(id){
   const lines=(p.lines||[]), mem=(p.memory||[]), scn=(p.scenes||[]), st=p.story||{}, tl=(st.timeline||[]);
   const expand = p.level==='拓展';
   const EXPAND_HTML = `<div class="tip"><div class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M7 8l5-5 5 5"/></svg></div><div><div class="tt">拓展收录</div><div class="td">本篇为拓展收录，已附串讲、助记与化用场景；逐句译文与更详尽背景仍在陆续补充。</div></div></div>`;
-  $("#dOriginal").innerHTML = lines.map((l,i)=>`<div class="line"><span class="idx">${String(i+1).padStart(2,"0")}</span>${l.o}</div>`).join("")
-    + `<div class="note">全篇 ${lines.length} 句 · ${p.category} · ${(p.tags||[]).join("·")}${expand?" · 拓展篇":""}。${expand?"本篇为拓展收录，已附串讲与助记；逐句译文陆续补充。":"点击下方标签，从五个维度吃透它。"}</div>`;
+  $("#dOriginal").innerHTML = `<div class="vpoem">
+      <div class="vtitle"><span class="vt-name">${esc(p.title)}</span><span class="vt-author">${esc(p.author)}</span></div>
+      <div class="vscroll" id="vscroll"><div class="vbody">${lines.map(l=>`<div class="vline">${l.o}</div>`).join("")}</div></div>
+    </div>`
+    + `<div class="note">全篇 ${lines.length} 句 · ${p.category} · ${(p.tags||[]).join("·")}${expand?" · 拓展篇":""}。${expand?"本篇为拓展收录，已附串讲与助记；逐句译文陆续补充。":"诗句自右向左竖读；点击下方标签，从五个维度吃透它。"}</div>`;
   // 解读翻译
   $("#panel-tr").innerHTML = expand ? `<div class="tr">`+lines.map(l=>`<div class="row"><div class="o">${l.o}</div></div>`).join("")+`</div><div class="note">本篇为拓展收录，逐句译文正在补充中。</div>`
     : `<div class="tr">`+lines.map(l=>`<div class="row"><div class="o">${l.o}</div><div class="m">${l.m||""}</div></div>`).join("")+`</div>`;
@@ -69163,26 +69194,15 @@ function openDetail(id){
   $("#panel-tr").classList.add("active"); ["lecture","viz","mem","use","story"].forEach(x=>$("#panel-"+x).classList.remove("active"));
   showView("view-detail");
   $("#tabbar").classList.add("hidden");
+  const vs=$("#vscroll"); if(vs) vs.scrollLeft=vs.scrollWidth; // 竖排卷轴初始停在篇首（最右）
 }
 function backFromDetail(){
   if(detailFrom==="view-category"||detailFrom==="view-search"){ $("#tabbar").classList.add("hidden"); showView(detailFrom); }
   else goHome();
 }
 
-/* 动画场景生成器 */
-function renderViz(type){
-  const capMap={
-    moon:"一轮明月，千里相共——望月、问月、怀人，是中国诗共同的夜晚。",
-    mountain:"空山新雨，松间清泉——山水之间，安放诗人的静与远。",
-    spring:"春色染绿枝头，也染动情意——万物生发时，相思最盛。",
-    autumn:"秋风起，草木摇落——雁南飞时，思念最长的季节。",
-    love:"心悦君兮，琴声为凭——爱在诗里，是一见倾心的痴狂。",
-    hope:"长风破浪会有时——困顿处，诗人总为后人留一盏灯。",
-    festival:"灯火满城，人月两圆——佳节，是中国人共同的情感刻度。",
-    rain:"雨声淅沥，湿了长巷与心绪——朦胧与愁绪，在雨里缓缓沉淀。",
-    distant:"长安不见，天涯若比邻——送别与远行，写尽人间聚散。"
-  };
-  const cap = capMap[type]||capMap.distant;
+/* 动画场景生成器（renderVizScene 只出场景内容，供详情页与首页英雄区背景复用） */
+function renderVizScene(type){
   let inner="";
   if(type==="moon"){
     inner = `<defs><radialGradient id="mg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFF6DA"/><stop offset="70%" stop-color="#F3E2A8"/><stop offset="100%" stop-color="#E7CE86"/></radialGradient><radialGradient id="gg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,246,218,.55)"/><stop offset="100%" stop-color="rgba(255,246,218,0)"/></radialGradient></defs>
@@ -69255,7 +69275,23 @@ function renderViz(type){
       <g stroke="#C9D3E6" stroke-width="2" opacity=".6"><path d="M0 245 q100 -10 200 0 t190 0"/></g>
       <g fill="#F3E6CF"><path d="M195 120 l4 16 14 4 -14 4 -4 16 -4 -16 -14 -4 14 -4z"/></g>`;
   }
-  return `<svg viewBox="0 0 390 260" preserveAspectRatio="xMidYMid slice">${inner}</svg><div class="cap">${cap}</div>`;
+  return inner;
+}
+function renderVizSvg(type){ return `<svg viewBox="0 0 390 260" preserveAspectRatio="xMidYMid slice">${renderVizScene(type)}</svg>`; }
+function renderViz(type){
+  const capMap={
+    moon:"一轮明月，千里相共——望月、问月、怀人，是中国诗共同的夜晚。",
+    mountain:"空山新雨，松间清泉——山水之间，安放诗人的静与远。",
+    spring:"春色染绿枝头，也染动情意——万物生发时，相思最盛。",
+    autumn:"秋风起，草木摇落——雁南飞时，思念最长的季节。",
+    love:"心悦君兮，琴声为凭——爱在诗里，是一见倾心的痴狂。",
+    hope:"长风破浪会有时——困顿处，诗人总为后人留一盏灯。",
+    festival:"灯火满城，人月两圆——佳节，是中国人共同的情感刻度。",
+    rain:"雨声淅沥，湿了长巷与心绪——朦胧与愁绪，在雨里缓缓沉淀。",
+    distant:"长安不见，天涯若比邻——送别与远行，写尽人间聚散。"
+  };
+  const cap = capMap[type]||capMap.distant;
+  return renderVizSvg(type)+`<div class="cap">${cap}</div>`;
 }
 function replayViz(){
   const svg = $("#vizScene svg"); if(!svg) return;

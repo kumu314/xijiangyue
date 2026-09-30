@@ -206,6 +206,25 @@
   .ci-item .cd{font-size:10px;color:var(--ink-3);margin-top:2px;}
   .ci-encourage{margin-top:12px;padding:13px 15px;background:linear-gradient(135deg,rgba(178,58,46,.08),rgba(185,138,62,.08));border:1px dashed rgba(178,58,46,.3);border-radius:var(--r-sm);font-family:var(--serif);font-size:13.5px;line-height:1.7;color:var(--ink);text-align:center;}
 
+  /* round3-② 打卡钤印：完成项右上角朱印 + 落印动效 + 一次性墨晕 */
+  .ci-item{position:relative;}
+  .ci-item .stamp{position:absolute;top:-7px;right:-5px;width:26px;height:26px;background:var(--cinnabar);color:#fff;font-family:var(--kai);font-weight:700;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;border-radius:4px;transform:rotate(-2deg);box-shadow:0 2px 6px rgba(178,58,46,.35);z-index:2;}
+  .ci-item .stamp.stamp-in{animation:stampIn .45s cubic-bezier(.2,.8,.3,1.25) both;}
+  .ci-item .stamp.stamp-in::after{content:"";position:absolute;inset:-9px;border-radius:50%;background:radial-gradient(circle,rgba(178,58,46,.38),transparent 68%);animation:inkSpread .6s ease-out both;pointer-events:none;}
+  @keyframes stampIn{0%{transform:scale(1.18) rotate(-4.5deg);opacity:0}55%{transform:scale(.97) rotate(-1.6deg);opacity:1}100%{transform:scale(1) rotate(-2deg);opacity:1}}
+  @keyframes inkSpread{0%{transform:scale(.35);opacity:.9}100%{transform:scale(1.9);opacity:0}}
+  @media (prefers-reduced-motion: reduce){
+    .ci-item .stamp.stamp-in{animation:none;}
+    .ci-item .stamp.stamp-in::after{display:none;}
+  }
+  /* 印谱：全勤日收一印，册页横排 */
+  .ci-album{margin-top:10px;padding:11px 13px;background:var(--paper-card-2);border:1px solid var(--line);border-radius:var(--r-sm);display:flex;align-items:center;gap:8px;}
+  .ci-album .al-t{font-family:var(--kai);font-weight:700;font-size:12px;color:var(--ink-2);letter-spacing:1px;flex:0 0 auto;}
+  .ci-album .al-seals{display:flex;gap:6px;flex-wrap:nowrap;overflow:hidden;flex:1;justify-content:flex-end;}
+  .ci-album .seal{width:22px;height:22px;background:var(--cinnabar);color:#fff;font-family:var(--kai);font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;border-radius:3px;transform:rotate(-2deg);flex:0 0 auto;opacity:.92;}
+  .ci-album .seal:nth-child(2n){transform:rotate(1.6deg);}
+  .ci-album .al-n{font-size:10px;color:var(--ink-3);flex:0 0 auto;}
+
   /* 我的 */
   .me-head{display:flex;align-items:center;gap:16px;padding:18px 16px;margin-bottom:var(--gap);}
   .avatar{width:60px;height:60px;border-radius:50%;flex:0 0 auto;background:linear-gradient(150deg,var(--cinnabar),var(--cinnabar-deep));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:24px;}
@@ -69058,7 +69077,9 @@ const CATS = [
 ];
 
 /* ============ 状态 ============ */
-const LS_USER="shiyun_user", LS_CHECKIN="shiyun_checkin", LS_PROGRESS="shiyun_progress";
+const LS_USER="shiyun_user", LS_CHECKIN="shiyun_checkin", LS_PROGRESS="shiyun_progress", LS_ALBUM="shiyun_album";
+let stampAlbum = JSON.parse(localStorage.getItem(LS_ALBUM)||"[]"); // 印谱：[{date:'YYYY-MM-DD'}] 每全勤日一印
+function saveAlbum(){ localStorage.setItem(LS_ALBUM, JSON.stringify(stampAlbum)); }
 let currentUser = JSON.parse(localStorage.getItem(LS_USER)||"null");
 let checkin = JSON.parse(localStorage.getItem(LS_CHECKIN)||"null");
 let progress = JSON.parse(localStorage.getItem(LS_PROGRESS)||'{"learned":12,"streak":5}');
@@ -69337,11 +69358,12 @@ function readAloudText(text){
 
 /* ============ 学习页：打卡 ============ */
 const CHECKIN_ITEMS=[
-  {key:"read", t:"每日读一首", d:"读 / 看一首诗"},
-  {key:"watch", t:"每日看动画", d:"看意象动画"},
-  {key:"know", t:"每日了解", d:"读懂背景故事"},
-  {key:"memory", t:"每日记忆", d:"背下一首诗"}
+  {key:"read", t:"每日读一首", d:"读 / 看一首诗", se:"读"},
+  {key:"watch", t:"每日看动画", d:"看意象动画", se:"观"},
+  {key:"know", t:"每日了解", d:"读懂背景故事", se:"知"},
+  {key:"memory", t:"每日记忆", d:"背下一首诗", se:"记"}
 ];
+let justStampKey=null; // 本次勾选要播落印动效的项
 function renderCheckin(){
   const todayStr = new Date().toISOString().slice(0,10);
   if(!checkin || checkin.date!==todayStr){
@@ -69363,10 +69385,17 @@ function renderCheckin(){
     const d = checkin.done[it.key];
     return `<div class="ci-item ${d?'done':''}" onclick="toggleCheckin('${it.key}')">
       <div class="ck">${d?'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg>':''}</div>
-      <div><div class="ct">${it.t}</div><div class="cd">${it.d}</div></div></div>`;
+      <div><div class="ct">${it.t}</div><div class="cd">${it.d}</div></div>${d?`<div class="stamp ${justStampKey===it.key?'stamp-in':''}">${it.se}</div>`:''}</div>`;
   }).join("")+`</div>`;
   html += `<div class="ci-encourage">${allDone? "太棒了！今日诗词满勤，习惯正在长成 🌱" : enc}</div>`;
+  if(stampAlbum.length){
+    const shown = stampAlbum.slice(-8);
+    html += `<div class="ci-album"><div class="al-t">印谱</div><div class="al-seals">`+
+      shown.map(a=>`<div class="seal" title="${a.date}">阅</div>`).join("")+
+      `</div><div class="al-n">${stampAlbum.length} 印</div></div>`;
+  }
   $("#checkinBox").innerHTML = html;
+  justStampKey=null;
 }
 function getYesterday(){
   const d=new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10);
@@ -69383,6 +69412,12 @@ function toggleCheckin(key){
     localStorage.setItem(LS_PROGRESS, JSON.stringify(progress));
   }
   localStorage.setItem(LS_CHECKIN, JSON.stringify(checkin));
+  // 钤印：勾选播落印动效；当日四项全勤收一印入印谱，撤销致不满勤则移除当日印（与钤印对称）
+  if(checkin.done[key]) justStampKey=key;
+  const allDoneNow = CHECKIN_ITEMS.every(it=>checkin.done[it.key]);
+  const ai = stampAlbum.findIndex(a=>a.date===checkin.date);
+  if(allDoneNow && ai<0){ stampAlbum.push({date:checkin.date}); saveAlbum(); }
+  if(!allDoneNow && ai>=0){ stampAlbum.splice(ai,1); saveAlbum(); }
   syncPush();
   renderCheckin();
   toast(checkin.done[key]?"已打卡 ✦":"已取消");

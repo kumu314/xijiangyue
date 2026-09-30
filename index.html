@@ -90,14 +90,17 @@
   .progress .streak .n{font-family:var(--serif);font-weight:700;font-size:20px;color:var(--gold);}
   .progress .streak .t{font-size:10px;color:var(--ink-3);}
 
-  .rec-list{display:flex;flex-direction:column;gap:var(--gap);}
-  .rec{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer;transition:transform .15s ease;}
-  .rec:active{transform:scale(.99);}
-  .rec .no{font-family:var(--serif);font-weight:700;font-size:18px;color:var(--cinnabar);width:24px;text-align:center;flex:0 0 auto;}
+  /* 书目条目（round3-① 去卡片化）：纸色底容器+上下界行，条目间细界线，密排无圆角无阴影 */
+  .rec-list{display:flex;flex-direction:column;background:var(--paper-card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .rec{display:flex;align-items:center;gap:12px;padding:13px 12px;cursor:pointer;border-bottom:1px solid var(--line-soft);transition:background .15s ease;}
+  .rec:last-child{border-bottom:none;}
+  .rec:hover{background:rgba(110,90,55,.05);}
+  .rec:active{background:rgba(178,58,46,.06);}
+  .rec .no{font-family:var(--kai);font-weight:400;font-size:12px;color:var(--cinnabar);min-width:40px;letter-spacing:2px;text-align:left;flex:0 0 auto;}
   .rec .body{flex:1;min-width:0;}
-  .rec .t{font-family:var(--serif);font-weight:700;font-size:16px;}
-  .rec .a{font-size:11px;color:var(--ink-3);margin-top:3px;}
-  .rec .arrow{color:var(--ink-3);flex:0 0 auto;}
+  .rec .t{font-family:var(--kai);font-weight:700;font-size:15.5px;letter-spacing:1px;color:var(--ink);}
+  .rec .a{font-size:11px;color:var(--ink-3);margin-top:3px;letter-spacing:.5px;}
+  .rec .arrow{color:var(--ink-3);flex:0 0 auto;opacity:.65;}
 
   /* 详情页 */
   .detail-head{display:flex;align-items:center;gap:12px;margin:4px 0 16px;}
@@ -69078,9 +69081,14 @@ function dayIndex(){ return Math.floor(Date.now()/86400000); }
 /* ============ 渲染：首页 ============ */
 let hotOffset = (dayIndex()*4)%POEMS.length;
 function hotList(){ const out=[]; for(let i=0;i<4;i++) out.push(POEMS[(hotOffset+i)%POEMS.length]); return out; }
+/* 书目卷次号：1→〇〇一，12→〇一二，345→三四五 */
+function cnOrdinal(n){
+  const d="〇一二三四五六七八九";
+  return String(n).padStart(3,"0").split("").map(c=>d[+c]).join("");
+}
 function renderHot(){
   $("#homeHot").innerHTML = hotList().map((p,i)=>`
-    <div class="rec card" onclick="openDetail('${p.id}')">
+    <div class="rec" onclick="openDetail('${p.id}')">
       <div class="no">${["壹","贰","叁","肆"][i]}</div>
       <div class="body"><div class="t">${p.title}</div><div class="a">${p.author} · ${p.tags.join("·")}</div></div>
       <div class="arrow"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3l5 5-5 5"/></svg></div>
@@ -69131,8 +69139,8 @@ function goCategory(name){
   $("#catHero").innerHTML = `<div class="cn">${name}</div><div class="cd">${cat.desc}</div>`;
   const list = POEMS.filter(p=>p.category===name);
   $("#catList").innerHTML = list.map((p,i)=>`
-    <div class="rec card" onclick="openDetail('${p.id}')">
-      <div class="no">${i+1}</div>
+    <div class="rec" onclick="openDetail('${p.id}')">
+      <div class="no">${cnOrdinal(i+1)}</div>
       <div class="body"><div class="t">${p.title}</div><div class="a">${p.author} · ${p.tags.join("·")}</div></div>
       <div class="arrow"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3l5 5-5 5"/></svg></div>
     </div>`).join("");
@@ -69151,8 +69159,8 @@ function doSearch(q){
   });
   if(!r.length){ box.innerHTML = `<div class="search-empty">没有找到「${esc(q)}」相关的诗词</div>`; return; }
   box.innerHTML = `<div class="section-title">找到 ${r.length} 首</div><div class="rec-list">`+
-    r.map(p=>`<div class="rec card" onclick="openDetail('${p.id}')">
-      <div class="no">·</div>
+    r.map((p,idx)=>`<div class="rec" onclick="openDetail('${p.id}')">
+      <div class="no">${cnOrdinal(idx+1)}</div>
       <div class="body"><div class="t">${p.title}</div><div class="a">${p.author} · ${p.category}</div></div>
       <div class="arrow"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3l5 5-5 5"/></svg></div>
     </div>`).join("")+`</div>`;
@@ -69392,7 +69400,7 @@ function renderLearn(){
   $("#learnTasks").innerHTML = [0,1,2].map(i=>{
     const p=POEMS[(t0+i)%POEMS.length];
     return `
-    <div class="rec card" onclick="openDetail('${p.id}')">
+    <div class="rec" onclick="openDetail('${p.id}')">
       <div class="no">${i===0?'✓':(i===1?'▶':'＋')}</div>
       <div class="body"><div class="t">${i===0?'复习《'+p.title+'》':'新学《'+p.title+'》'}</div><div class="a">${i===0?'已掌握 · 可挑战背诵':(i===1?'五维学习 · 约 8 分钟':'进阶拓展 · 约 6 分钟')}</div></div>
     </div>`;}).join("");

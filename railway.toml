@@ -1,0 +1,15 @@
+# Railway 配置（西江阅后端）
+[build]
+  dockerfile = "backend/Dockerfile"
+
+[deploy]
+  healthcheckPath = "/api/health"
+  healthcheckTimeout = 30
+  restartPolicyType = "on-failure"
+  restartPolicyMaxRetries = 3
+  startCommand = "node backend/server.js"
+
+[environments.production.variables]
+  PORT = "8080"
+  DATA_DIR = "/data"
+  # SECRET 通过 `railway variables --set "SECRET=<值>"` 注入，不写进本文件

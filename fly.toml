@@ -1,0 +1,29 @@
+# Fly.io 配置（西江阅后端）— 部署见 README 或黑板操作书
+app = "xijiangyue-api"
+primary_region = "hkg"
+
+[build]
+  dockerfile = "backend/Dockerfile"
+
+[env]
+  PORT = "8080"
+  # SECRET 通过 `fly secrets set SECRET=<值>` 注入，不写进本文件
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = "requests"
+
+[[http_service.checks]]
+  interval = "30s"
+  timeout = "5s"
+  path = "/api/health"
+
+[mounts]
+  source = "xijiangyue_data"
+  destination = "/data"

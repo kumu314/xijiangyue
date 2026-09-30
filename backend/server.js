@@ -21,6 +21,9 @@ const SECRET = process.env.SECRET || crypto.randomBytes(32).toString("hex");
 if (!process.env.SECRET) console.warn("[warn] 未设置 SECRET 环境变量，已生成临时密钥：服务重启后所有登录令牌失效");
 const ROOT = path.resolve(__dirname, "..");
 const DB_PATH = process.env.DATA_DIR ? path.join(process.env.DATA_DIR, "data.sqlite") : path.join(__dirname, "data.sqlite");
+fs.mkdirSync(path.dirname(DB_PATH), { recursive: true }); // DATA_DIR 指向的目录不存在时自动创建
+/* CORS 白名单：线上前端（GitHub Pages）。本地同源托管无 Origin 头不受影响；额外环境用逗号分隔 ALLOW_ORIGINS 追加 */
+const ALLOW_ORIGINS = (process.env.ALLOW_ORIGINS || "https://kumu314.github.io").split(",").map(s => s.trim()).filter(Boolean);
 
 /* ---------- 数据库 ---------- */
 const db = new DatabaseSync(DB_PATH);
@@ -228,7 +231,7 @@ function serveStatic(res, urlPath) {
 /* ---------- 服务器 ---------- */
 const server = http.createServer(async (req, res) => {
   const origin = req.headers.origin;
-  if (origin) {
+  if (origin && ALLOW_ORIGINS.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,OPTIONS");

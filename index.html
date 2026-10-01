@@ -139,6 +139,16 @@
   .vpoem.orig-lang .vbody{writing-mode:horizontal-tb;height:auto;display:block;}
   .vpoem.orig-lang .vline{display:block;writing-mode:horizontal-tb;font-size:var(--reader-fs);line-height:var(--reader-lh);letter-spacing:normal;padding:8px 2px;border-block-start:none;border-bottom:1px dashed var(--line-soft);}
   .vpoem.orig-lang .vline:last-child{border-bottom:none;}
+  /* 背诵模式：遮字四级递减（round5 P0-2，竖排/横排/横排原文三组合通用） */
+  .vbody .ch{cursor:default;}
+  .vbody .ch.masked{color:transparent;background-image:linear-gradient(to top,rgba(178,58,46,.55) 0 2px,transparent 2px);border-radius:2px;cursor:pointer;transition:background-color .16s ease,color .16s ease;}
+  .vbody .ch.masked:hover{background-color:rgba(178,58,46,.10);}
+  .vbody .ch.revealed{color:#B23A2E;}
+  .vbody .ch.first{font-weight:600;}
+  .btn.reciting{background:#B23A2E;color:#FFF8EC;border-color:#B23A2E;}
+  .mem-pending{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px dashed var(--line);border-radius:var(--r-card);background:var(--paper-card-2);}
+  .mem-pending .mp-t{font-weight:700;color:var(--ink,#2B2620);margin-bottom:4px;}
+  .mem-pending .mp-d{font-size:13px;line-height:1.7;color:var(--ink-2,#6B6152);}
 
   /* 阅读设置浮层（排版 + 字体） */
   .rset-overlay{position:absolute;inset:0;background:rgba(43,38,32,.5);z-index:300;display:none;align-items:center;justify-content:center;padding:24px;}
@@ -448,6 +458,7 @@
         <div><div class="dt" id="dTitle">标题</div><div class="da" id="dAuthor">作者</div></div>
         <button class="btn btn-primary read-btn" onclick="readAloud()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 8a5 5 0 010 8"/></svg><span id="readBtnTxt">听朗读</span></button>
         <button class="btn read-btn" id="layoutBtn" onclick="toggleLayout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span id="layoutBtnTxt">竖排</span></button>
+        <button class="btn read-btn" id="maskBtn" onclick="cycleMask()" title="开启遮字背诵（四级递减）"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8M12 8v8"/></svg><span id="maskBtnTxt">背诵</span></button>
         <button class="btn read-btn" id="reciteBtn" onclick="toggleRecite()" style="display:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.6 3 14.4 0 18-3-3.6-3-14.4 0-18"/></svg><span id="reciteBtnTxt">背原文</span></button>
       </div>
       <div class="original" id="dOriginal"></div>
@@ -69506,11 +69517,16 @@ function openDetail(id){
   const hasOrig = lines.some(l=>isOrigRe.test(l.m||""));
   const showOrig = getRecite()==="orig" && hasOrig;
   const bodyLines = showOrig ? lines.map(l=>l.m||l.o) : lines.map(l=>l.o);
-  $("#dOriginal").innerHTML = `<div class="vpoem${showOrig?" orig-lang":""}">
+  const maskLv=getMask(), maskOn=maskLv>0;
+  $("#dOriginal").innerHTML = `<div class="vpoem${showOrig?" orig-lang":""}${maskOn?" mask-on":""}">
       <div class="vtitle ${tcls}"><span class="vt-name">${esc(p.title)}</span><span class="vt-author">${esc(p.author)}</span></div>
-      <div class="vscroll" id="vscroll"><div class="vbody">${bodyLines.map(t=>`<div class="vline">${t}</div>`).join("")}</div></div>
+      <div class="vscroll" id="vscroll"><div class="vbody">${renderMaskLines(bodyLines,p.id)}</div></div>
     </div>`
-    + `<div class="note">全篇 ${lines.length} 句 · ${p.category} · ${(p.tags||[]).join("·")}${expand?" · 拓展篇":""}。${expand?"本篇为拓展收录，已附串讲与助记；逐句译文陆续补充。":"诗句自右向左竖读；点击下方标签，从五个维度吃透它。"}${showOrig?"（背诵语言：原文）":""}</div>`;
+    + `<div class="note">全篇 ${lines.length} 句 · ${p.category} · ${(p.tags||[]).join("·")}${expand?" · 拓展篇":""}。${expand?"本篇为拓展收录，已附串讲与助记；逐句译文陆续补充。":"诗句自右向左竖读；点击下方标签，从五个维度吃透它。"}${showOrig?"（背诵语言：原文）":""}${maskOn?`（背诵：${MASK_LABEL[maskLv]}）`:""}<span id="maskTip"></span></div>`;
+  if($("#maskBtn")){ $("#maskBtnTxt").textContent=MASK_LABEL[maskLv];
+    $("#maskBtn").title = maskOn ? ("当前遮 "+Math.round(maskRatio(maskLv)*100)+"%，点按循环下一档") : "开启遮字背诵（四级递减）";
+    $("#maskBtn").classList.toggle("reciting", maskOn); }
+  touchReview(p);
   if($("#reciteBtn")){ $("#reciteBtn").style.display = hasOrig ? "" : "none"; if(hasOrig) $("#reciteBtnTxt").textContent = showOrig ? "背中文" : "背原文"; }
   // 解读翻译（拓展篇若有原文附注则同样走完整渲染；白话现代诗不重复白话对照，改显妙处点拨）
   const rowO = `<div class="tr">`+lines.map(l=>`<div class="row"><div class="o">${l.o}</div></div>`).join("")+`</div>`;
@@ -69522,7 +69538,11 @@ function openDetail(id){
   // 动画可视化
   $("#panel-viz").innerHTML = `<div class="viz" id="vizScene">${renderViz(p.anim)}<button class="replay" onclick="replayViz()">↻ 重播</button></div>`;
   // 记忆技巧
-  $("#panel-mem").innerHTML = (mem.length?mem:[{t:"文本识记",d:"反复吟诵，感受原句节奏与韵律，先熟读成诵。"}]).map(m=>`<div class="tip"><div class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M7 8l5-5 5 5"/></svg></div><div><div class="tt">${m.t}</div><div class="td">${m.d}</div></div></div>`).join("");
+  // 拓展篇 memory 多为内容量产模板（「它是全篇的眼」/「每天慢读三遍」两句式），非人工记忆卡 → 不渲染模板文本
+  const memTpl = expand && (!mem.length || mem.some(m=>/它是全篇的眼|每天慢读三遍/.test(m.d||"")));
+  $("#panel-mem").innerHTML = memTpl
+    ? `<div class="mem-pending"><div class="mp-t">记忆要点待补</div><div class="mp-d">本篇为拓展收录，专属记忆卡尚未编写。先用正文的「背诵」遮字自测，熟了再回看这里。</div></div>`
+    : (mem.length?mem:[{t:"文本识记",d:"反复吟诵，感受原句节奏与韵律，先熟读成诵。"}]).map(m=>`<div class="tip"><div class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M7 8l5-5 5 5"/></svg></div><div><div class="tt">${m.t}</div><div class="td">${m.d}</div></div></div>`).join("");
   // 使用场景
   $("#panel-use").innerHTML = (scn.length?scn:[{t:"诵读体会",d:"反复吟诵，体会诗中意境与情感。"}]).map(s=>`
     <div class="scene"><div class="sh"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z"/></svg></div><div class="st">${s.t}</div></div>
@@ -70198,6 +70218,71 @@ function setFont(k,v){
 }
 
 /* ============ 背诵语言切换（原文/中文，外国诗专用，round4-recite） ============ */
+/* ===== 背诵模式：遮字四级递减 + 点按揭示 + review 数据结构 v1（round5 P0-2） =====
+   口径：SM-2 固定桶简化版（扩张间隔），不引 FSRS。外国诗暂不进温故/默写队列。 */
+const LS_REVIEW="xjy_review", LS_MASK="xjy_mask";
+const MASK_LABEL=["背诵","遮一","遮二","遮三","全遮"];
+const REVIEW_STEPS=[1,3,7,14,30], REVIEW_STEPS_LONG=[1,2,4,7,14,30]; // 长诗(≥8句)升桶更慢
+function getMask(){ try{ return Math.min(4,Math.max(0,parseInt(localStorage.getItem(LS_MASK)||"0",10)||0)); }catch(e){ return 0; } }
+function setMask(v){ try{ localStorage.setItem(LS_MASK,String(v)); }catch(e){} }
+function cycleMask(){ setMask((getMask()+1)%5); if(currentPoemId) openDetail(currentPoemId); }
+function maskRatio(lv){ return [0,0.25,0.5,0.75,1][lv]||0; }
+function hash32(s){ let x=2166136261; for(let i=0;i<s.length;i++){ x^=s.charCodeAt(i); x=Math.imul(x,16777619); } return x>>>0; }
+function tokenize(t){ return /[A-Za-zÀ-ɏͰ-ϿЀ-ӿ぀-ヿ]/.test(t) ? t.split(/(\s+)/) : t.split(""); }
+/* 遮蔽集随档位单调扩大（hash%100 阈值递增），同一首诗每次渲染结果稳定 */
+function renderMaskLines(texts,id){
+  const lv=getMask();
+  if(lv<=0) return texts.map(t=>`<div class="vline">${esc(t)}</div>`).join("");
+  const r=maskRatio(lv);
+  return texts.map((t,li)=>{
+    let idx=0;
+    const inner=tokenize(t).map(tok=>{
+      if(!tok.trim() && lv<4) return esc(tok);
+      const pos=idx++;
+      if(lv>=4) return pos===0 ? `<span class="ch first">${esc(tok)}</span>` : `<span class="ch masked">${esc(tok)}</span>`;
+      const keep = (hash32(id+"|"+li+"|"+pos)%100) >= r*100;
+      return keep ? `<span class="ch">${esc(tok)}</span>` : `<span class="ch masked">${esc(tok)}</span>`;
+    }).join("");
+    return `<div class="vline">${inner}</div>`;
+  }).join("");
+}
+/* review v1：{bucket, due, last}，本地日（toISOString 是 UTC，早 8 点前会错位） */
+function localDay(d){ d=d||new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function getReview(){ try{ return JSON.parse(localStorage.getItem(LS_REVIEW)||"{}"); }catch(e){ return {}; } }
+function saveReview(r){ try{ localStorage.setItem(LS_REVIEW,JSON.stringify(r)); }catch(e){} }
+function reviewSteps(n){ return (n>=8?REVIEW_STEPS_LONG:REVIEW_STEPS); }
+function reviewable(p){ return !!p && !(p.orig_lang && p.orig_lang!=="zh"); }
+function touchReview(p){
+  if(!reviewable(p)) return;
+  const r=getReview(); if(r[p.id]) return;
+  const d=new Date(); d.setDate(d.getDate()+reviewSteps((p.lines||[]).length)[0]);
+  r[p.id]={bucket:0,due:localDay(d),last:localDay()};
+  saveReview(r);
+}
+function bumpReview(id){
+  const p=POEMS.find(x=>x.id===id); if(!reviewable(p)) return 0;
+  const r=getReview(), steps=reviewSteps((p.lines||[]).length);
+  const it=r[id]||{bucket:0,due:localDay(),last:localDay()};
+  it.bucket=Math.min(steps.length-1,(it.bucket||0)+1);
+  const d=new Date(); d.setDate(d.getDate()+steps[it.bucket]);
+  it.due=localDay(d); it.last=localDay();
+  r[id]=it; saveReview(r);
+  return steps[it.bucket];
+}
+/* 事件委托：容器级单一 handler，禁止逐 span 绑 onclick（长诗数百 span，低端机会卡） */
+document.addEventListener("click", function(e){
+  const el = e.target && e.target.closest ? e.target.closest(".vbody .ch.masked") : null;
+  if(!el) return;
+  el.classList.remove("masked"); el.classList.add("revealed");
+  const body = el.closest(".vbody"); if(!body || !currentPoemId) return;
+  const tip = document.querySelector("#maskTip");
+  if(!body.querySelectorAll(".ch.masked").length){
+    const days = bumpReview(currentPoemId);
+    if(tip) tip.textContent = days ? " —— 全部揭示，已记一过，"+days+" 天后再温。" : " —— 全部揭示。";
+  } else if(tip){
+    tip.textContent = " —— 还剩 "+body.querySelectorAll(".ch.masked").length+" 字，继续。";
+  }
+}, false);
 function getRecite(){ try{ return localStorage.getItem("xjy_recite")==="orig" ? "orig" : "zh"; }catch(e){ return "zh"; } }
 function setRecite(v){ try{ localStorage.setItem("xjy_recite", v); }catch(e){} }
 function toggleRecite(){

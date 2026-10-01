@@ -8719,7 +8719,8 @@ const POEMS = [
  {
   "id": "w_yueni",
   "title": "我想和你一起生活",
-  "author": "〔俄〕传茨维塔耶娃（存疑）",
+  "author": "〔俄〕茨维塔耶娃",
+  "ed_note": "中文为节译：原诗作于 1916.12.10，共 12 节，此处取首尾两节大意。",
   "category": "外国诗",
 
   "orig_lang": "ru",
@@ -10435,7 +10436,7 @@ const POEMS = [
   "lines": [
    {
     "o": "我见过那远在海尽头的自由，",
-    "m": "I have seen the自由 beyond the sea."
+    "m": "I have seen the freedom beyond the sea."
    },
    {
     "o": "却在自己的牢笼里歌唱。",
@@ -10820,11 +10821,11 @@ const POEMS = [
   "lines": [
    {
     "o": "我记得那美妙的瞬间，你翩然出现在我眼前。",
-    "m": "I remembered the wonderful moment, you appeared before me."
+    "m": "Я помню чудное мгновенье: / Передо мной явилась ты,"
    },
    {
     "o": "如同昙花一现的幻影，如同纯洁之美的精灵。",
-    "m": "Like a fleeting vision, a spirit of pure beauty."
+    "m": "Как мимолётное виденье, / Как гений чистой красоты."
    }
   ],
   "anim": "spring",
@@ -10875,11 +10876,11 @@ const POEMS = [
   "lines": [
    {
     "o": "走吧，从我的眼前走开，西色拉岛的柔弱女王！",
-    "m": "Away from me, the frail queen of Cyprus!"
+    "m": "Беги, сокройся от очей, / Цитеры слабая царица!"
    },
    {
-    "o": "你在哪里，你这自由的钟声？",
-    "m": "Where are you, bell of freedom?"
+    "o": "你在哪里，帝王的雷霆，自由的骄傲歌手？",
+    "m": "Где ты, где ты, гроза царей, / Свободы гордая певица?"
    }
   ],
   "anim": "distant",
@@ -10930,11 +10931,11 @@ const POEMS = [
   "lines": [
    {
     "o": "在那茫茫大海的蓝天上，有一叶孤帆闪着白光。",
-    "m": "A lone sail gleams white in the blue mist."
+    "m": "Белеет парус одинокой / В тумане моря голубом!.."
    },
    {
     "o": "它寻求什么，在遥远的故乡？",
-    "m": "What does it seek in its native land?"
+    "m": "Что ищет он в стране далекой? / Что кинул он в краю родном?.."
    }
   ],
   "anim": "distant",
@@ -11645,11 +11646,11 @@ const POEMS = [
   "lines": [
    {
     "o": "在疑虑、动摇的日子里，只有你，",
-    "m": "In days of doubt, only you."
+    "m": "Во дни сомнений, во дни тягостных раздумий / о судьбах моей родины —"
    },
    {
-    "o": "伟大的、有力的、真实的俄语，给我以支撑。",
-    "m": "Great, mighty, truthful Russian tongue, you sustain me."
+    "o": "只有你给我支撑与依靠，伟大的、有力的、真实的、自由的俄罗斯语言！",
+    "m": "ты один мне поддержка и опора, / о великий, могучий, правдивый и свободный русский язык!"
    }
   ],
   "anim": "distant",
@@ -69479,8 +69480,9 @@ function openDetail(id){
   const rowO = `<div class="tr">`+lines.map(l=>`<div class="row"><div class="o">${l.o}</div></div>`).join("")+`</div>`;
   const rowOM = `<div class="tr">`+lines.map(l=>{const isOrig=isOrigRe.test(l.m||"");const oc=isOrig?" orig":"";const tag=isOrig?`<span class="orig-tag">原文</span> `:"";return `<div class="row"><div class="o">${l.o}</div><div class="m${oc}">${tag}${l.m||""}</div></div>`;}).join("")+`</div>`;
   const charmNote = p.charm ? `<div class="note">【妙处】${p.charm}</div>` : "";
-  $("#panel-tr").innerHTML = (expand && !hasOrig) ? rowO+`<div class="note">本篇为拓展收录，逐句译文正在补充中。</div>`+charmNote
-    : (p.no_paraphrase ? rowO : rowOM) + charmNote;
+  const edNote = p.ed_note ? `<div class="note">【版本】${esc(p.ed_note)}</div>` : "";
+  $("#panel-tr").innerHTML = (expand && !hasOrig) ? rowO+`<div class="note">本篇为拓展收录，逐句译文正在补充中。</div>`+charmNote+edNote
+    : (p.no_paraphrase ? rowO : rowOM) + charmNote + edNote;
   // 动画可视化
   $("#panel-viz").innerHTML = `<div class="viz" id="vizScene">${renderViz(p.anim)}<button class="replay" onclick="replayViz()">↻ 重播</button></div>`;
   // 记忆技巧

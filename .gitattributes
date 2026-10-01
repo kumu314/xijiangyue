@@ -1,0 +1,16 @@
+# 行尾归一：入库统一 LF，检出按平台转换，避免 CRLF/LF 混用造成整文件 diff
+* text=auto
+
+*.html text eol=lf
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary

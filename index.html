@@ -106,11 +106,13 @@
   .rec .arrow{color:var(--ink-3);flex:0 0 auto;opacity:.65;}
 
   /* 详情页 */
-  .detail-head{display:flex;align-items:center;gap:12px;margin:4px 0 16px;}
+  .detail-head{display:flex;align-items:center;gap:12px;row-gap:8px;margin:4px 0 16px;flex-wrap:wrap;}
   .back{width:36px;height:36px;border-radius:50%;background:var(--paper-card);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);flex:0 0 auto;}
   .detail-head .dt{font-family:var(--kai);font-weight:700;font-size:24px;letter-spacing:2px;}
   .detail-head .da{font-size:12px;color:var(--ink-3);margin-top:2px;}
-  .detail-head .read-btn{margin-left:auto;}
+  .detail-head>div:nth-child(2){flex:1 1 auto;min-width:0;}
+  .detail-head .head-actions{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;min-width:0;}
+  .detail-head .read-btn{margin-left:0;flex:0 0 auto;}
   .original{background:radial-gradient(100% 70% at 10% 0%,rgba(178,58,46,.07),transparent 55%),var(--paper-card-2);border:1px solid var(--line);border-radius:4px;padding:18px 16px 16px;margin-bottom:var(--gap);}
   .original::before{content:"";display:block;height:1px;background:rgba(178,58,46,.25);margin:0 4px 12px;box-shadow:0 3px 0 rgba(178,58,46,.12);}
   .vpoem{display:flex;flex-direction:row-reverse;gap:12px;align-items:stretch;}
@@ -503,10 +505,17 @@
       <div class="detail-head">
         <div class="back" onclick="backFromDetail()"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 3l-6 6 6 6"/></svg></div>
         <div><div class="dt" id="dTitle">标题</div><div class="da" id="dAuthor">作者</div></div>
-        <button class="btn btn-primary read-btn" onclick="readAloud()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 8a5 5 0 010 8"/></svg><span id="readBtnTxt">听朗读</span></button>
-        <button class="btn read-btn" id="layoutBtn" onclick="toggleLayout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span id="layoutBtnTxt">竖排</span></button>
-        <button class="btn read-btn" id="maskBtn" onclick="cycleMask()" title="开启遮字背诵（四级递减）"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8M12 8v8"/></svg><span id="maskBtnTxt">背诵</span></button>
-        <button class="btn read-btn" id="reciteBtn" onclick="toggleRecite()" style="display:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.6 3 14.4 0 18-3-3.6-3-14.4 0-18"/></svg><span id="reciteBtnTxt">背原文</span></button>
+        <div class="head-actions">
+
+          <button class="btn btn-primary read-btn" onclick="readAloud()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 8a5 5 0 010 8"/></svg><span id="readBtnTxt">听朗读</span></button>
+
+          <button class="btn read-btn" id="layoutBtn" onclick="toggleLayout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span id="layoutBtnTxt">竖排</span></button>
+
+          <button class="btn read-btn" id="maskBtn" onclick="cycleMask()" title="开启遮字背诵（四级递减）"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8M12 8v8"/></svg><span id="maskBtnTxt">背诵</span></button>
+
+          <button class="btn read-btn" id="reciteBtn" onclick="toggleRecite()" style="display:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.6 3 14.4 0 18-3-3.6-3-14.4 0-18"/></svg><span id="reciteBtnTxt">背原文</span></button>
+
+        </div>
       </div>
       <div class="original" id="dOriginal"></div>
       <div class="tabs" id="dTabs">

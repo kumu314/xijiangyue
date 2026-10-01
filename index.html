@@ -310,6 +310,11 @@
   .game-card:active{transform:scale(.97);}
   .game-card .gc-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:22px;font-weight:900;color:#fff;margin-bottom:10px;}
   .game-card .gc-icon.feihua{background:linear-gradient(135deg,#B23A2E,#8E2C22);}
+  .gc-icon svg{width:30px;height:30px;color:#FBF6EA;opacity:.92;display:block}
+  .gc-ring{position:absolute;inset:3px;border-radius:50%;border:1px solid rgba(251,246,234,.35)}
+  .gc-seal{position:absolute;right:-3px;bottom:-3px;width:15px;height:15px;border-radius:3px;background:#B23A2E;color:#FBF6EA;font-family:var(--kai);font-size:10px;line-height:15px;text-align:center;box-shadow:0 0 0 1.5px #FCF8EE;transform:rotate(-4deg);z-index:1}
+  .gc-deco svg{width:100%;height:100%;display:block}
+  .lead{white-space:pre-line}
   .game-card .gc-title{font-family:var(--serif);font-weight:900;font-size:17px;color:var(--ink);margin-bottom:4px;}
   .game-card .gc-sub{font-size:12px;color:var(--ink-3);line-height:1.5;}
   .game-card .gc-deco{position:absolute;right:-10px;bottom:-10px;font-family:var(--serif);font-size:60px;color:var(--cinnabar);opacity:.06;font-weight:900;}
@@ -379,30 +384,36 @@
       <div class="section-title">热学榜 <span class="more" onclick="hotMore()">换一批</span></div>
       <div class="rec-list" id="homeHot"></div>
       <div class="section-title">小游戏</div>
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="gi-flower" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 41 C14 33 21 27 29 20 C32.5 17 36.5 14 41.5 11.5"/><path d="M20 30.5 C23 26.5 26 23 30 20"/><circle cx="33" cy="10.8" r="3"/><circle cx="37.2" cy="13.9" r="3"/><circle cx="35.6" cy="18.7" r="3"/><circle cx="30.4" cy="18.7" r="3"/><circle cx="28.8" cy="13.9" r="3"/><circle cx="14" cy="33" r="1.7"/><circle cx="24.5" cy="24" r="1.5"/></g><circle cx="33" cy="15" r="1.1" fill="currentColor"/></symbol>
+<symbol id="gi-dragon-c" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M33 9.5 C20 5.5 9.5 13 9.5 24 C9.5 34.5 19 41.5 29.5 39.5 C34 38.6 37.5 36 39 32.5"/><path d="M33 9.5 C36 10.5 37.5 12.5 37.5 15 L31.5 16.5"/><path d="M31 8.5 C30.5 5.5 32 3.5 35 3"/><path d="M36 8.8 C36.5 6.2 38.5 5 41 5.2"/><path d="M37.5 15 C39.5 15.5 40.8 16.8 41.5 18.5 L36.5 20"/></g><circle cx="34.8" cy="13.4" r="1" fill="currentColor"/></symbol>
+<symbol id="gi-bamboo" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 9.5 V38.5"/><path d="M19 11 V37"/><path d="M25.5 9.5 V38.5"/><path d="M32 11 V37"/><path d="M38.5 9.5 V38.5"/><path d="M11 16.5 H40"/><path d="M11 30.5 H40"/></g></symbol>
+<symbol id="gi-paperbrush" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="21" width="30" height="16" rx="1.6"/><path d="M14 26.5 C18 25.2 23 25.2 26.5 26.2"/><path d="M20 29.5 L38 8.5"/></g><path d="M20 29.5 c-1.9 1.4 -3.2 3.3 -3.9 5.6 c2.3 -.3 4.2 -1.4 5.6 -3 Z" fill="currentColor"/></symbol>
+</defs></svg>
       <div class="game-entry">
         <div class="game-card" onclick="openFeihua()">
-          <div class="gc-icon feihua">花</div>
+          <div class="gc-icon feihua"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#gi-flower"/></svg><span class="gc-ring"></span><span class="gc-seal">令</span></div>
           <div class="gc-title">飞花令</div>
           <div class="gc-sub">含某字一句诗，看谁接得快</div>
-          <div class="gc-deco">令</div>
+          <div class="gc-deco" aria-hidden="true"><svg viewBox="0 0 48 48"><use href="#gi-flower"/></svg></div>
         </div>
         <div class="game-card" onclick="toast('即将上线，敬请期待')">
-          <div class="gc-icon" style="background:linear-gradient(135deg,#3E5C6E,#2A4456);">龙</div>
+          <div class="gc-icon" style="background:linear-gradient(135deg,#3E5C6E,#2A4456);"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#gi-dragon-c"/></svg><span class="gc-ring"></span><span class="gc-seal">接</span></div>
           <div class="gc-title">诗词接龙</div>
           <div class="gc-sub">上句末字接下句首字</div>
-          <div class="gc-deco">接</div>
+          <div class="gc-deco" aria-hidden="true"><svg viewBox="0 0 48 48"><use href="#gi-dragon-c"/></svg></div>
         </div>
         <div class="game-card" onclick="toast('即将上线，敬请期待')">
-          <div class="gc-icon" style="background:linear-gradient(135deg,#8A6220,#8B6722);">背</div>
+          <div class="gc-icon" style="background:linear-gradient(135deg,#8A6220,#8B6722);"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#gi-bamboo"/></svg><span class="gc-ring"></span><span class="gc-seal">背</span></div>
           <div class="gc-title">背一背</div>
           <div class="gc-sub">给上句填下句，巩固记忆</div>
-          <div class="gc-deco">背</div>
+          <div class="gc-deco" aria-hidden="true"><svg viewBox="0 0 48 48"><use href="#gi-bamboo"/></svg></div>
         </div>
         <div class="game-card" onclick="toast('即将上线，敬请期待')">
-          <div class="gc-icon" style="background:linear-gradient(135deg,#4E6B4A,#4F6748);">考</div>
+          <div class="gc-icon" style="background:linear-gradient(135deg,#4E6B4A,#4F6748);"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#gi-paperbrush"/></svg><span class="gc-ring"></span><span class="gc-seal">考</span></div>
           <div class="gc-title">考一考</div>
           <div class="gc-sub">作者/诗名选择题，趣味闯关</div>
-          <div class="gc-deco">考</div>
+          <div class="gc-deco" aria-hidden="true"><svg viewBox="0 0 48 48"><use href="#gi-paperbrush"/></svg></div>
         </div>
       </div>
     </section>

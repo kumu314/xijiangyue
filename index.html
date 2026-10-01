@@ -22,6 +22,9 @@
     --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",serif;
     --kai:"LXGW WenKai","LXGW WenKai GB","Kaiti SC","STKaiti","KaiTi","DFKai-SB",var(--serif);
     --sans:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    /* 阅读设置变量（round4-③，默认=现状，不改观感） */
+    --reader-fs:18px; --reader-ff:var(--kai); --reader-lh:2;
+    --hei:"PingFang SC","Microsoft YaHei","Heiti SC","SimHei",sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   html,body{height:100%;}
@@ -57,9 +60,9 @@
   .hero .tag{position:absolute;top:-1px;right:20px;transform:rotate(2deg);transform-origin:top center;
     font-size:11px;color:var(--cinnabar-deep);background:var(--paper-card-2);border:1px solid rgba(178,58,46,.35);border-top:none;
     border-radius:0 0 8px 8px;padding:5px 12px;letter-spacing:1px;}
-  .hero .poem-title{font-family:var(--kai);font-weight:700;font-size:22px;letter-spacing:2px;}
+  .hero .poem-title{font-family:var(--reader-ff);font-weight:700;font-size:22px;letter-spacing:2px;}
   .hero .poem-author{font-size:12px;color:var(--ink-3);margin:5px 0 14px;}
-  .hero .verse{font-family:var(--kai);font-size:17.5px;line-height:2.1;letter-spacing:1.5px;}
+  .hero .verse{font-family:var(--reader-ff);font-size:var(--reader-fs);line-height:var(--reader-lh);letter-spacing:1.5px;}
   .hero .actions{display:flex;gap:10px;margin-top:16px;}
   .hero .signoff{position:absolute;right:17px;bottom:58px;writing-mode:vertical-rl;font-family:var(--kai);
     font-size:10px;color:var(--ink-3);letter-spacing:2px;opacity:.85;z-index:2;}
@@ -113,16 +116,42 @@
   .vpoem{display:flex;flex-direction:row-reverse;gap:12px;align-items:stretch;}
   .vtitle{writing-mode:vertical-rl;flex:0 0 auto;background:var(--cinnabar);color:#FBF6EA;border-radius:4px;
     padding:12px 5px;display:flex;gap:5px;align-items:flex-start;justify-content:flex-start;box-shadow:0 3px 10px rgba(178,58,46,.30);}
-  .vtitle .vt-name{font-family:var(--kai);font-weight:700;font-size:16px;letter-spacing:4px;}
+  .vtitle .vt-name{font-family:var(--reader-ff);font-weight:700;font-size:16px;letter-spacing:4px;}
   .vtitle.long .vt-name{font-size:13px;letter-spacing:2px;}
   .vtitle.xlong .vt-name{font-size:11px;letter-spacing:1px;}
-  .vtitle .vt-author{font-family:var(--kai);font-size:10px;letter-spacing:2px;opacity:.88;margin-top:6px;}
+  .vtitle .vt-author{font-family:var(--reader-ff);font-size:10px;letter-spacing:2px;opacity:.88;margin-top:6px;}
   .vscroll{flex:1 1 auto;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
   .vscroll::-webkit-scrollbar{display:none;}
   .vbody{writing-mode:vertical-rl;height:300px;display:inline-block;padding:6px 2px;}
-  .vline{font-family:var(--kai);font-size:18px;letter-spacing:2.5px;color:var(--ink);line-height:2;
+  .vline{font-family:var(--reader-ff);font-size:var(--reader-fs);letter-spacing:2.5px;color:var(--ink);line-height:var(--reader-lh);
     border-block-start:1px solid rgba(178,58,46,.18);padding:0 9px;}
   .original .note{margin-top:12px;font-size:12px;color:var(--ink-3);border-top:1px dashed var(--line);padding-top:12px;}
+
+  /* 读诗排版：横排现代式（body.layout-horizontal 时生效；竖排手卷为默认） */
+  body.layout-horizontal .vpoem{display:block;}
+  body.layout-horizontal .vtitle{writing-mode:horizontal-tb;flex:0 0 auto;display:inline-flex;align-items:baseline;gap:8px;padding:5px 14px;border-radius:var(--r-pill);margin:0 0 14px;}
+  body.layout-horizontal .vtitle .vt-author{margin-top:0;}
+  body.layout-horizontal .vscroll{overflow:visible;}
+  body.layout-horizontal .vbody{writing-mode:horizontal-tb;height:auto;display:block;padding:4px 0;}
+  body.layout-horizontal .vline{display:block;writing-mode:horizontal-tb;font-size:var(--reader-fs);line-height:var(--reader-lh);letter-spacing:normal;padding:8px 2px;border-block-start:none;border-bottom:1px dashed var(--line-soft);}
+  body.layout-horizontal .vline:last-child{border-bottom:none;}
+
+  /* 阅读设置浮层（排版 + 字体） */
+  .rset-overlay{position:absolute;inset:0;background:rgba(43,38,32,.5);z-index:300;display:none;align-items:center;justify-content:center;padding:24px;}
+  .rset-overlay.active{display:flex;animation:fhIn .2s ease;}
+  .rset-panel{width:100%;max-width:360px;background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;box-shadow:0 18px 48px rgba(0,0,0,.28);}
+  .rset-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:15px 16px;background:var(--paper-card-2);border-bottom:1px solid var(--line);}
+  .rset-head .rset-title{font-family:var(--serif);font-weight:900;font-size:17px;color:var(--ink);}
+  .rset-head .rset-close{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--paper);cursor:pointer;color:var(--ink-2);}
+  .rset-body{padding:6px 18px 20px;max-height:64vh;overflow-y:auto;}
+  .rset-sec{padding:15px 0;border-bottom:1px solid var(--line-soft);}
+  .rset-sec:last-child{border-bottom:none;}
+  .rset-sec-t{font-size:13px;color:var(--ink-2);margin-bottom:11px;font-weight:600;display:flex;align-items:center;gap:6px;}
+  .rset-sec-t .cur{margin-left:auto;color:var(--cinnabar);font-weight:600;font-size:12px;}
+  .rset-opts{display:flex;gap:8px;flex-wrap:wrap;}
+  .rset-opt{flex:1 1 auto;min-width:72px;padding:11px 6px;text-align:center;font-size:13.5px;border:1px solid var(--line);border-radius:var(--r-pill);cursor:pointer;background:var(--paper);color:var(--ink-2);transition:all .15s ease;}
+  .rset-opt.on{background:var(--cinnabar);color:#fff;border-color:var(--cinnabar);font-weight:600;}
+  .rset-opt:active{transform:scale(.97);}
 
   .tabs{display:flex;gap:6px;overflow-x:auto;padding:4px;margin-bottom:14px;background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-pill);}
   .tabs::-webkit-scrollbar{display:none;}
@@ -403,6 +432,7 @@
         <div class="back" onclick="backFromDetail()"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 3l-6 6 6 6"/></svg></div>
         <div><div class="dt" id="dTitle">标题</div><div class="da" id="dAuthor">作者</div></div>
         <button class="btn btn-primary read-btn" onclick="readAloud()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 8a5 5 0 010 8"/></svg>听朗读</button>
+        <button class="btn read-btn" id="layoutBtn" onclick="toggleLayout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span id="layoutBtnTxt">竖排</span></button>
       </div>
       <div class="original" id="dOriginal"></div>
       <div class="tabs" id="dTabs">
@@ -69669,6 +69699,7 @@ function renderMe(){
     <div class="mi" onclick="goLogin()"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 8l7-5 7 5"/></svg></span><span class="mi-t">我的收藏</span><span class="mi-ar">›</span></div>
     <div class="mi" onclick="switchTab('learn')"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span><span class="mi-t">学习记录</span><span class="mi-ar">›</span></div>
     <div class="mi" onclick="toast('朗读设置：可调节语速与音色')"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></span><span class="mi-t">朗读设置</span><span class="mi-ar">›</span></div>
+    <div class="mi" onclick="openReadingSettings()"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h11M4 12h16M4 17h9"/><path d="M17 5l2 2-2 2M20 14l-2 2 2 2"/></svg></span><span class="mi-t">阅读设置（排版 / 字体）</span><span class="mi-ar">›</span></div>
     <div class="mi" onclick="toast('西江阅·诗笺 · 边学边教，读懂千年')"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 013.5 2.3c-.8.4-1 .9-1 1.7M12 16.5v.5"/></svg></span><span class="mi-t">关于西江阅</span><span class="mi-ar">›</span></div>`;
 }
 
@@ -69952,7 +69983,49 @@ function closeFeihua(){ clearInterval(fhState.timer); $("#feihuaOverlay").classL
 
 
 renderHome(); renderMe();
+
+/* ============ 阅读设置：排版切换（round4-②） ============ */
+function getLayout(){ return localStorage.getItem("xjy_layout") || "vertical"; }
+function applyLayout(){
+  const b=document.body.classList;
+  if(getLayout()==="horizontal") b.add("layout-horizontal"); else b.remove("layout-horizontal");
+  if($("#layoutBtnTxt")) $("#layoutBtnTxt").textContent = getLayout()==="vertical" ? "竖排" : "横排";
+}
+function setLayout(v){
+  localStorage.setItem("xjy_layout", v);
+  applyLayout();
+  if($("#view-detail") && $("#view-detail").classList.contains("active")) openDetail(currentPoemId);
+  renderReadingSettings();
+}
+function toggleLayout(){ setLayout(getLayout()==="vertical" ? "horizontal" : "vertical"); }
+function renderReadingSettings(){
+  const lay=getLayout();
+  $("#rsetBody").innerHTML = `
+    <div class="rset-sec">
+      <div class="rset-sec-t">读诗排版<span class="cur">${lay==="vertical"?"竖排手卷":"横排现代式"}</span></div>
+      <div class="rset-opts">
+        <div class="rset-opt ${lay==="vertical"?"on":""}" onclick="setLayout('vertical')">竖排手卷</div>
+        <div class="rset-opt ${lay==="horizontal"?"on":""}" onclick="setLayout('horizontal')">横排现代式</div>
+      </div>
+    </div>`;
+}
+function openReadingSettings(){ renderReadingSettings(); $("#rsetOverlay").classList.add("active"); }
+function closeReadingSettings(){ $("#rsetOverlay").classList.remove("active"); }
+
+applyLayout();
 if(API_BASE && currentUser && currentUser.token) syncPull();
 </script>
+
+  <!-- ============ 阅读设置浮层 ============ -->
+  <div class="rset-overlay" id="rsetOverlay">
+    <div class="rset-panel">
+      <div class="rset-head">
+        <div class="rset-title">阅读设置</div>
+        <div class="rset-close" onclick="closeReadingSettings()"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4l10 10M14 4L4 14"/></svg></div>
+      </div>
+      <div class="rset-body" id="rsetBody"></div>
+    </div>
+  </div>
+
 </body>
 </html>

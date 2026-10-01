@@ -156,6 +156,10 @@
   .vbody .ch.revealed{animation:chIn .26s ease both;}
   .vbody .ch.revealed.imagery{color:#B23A2E;animation:imgIn .42s ease both;text-shadow:0 0 8px rgba(178,58,46,.22);}
   @media (prefers-reduced-motion:reduce){ .vbody .ch.revealed,.vbody .ch.revealed.imagery{animation:none;} }
+  /* #63③ 生僻字注音：ruby 小字，竖横排通用；AA 深棕 #5b4636 对纸底对比足 */
+  .vbody ruby{ ruby-position:over; line-height:1.12; }
+  .vbody rt{ font-size:.5em; color:#5b4636; font-weight:400; letter-spacing:0; }
+  body.layout-horizontal .vbody ruby{ ruby-position:over; }
   .btn.reciting{background:#B23A2E;color:#FFF8EC;border-color:#B23A2E;}
   .mem-pending{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px dashed var(--line);border-radius:var(--r-card);background:var(--paper-card-2);}
   .mem-pending .mp-t{font-weight:700;color:var(--ink,#2B2620);margin-bottom:4px;}
@@ -69534,6 +69538,7 @@ function openDetail(id){
   const isOrigRe=/[A-Za-z\u00C0-\u024F\u0370-\u03FF\u0400-\u04FF\u0600-\u06FF\u0900-\u097F\u0980-\u09FF\u0E00-\u0E7F\u3040-\u30FF]/;
   const hasOrig = lines.some(l=>isOrigRe.test(l.m||""));
   const showOrig = getRecite()==="orig" && hasOrig;
+  curRhymeMa = poemRhymesMa(lines.map(l=>l.o));   // #63③ 注音门控：本诗押麻韵才标 斜=xiá（lines 是行对象，须取 .o 字符串）
   const bodyLines = showOrig ? lines.map(l=>l.m||l.o) : lines.map(l=>l.o);
   const maskLv=getMask(), maskOn=maskLv>0;
   if(segPoemId!==p.id){ segPoemId=p.id; curSeg=-1; segDone.clear(); }   // 换诗重置分段
@@ -69813,6 +69818,39 @@ function ttsFix(line, rhymeMa){
   for(const [a,b] of TTS_FIXES) s=s.split(a).join(b);
   // 斜（甲·风格）：仅当「处于分句末（后接标点或行尾）+ 本诗押麻韵」才叶韵读 xiá，否则保持统读 xié
   if(rhymeMa) s = s.replace(/斜(?=[，。！？、；：,.!?;:]|$)/g, "霞");
+  return s;
+}
+
+/* #63③ 生僻字注音：复用破音字表 v2（TTS_FIXES）的正确读音，但按短语上下文门控——
+   破音字是多音字，全局标一个音会错（骑 qí/jì、燕 yàn/yān、荷 hé/hè、著 zhuó/zhù），
+   故每条只在该字处于原表短语语境时才标注正确读音；与 TTS 替换同源同口径。
+   wrap：把命中短语里的目标字包成 <ruby><rt>拼音</rt></ruby>，竖横排均可用。 */
+function annRuby(ch, py){ return '<ruby>'+ch+'<rt>'+py+'</rt></ruby>'; }
+const ANN_RULES = [
+  // 甲·风格（叶韵/传统诵读）：斜读 xiá 由 rhymeMa 门控，单独在 annLine 末尾处理
+  { re:/(鬓毛衰)/g,               t:"衰", py:"cuī（旧读）" },
+  { re:/(一骑|铁骑|千骑|候骑)/g,  t:"骑", py:"jì" },
+  { re:/(燕山|燕然)/g,            t:"燕", py:"yān" },
+  { re:/(宫阙|城阙|凤阙|金阙|北阙|贝阙|魏阙|瑶阙|双阙|朝天阙)/g, t:"阙", py:"què" },
+  { re:/(荷锄|荷笠)/g,            t:"荷", py:"hè" },
+  { re:/(龟兹)/g,                 t:"龟兹", py:"qiū cí" },
+  { re:/(舴艋)/g,                 t:"舴艋", py:"zé měng" },
+  { re:/(戍鼓)/g,                 t:"戍", py:"shù" },
+  { re:/(金柝)/g,                 t:"柝", py:"tuò" },
+  { re:/(机杼)/g,                 t:"杼", py:"zhù" },
+  { re:/(著我)/g,                 t:"著", py:"zhuó" },
+  { re:/(可汗)/g,                 t:"可汗", py:"kè hán" },
+  { re:/(单于)/g,                 t:"单于", py:"chán yú" },
+  { re:/(见牛羊)/g,               t:"见", py:"xiàn（通「现」）" },
+  { re:/(浣)/g,                   t:"浣", py:"huàn" },   // 全局：浣只读 huàn
+  { re:/(嗟)/g,                   t:"嗟", py:"jiē" },      // 全局：同音无害
+];
+function annLine(text, rhymeMa){
+  let s = esc(text);
+  for(const r of ANN_RULES){
+    s = s.replace(r.re, (m)=> m.split(r.t).join(annRuby(r.t, r.py)));
+  }
+  if(rhymeMa) s = s.replace(/斜/g, annRuby("斜","xiá（叶韵）"));
   return s;
 }
 
@@ -70397,7 +70435,7 @@ function tokenize(t){ return /[A-Za-zÀ-ɏͰ-ϿЀ-ӿ぀-ヿ]/.test(t) ? t.split(
 /* 遮蔽集随档位单调扩大（hash%100 阈值递增），同一首诗每次渲染结果稳定 */
 function renderMaskLines(texts,id,off){
   const lv=getMask(); off=off||0;
-  if(lv<=0) return texts.map(t=>`<div class="vline">${esc(t)}</div>`).join("");
+  if(lv<=0) return texts.map(t=>`<div class="vline">${annLine(t, curRhymeMa)}</div>`).join("");
   const r=maskRatio(lv);
   return texts.map((t,k)=>{
     const li=k+off;
@@ -70412,6 +70450,7 @@ function renderMaskLines(texts,id,off){
     return `<div class="vline">${inner}</div>`;
   }).join("");
 }
+let curRhymeMa=false;
 /* review v1：{bucket, due, last}，本地日（toISOString 是 UTC，早 8 点前会错位） */
 function localDay(d){ d=d||new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function getReview(){ try{ return JSON.parse(localStorage.getItem(LS_REVIEW)||"{}"); }catch(e){ return {}; } }

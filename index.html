@@ -245,6 +245,20 @@
   .checkin .ci-title{font-family:var(--serif);font-weight:700;font-size:16px;}
   .checkin .ci-sub{font-size:11px;color:var(--ink-3);}
   .ci-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+  .ci-item.wide{grid-column:1 / -1;}   /* round5-② 第五印「温」独占一行，防 2×2+1 留空洞 */
+  .rv-card{margin-top:12px;padding:13px 14px;background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);}
+  .rv-t{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px;}
+  .rv-t .rv-n{margin-left:auto;font-size:11px;font-weight:500;color:var(--ink-3);}
+  .rv-t .rv-ok{font-size:11px;color:var(--jade);font-weight:600;}
+  .rv-empty{margin-top:8px;font-size:12.5px;color:var(--ink-3);line-height:1.6;}
+  .rv-list{margin-top:9px;display:flex;flex-direction:column;gap:7px;}
+  .rv-item{padding:9px 11px;border:1px solid var(--line);border-radius:8px;cursor:pointer;transition:background .15s ease;}
+  .rv-item:active{background:rgba(178,58,46,.06);}
+  .rv-item.leech{border-color:rgba(185,138,62,.55);background:rgba(185,138,62,.08);}
+  .rv-i-t{font-size:13px;font-weight:600;color:var(--ink);}
+  .rv-i-a{font-size:11px;color:var(--ink-3);margin-top:2px;}
+  .rv-note{margin-top:8px;font-size:11.5px;color:var(--ink-3);line-height:1.6;}
+  .rv-more{margin-top:6px;font-size:11px;color:var(--ink-3);text-align:right;}
   .ci-item{background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);padding:13px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s ease;}
   .ci-item.done{background:rgba(110,139,106,.12);border-color:rgba(110,139,106,.4);}
   .ci-item .ck{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#fff;}
@@ -69814,15 +69828,19 @@ const CHECKIN_ITEMS=[
   {key:"read", t:"每日读一首", d:"读 / 看一首诗", se:"读"},
   {key:"watch", t:"每日看动画", d:"看意象动画", se:"观"},
   {key:"know", t:"每日了解", d:"读懂背景故事", se:"知"},
-  {key:"memory", t:"每日记忆", d:"背下一首诗", se:"记"}
+  {key:"memory", t:"每日记忆", d:"背下一首诗", se:"记"},
+  {key:"review", t:"每日温故", d:"温习到期旧诗", se:"温", noStreak:true, wide:true}
 ];
+/* 全勤/连击口径：显式排除「温」——温故照落印、照展示，但不得进全勤判定（枯木拍板②）。
+   注意不能写 CHECKIN_ITEMS.every()，那会自动把第 5 项算进去（陷阱）。 */
+const STREAK_ITEMS = CHECKIN_ITEMS.filter(it=>!it.noStreak);
 let justStampKey=null; // 本次勾选要播落印动效的项
 function renderCheckin(){
-  const todayStr = new Date().toISOString().slice(0,10);
+  const todayStr = localDay(); // 本地日（toISOString 是 UTC，早 8 点前会错位一天）
   if(!checkin || checkin.date!==todayStr){
     // 跨天结算：昨天四项全勤则连击+1，有记录但未全勤或隔了天则清零
     if(checkin){
-      const allDone = CHECKIN_ITEMS.every(it=>checkin.done && checkin.done[it.key]);
+      const allDone = STREAK_ITEMS.every(it=>checkin.done && checkin.done[it.key]); // 全勤不含温项
       if(checkin.date===getYesterday() && allDone) progress.streak++;
       else progress.streak=0;
       localStorage.setItem(LS_PROGRESS, JSON.stringify(progress));
@@ -69831,15 +69849,16 @@ function renderCheckin(){
     localStorage.setItem(LS_CHECKIN, JSON.stringify(checkin));
   }
   const doneCount = Object.values(checkin.done).filter(Boolean).length;
-  const allDone = doneCount===CHECKIN_ITEMS.length;
+  const allDone = STREAK_ITEMS.every(it=>checkin.done && checkin.done[it.key]); // 满勤判定不含温项（温照展示计数）
   const enc = ENCOURAGE[Math.min(ENCOURAGE.length-1, (progress.streak-1+ENCOURAGE.length)%ENCOURAGE.length)].replace("{n}",progress.streak);
   let html = `<div class="ci-head"><div><div class="ci-title">每日打卡</div><div class="ci-sub">${allDone?"今日已全部完成 🎉":`已完成 ${doneCount}/${CHECKIN_ITEMS.length}`}</div></div></div>`;
   html += `<div class="ci-grid">`+CHECKIN_ITEMS.map(it=>{
     const d = checkin.done[it.key];
-    return `<div class="ci-item ${d?'done':''}" onclick="toggleCheckin('${it.key}')">
+    return `<div class="ci-item ${d?'done':''}${it.wide?' wide':''}" onclick="toggleCheckin('${it.key}')">
       <div class="ck">${d?'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg>':''}</div>
       <div><div class="ct">${it.t}</div><div class="cd">${it.d}</div></div>${d?`<div class="stamp ${justStampKey===it.key?'stamp-in':''}">${it.se}</div>`:''}</div>`;
   }).join("")+`</div>`;
+  html += renderReviewCard(); // 今日温故卡（到期队列，每日上限 10）
   html += `<div class="ci-encourage">${allDone? "太棒了！今日诗词满勤，习惯正在长成 🌱" : enc}</div>`;
   if(stampAlbum.length){
     const shown = stampAlbum.slice(-8);
@@ -69851,23 +69870,26 @@ function renderCheckin(){
   justStampKey=null;
 }
 function getYesterday(){
-  const d=new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10);
+  const d=new Date(); d.setDate(d.getDate()-1); return localDay(d); // 本地日，修 UTC 错位
 }
 function toggleCheckin(key){
-  if(!checkin) checkin={date:new Date().toISOString().slice(0,10),done:{}};
+  if(!checkin) checkin={date:localDay(),done:{}};
   if(!checkin.counted) checkin.counted={};
   const was=!!checkin.done[key];
   checkin.done[key]=!was;
   // 每日每项只计一次进度，取消后当天再勾不重复累计
   if(checkin.done[key] && !was && !checkin.counted[key]){
-    progress.learned++;
+    // learned 口径分离：温故不计入 progress.learned（保历史横向可比），另设 reviewCount
+    const itNow = CHECKIN_ITEMS.find(it=>it.key===key);
+    if(itNow && itNow.noStreak) progress.reviewCount = (progress.reviewCount||0)+1;
+    else progress.learned++;
     checkin.counted[key]=true;
     localStorage.setItem(LS_PROGRESS, JSON.stringify(progress));
   }
   localStorage.setItem(LS_CHECKIN, JSON.stringify(checkin));
   // 钤印：勾选播落印动效；当日四项全勤收一印入印谱，撤销致不满勤则移除当日印（与钤印对称）
   if(checkin.done[key]) justStampKey=key;
-  const allDoneNow = CHECKIN_ITEMS.every(it=>checkin.done[it.key]);
+  const allDoneNow = STREAK_ITEMS.every(it=>checkin.done[it.key]); // 收印（印谱）同样不含温项
   const ai = stampAlbum.findIndex(a=>a.date===checkin.date);
   if(allDoneNow && ai<0){ stampAlbum.push({date:checkin.date}); saveAlbum(); }
   if(!allDoneNow && ai>=0){ stampAlbum.splice(ai,1); saveAlbum(); }
@@ -70359,6 +70381,74 @@ document.addEventListener("click", function(e){
     tip.textContent = " —— 还剩 "+body.querySelectorAll(".ch.masked").length+" 字，继续。";
   }
 }, false);
+/* ===== 温故队列（round5-② P0-1，本卡实现） =====
+   口径（写在代码里，避免下次复核扯皮）：
+   1. 到期 = due <= 今天（本地日），按 due 升序取前 REVIEW_DAILY_CAP 首（超期越久越靠前）。
+   2. 每日上限 10 首：积压再多也只推 10 首，其余明日继续——否则一天塞 100 首没人做。
+   3. 超期降档：due < 今天的，每天结算时降一档（bucket-1，下限 0）并 slip++；
+      降档只影响它复习后的升桶起点（更快再来），due 不变、仍留在队列最前——
+      这样积压能被消化；若不降档，超期项复习后又跳到 30 天桶，队列永不收敛。
+   4. leech：slip >= 3（连续 3 次回炉仍卡壳）→ 降回 1 天桶（bucket=0）并标记，UI 温和提示。 */
+const REVIEW_DAILY_CAP=10, LEECH_SLIP=3;
+function dayGap(a,b){ return Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/86400000); }
+function reviewDueList(){
+  const r=getReview(), today=localDay(), out=[];
+  for(const [id,it] of Object.entries(r)){
+    const p=POEMS.find(x=>x.id===id);
+    if(!p || !reviewable(p)) continue;
+    if((it.due||today) > today) continue;         // 未到期
+    out.push({id, p, it});
+  }
+  out.sort((a,b)=> String(a.it.due||"").localeCompare(String(b.it.due||"")) || String(a.id).localeCompare(String(b.id)));
+  return out;
+}
+function nextDueDays(){
+  const r=getReview(), today=localDay();
+  let min=null;
+  for(const [id,it] of Object.entries(r)){
+    const p=POEMS.find(x=>x.id===id); if(!p||!reviewable(p)) continue;
+    const d=it.due||"";
+    if(d>today){ const g=dayGap(today,d); if(min===null||g<min) min=g; }
+  }
+  return min;   // null = 未来无安排
+}
+function applyOverdueDowngrade(){
+  const r=getReview(), today=localDay();
+  let changed=false;
+  for(const [id,it] of Object.entries(r)){
+    if(!it.due || it.due>=today) continue;          // 只处理超期
+    if(it.slipDay===today) continue;                // 每天最多降一档
+    it.bucket=Math.max(0,(it.bucket||0)-1);
+    it.slip=(it.slip||0)+1;
+    if(it.slip>=LEECH_SLIP){ it.bucket=0; it.leech=true; }
+    it.slipDay=today;
+    changed=true;
+  }
+  if(changed) saveReview(r);
+  return r;
+}
+function renderReviewCard(){
+  applyOverdueDowngrade();
+  const due=reviewDueList(), cap=due.slice(0,REVIEW_DAILY_CAP), today=localDay();
+  const doneToday = !!(checkin && checkin.done && checkin.done.review);
+  if(!cap.length){
+    const n=nextDueDays();
+    return `<div class="rv-card"><div class="rv-t">今日温故</div>
+      <div class="rv-empty">${n===null?"今日无到期，暂无温故安排":"今日无到期，距离下次 "+n+" 天"}</div></div>`;
+  }
+  const leechCount=cap.filter(x=>x.it.leech).length;
+  return `<div class="rv-card${leechCount?" has-leech":""}">
+    <div class="rv-t">今日温故<span class="rv-n">${cap.length} 首${due.length>cap.length?"（积压 "+due.length+"）":""}</span>${doneToday?'<span class="rv-ok">已打卡</span>':""}</div>
+    <div class="rv-list">${cap.slice(0,3).map(x=>`
+      <div class="rv-item${x.it.leech?" leech":""}" onclick="openDetail('${x.id}')">
+        <div class="rv-i-t">${esc(x.p.title)}</div>
+        <div class="rv-i-a">${esc(x.p.author)}${x.it.leech?" · 拗口":""}</div>
+      </div>`).join("")}</div>
+    ${leechCount?`<div class="rv-note">${leechCount} 首已连续回炉 ${LEECH_SLIP} 次，已放回 1 天桶，慢慢来。</div>`:""}
+    ${due.length>cap.length?`<div class="rv-note">今日上限 ${REVIEW_DAILY_CAP} 首，余 ${due.length-cap.length} 首明日继续。</div>`:""}
+    ${cap.length>3?`<div class="rv-more">还有 ${cap.length-3} 首，温完上面几首再来。</div>`:""}
+  </div>`;
+}
 function getRecite(){ try{ return localStorage.getItem("xjy_recite")==="orig" ? "orig" : "zh"; }catch(e){ return "zh"; } }
 function setRecite(v){ try{ localStorage.setItem("xjy_recite", v); }catch(e){} }
 function toggleRecite(){

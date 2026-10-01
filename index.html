@@ -145,6 +145,17 @@
   .vbody .ch.masked:hover{background-color:rgba(178,58,46,.10);}
   .vbody .ch.revealed{color:#B23A2E;}
   .vbody .ch.first{font-weight:600;}
+  /* 分段导航（背诵模式第二刀） */
+  .seg-nav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:0 0 10px;}
+  .seg{min-width:32px;padding:4px 10px;border:1px solid var(--line);border-radius:var(--r-pill);background:var(--paper-card);font-size:12px;color:var(--ink-2,#6B6152);cursor:pointer;transition:background .16s,color .16s;}
+  .seg.on{background:#B23A2E;color:#FFF8EC;border-color:#B23A2E;}
+  .seg.done::after{content:"\2713";margin-left:3px;font-size:11px;}
+  /* 揭示淡入 / 意象字淡入 */
+  @keyframes chIn{from{opacity:.25;transform:translateY(3px);}to{opacity:1;transform:none;}}
+  @keyframes imgIn{0%{opacity:0;transform:scale(.86);}60%{opacity:1;transform:scale(1.07);}100%{opacity:1;transform:none;}}
+  .vbody .ch.revealed{animation:chIn .26s ease both;}
+  .vbody .ch.revealed.imagery{color:#B23A2E;animation:imgIn .42s ease both;text-shadow:0 0 8px rgba(178,58,46,.22);}
+  @media (prefers-reduced-motion:reduce){ .vbody .ch.revealed,.vbody .ch.revealed.imagery{animation:none;} }
   .btn.reciting{background:#B23A2E;color:#FFF8EC;border-color:#B23A2E;}
   .mem-pending{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px dashed var(--line);border-radius:var(--r-card);background:var(--paper-card-2);}
   .mem-pending .mp-t{font-weight:700;color:var(--ink,#2B2620);margin-bottom:4px;}
@@ -69525,11 +69536,21 @@ function openDetail(id){
   const showOrig = getRecite()==="orig" && hasOrig;
   const bodyLines = showOrig ? lines.map(l=>l.m||l.o) : lines.map(l=>l.o);
   const maskLv=getMask(), maskOn=maskLv>0;
+  if(segPoemId!==p.id){ segPoemId=p.id; curSeg=-1; segDone.clear(); }   // 换诗重置分段
+  const segTotal = segCountOf(lines.length);
+  if(curSeg>=segTotal) curSeg=-1;
+  const segA = curSeg<0 ? 0 : curSeg*SEG_SIZE;
+  const segB = curSeg<0 ? bodyLines.length : Math.min(bodyLines.length, segA+SEG_SIZE);
+  const segNav = (maskOn && segTotal>1) ? `<div class="seg-nav">`
+    + `<button class="seg${curSeg<0?" on":""}" onclick="setSeg(-1)">全篇</button>`
+    + Array.from({length:segTotal},(_,i)=>`<button class="seg${curSeg===i?" on":""}${segDone.has(i)?" done":""}" onclick="setSeg(${i})">${i+1}</button>`).join("")
+    + `</div>` : "";
   $("#dOriginal").innerHTML = `<div class="vpoem${showOrig?" orig-lang":""}${maskOn?" mask-on":""}">
       <div class="vtitle ${tcls}"><span class="vt-name">${esc(p.title)}</span><span class="vt-author">${esc(p.author)}</span></div>
-      <div class="vscroll" id="vscroll"><div class="vbody">${renderMaskLines(bodyLines,p.id)}</div></div>
+      ${segNav}
+      <div class="vscroll" id="vscroll"><div class="vbody">${renderMaskLines(bodyLines.slice(segA,segB),p.id,segA)}</div></div>
     </div>`
-    + `<div class="note">全篇 ${lines.length} 句 · ${p.category} · ${(p.tags||[]).join("·")}${expand?" · 拓展篇":""}。${expand?"本篇为拓展收录，已附串讲与助记；逐句译文陆续补充。":"诗句自右向左竖读；点击下方标签，从五个维度吃透它。"}${showOrig?"（背诵语言：原文）":""}${maskOn?`（背诵：${MASK_LABEL[maskLv]}）`:""}<span id="maskTip"></span></div>`;
+    + `<div class="note">全篇 ${lines.length} 句 · ${p.category} · ${(p.tags||[]).join("·")}${expand?" · 拓展篇":""}。${expand?"本篇为拓展收录，已附串讲与助记；逐句译文陆续补充。":"诗句自右向左竖读；点击下方标签，从五个维度吃透它。"}${showOrig?"（背诵语言：原文）":""}${maskOn?`（背诵：${MASK_LABEL[maskLv]}${curSeg>=0?" · 第 "+(curSeg+1)+"/"+segTotal+" 段":""}）`:""}<span id="maskTip"></span></div>`;
   if($("#maskBtn")){ $("#maskBtnTxt").textContent=MASK_LABEL[maskLv];
     $("#maskBtn").title = maskOn ? ("当前遮 "+Math.round(maskRatio(maskLv)*100)+"%，点按循环下一档") : "开启遮字背诵（四级递减）";
     $("#maskBtn").classList.toggle("reciting", maskOn); }
@@ -69671,6 +69692,32 @@ function replayViz(){
 /* ============ 朗读（Web Speech API） ============
    round5-③：分段 utterance 队列（整首单 utterance 在 Chrome ~15s 截断）、
    zh 语音 voiceschanged 检测、离页 cancel、破音字覆盖表 v1、单句循环。 */
+/* ===== 朗读适配层（#54 P1-TTS ⑤ 可插拔） =====
+   业务代码只准走 TTS.* ，不直接碰 window.speechSynthesis。
+   将来切到微信 webview / 小程序（无 Web Speech，需接 wx 原生朗读）时，
+   只替换本对象的实现即可，不动任何调用点。
+   注意：本对象必须定义在所有调用点（含顶部 voiceschanged 注册）之前，否则 TDZ。 */
+const TTS={
+  name:"webspeech",
+  supported(){ return typeof window!=="undefined" && "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance==="function"; },
+  cancel(){ if(this.supported()){ try{ window.speechSynthesis.cancel(); }catch(e){} } },
+  getVoices(){ return this.supported() ? window.speechSynthesis.getVoices() : []; },
+  onVoicesChanged(fn){ if(this.supported()) window.speechSynthesis.onvoiceschanged=fn; },
+  speak(u){ if(!this.supported()) return false; window.speechSynthesis.speak(u); return true; },
+  /* iOS Safari：首次 speak 必须发生在用户手势的同步调用链内，否则静默失败。
+     做法：在点击入口先播一条静音空 utterance 解锁（只做一次）。 */
+  unlock(){
+    if(!this.supported()) return false;
+    try{
+      const u=new SpeechSynthesisUtterance(" "); u.volume=0; u.lang="zh-CN";
+      window.speechSynthesis.speak(u);
+      return true;
+    }catch(e){ return false; }
+  }
+};
+let ttsUnlocked=false;
+function unlockTts(){ if(ttsUnlocked) return; if(TTS.unlock()) ttsUnlocked=true; }
+
 let zhVoice=null;
 /* 朗读设置（#58 打回项）：语速 + 音色，存 localStorage xjy_tts；voice="auto" 走优选 */
 const TTS_RATE_MAP={"慢":0.75,"常":0.85,"快":1.0};
@@ -69692,8 +69739,7 @@ function voiceScore(v){
   return s;
 }
 function listZhVoices(){
-  const vs = ("speechSynthesis" in window) ? window.speechSynthesis.getVoices() : [];
-  return vs.filter(v=>/^zh|Chinese|中文|普通话/i.test((v.lang||"")+(v.name||"")));
+  return TTS.getVoices().filter(v=>/^zh|Chinese|中文|普通话/i.test((v.lang||"")+(v.name||"")));
 }
 function pickZhVoice(){
   const zhs = listZhVoices();
@@ -69709,9 +69755,9 @@ function currentVoice(){
   }
   return zhVoice;
 }
-if("speechSynthesis" in window){
+if(TTS.supported()){
   pickZhVoice();
-  window.speechSynthesis.onvoiceschanged = pickZhVoice; // Chrome 首调 getVoices() 返回 []，必须等此事件
+  TTS.onVoicesChanged(pickZhVoice); // Chrome 首调 getVoices() 返回 []，必须等此事件
 }
 /* 破音字覆盖表 v2（灵玉复核 #58 返工后）：同音字替换，仅作用于喂给 TTS 的文本，不影响显示。
 
@@ -69747,12 +69793,19 @@ const TTS_FIXES=[
 ];
 /* 麻韵常用句末字（叶韵判据）：斜读 xiá 只在句末且该诗押麻韵时成立 */
 const MA_RHYME="家花纱华沙茶麻瓜娃芽鸦葩笳奢衙槎夸斜";
+/* 叶韵证据必须来自「斜以外的麻韵字」。
+   若把斜本身也算证据，则「全诗唯一的疑似麻韵字就是斜」时判据自我满足（循环论证）：
+   灵玉 v2 复核抓到的 2 处误伤即由此而来——
+   《蓦山溪·洗妆真态》「竹外一枝斜」（全篇御/暮/路仄韵，不押麻）、
+   《新水令》「风急雁行斜」（车遮韵 -ie，曲韵读 xié）。
+   排除斜后：改写 12 处 → 10 处，且 10 处全部有独立麻韵证据。 */
+const MA_RHYME_EVIDENCE=MA_RHYME.split("斜").join("");
 /* 韵脚判据按「分句」算：数据里一行常含两句（"石径斜，白云生处有人家。"），
    「斜」处于分句末而非整行末——只看整行末字会漏判。 */
 function poemRhymesMa(lines){
   return (lines||[]).some(l=>{
     const toks=String(l).split(/[，。！？、；：,.!?;:'"]/);
-    return toks.some(t=>{ const last=t.trim().slice(-1); return last && MA_RHYME.includes(last); });
+    return toks.some(t=>{ const last=t.trim().slice(-1); return last && MA_RHYME_EVIDENCE.includes(last); });
   });
 }
 function ttsFix(line, rhymeMa){
@@ -69766,11 +69819,14 @@ function ttsFix(line, rhymeMa){
 /* 分段朗读队列。代际计数：stop/loop 切换后旧 utterance 的回调按代次作废，防 cancel 竞态 */
 const speechState={mode:"idle", idx:0, lines:[], loopIdx:-1};
 let speechGen=0;
+/* 句间停顿（呼吸感，#54 P1-TTS ②）：句末标点 420ms，其余 260ms */
+const TTS_GAP={normal:260, long:420};
+function gapAfter(line){ return /[。！？!?]\s*$/.test(String(line)) ? TTS_GAP.long : TTS_GAP.normal; }
 function setReadBtn(txt){ const b=$("#readBtnTxt"); if(b) b.textContent=txt; }
 function stopSpeech(){
   speechGen++;
   speechState.mode="idle"; speechState.idx=0; speechState.loopIdx=-1;
-  if("speechSynthesis" in window) window.speechSynthesis.cancel();
+  TTS.cancel();
   setReadBtn("听朗读");
 }
 function speakNext(gen){
@@ -69784,16 +69840,18 @@ function speakNext(gen){
   const vo=currentVoice(); if(vo) u.voice=vo;
   u.onend=()=>{
     if(gen!==speechGen) return;
-    if(speechState.mode==="loop") return speakNext(gen);  // 单句循环：同句重播
-    speechState.idx++; speakNext(gen);                    // 整首：下一句
+    const gap=gapAfter(raw);
+    if(speechState.mode==="loop") return setTimeout(()=>{ if(gen===speechGen) speakNext(gen); }, gap); // 单句循环：停顿后同句重播
+    speechState.idx++;
+    setTimeout(()=>{ if(gen===speechGen) speakNext(gen); }, gap);                                      // 整首：停顿后下一句
   };
   u.onerror=()=>{ if(gen===speechGen && speechState.mode!=="idle") stopSpeech(); };
-  window.speechSynthesis.speak(u);
+  TTS.speak(u);
 }
 function startSpeech(lines){
-  if(!("speechSynthesis" in window)){ toast("当前浏览器不支持朗读"); return; }
+  if(!TTS.supported()){ toast("当前浏览器不支持朗读"); return; }
   speechGen++;
-  window.speechSynthesis.cancel();
+  TTS.cancel();
   const rhymeMa = poemRhymesMa(lines);            // 「斜」叶韵判据：本诗是否押麻韵
   speechState.lines = lines.map(l=>ttsFix(l, rhymeMa));
   speechState.idx = 0; speechState.loopIdx = -1;
@@ -69804,10 +69862,12 @@ function startSpeech(lines){
   speakNext(speechGen);
 }
 function readPoem(id){
+  unlockTts();   // iOS：必须在点击手势内解锁
   const p = POEMS.find(x=>x.id===id); if(!p) return;
   startSpeech(p.lines.map(l=>l.o));
 }
 function readAloud(){
+  unlockTts();   // 同上，readAloud 由按钮 onclick 触发，仍在手势链内
   if(!currentPoemId) return;
   if(speechState.mode!=="idle"){ stopSpeech(); toast("已停止朗读"); return; }
   const p = POEMS.find(x=>x.id===currentPoemId);
@@ -69818,7 +69878,7 @@ function loopLine(idx){
   if(speechState.mode==="idle" || idx<0 || idx>=speechState.lines.length) return;
   speechGen++;
   speechState.mode="loop"; speechState.loopIdx=idx;
-  window.speechSynthesis.cancel();       // 打断当前句；代次已更新，旧回调作废
+  TTS.cancel();       // 打断当前句；代次已更新，旧回调作废
   speakNext(speechGen);
   toast("循环第 "+(idx+1)+" 句 · 点「停止」结束");
 }
@@ -70325,14 +70385,22 @@ function getMask(){ try{ return Math.min(4,Math.max(0,parseInt(localStorage.getI
 function setMask(v){ try{ localStorage.setItem(LS_MASK,String(v)); }catch(e){} }
 function cycleMask(){ setMask((getMask()+1)%5); if(currentPoemId) openDetail(currentPoemId); }
 function maskRatio(lv){ return [0,0.25,0.5,0.75,1][lv]||0; }
+/* 分段背诵：按「句」不按「节」（实测最长 24 句≈6 节）；短诗不出分段 UI 免噪音 */
+const SEG_SIZE=4, SEG_MIN=8;
+let segPoemId=null, curSeg=-1; const segDone=new Set();
+function segCountOf(n){ return n>=SEG_MIN ? Math.ceil(n/SEG_SIZE) : 0; }
+function setSeg(i){ curSeg=i; if(currentPoemId) openDetail(currentPoemId); }
+/* 意象字：揭示到这些字时做淡入强调（视觉锚点，帮助记全篇画面） */
+const IMAGERY_RE=/[月花风雨雪山江水云星秋春夜雁柳舟帆灯霜露烟梦酒剑楼桥松竹梅兰菊蝉鸿泪心声光香寒空明清白红绿湖海沙石草莺燕归客影]/;
 function hash32(s){ let x=2166136261; for(let i=0;i<s.length;i++){ x^=s.charCodeAt(i); x=Math.imul(x,16777619); } return x>>>0; }
 function tokenize(t){ return /[A-Za-zÀ-ɏͰ-ϿЀ-ӿ぀-ヿ]/.test(t) ? t.split(/(\s+)/) : t.split(""); }
 /* 遮蔽集随档位单调扩大（hash%100 阈值递增），同一首诗每次渲染结果稳定 */
-function renderMaskLines(texts,id){
-  const lv=getMask();
+function renderMaskLines(texts,id,off){
+  const lv=getMask(); off=off||0;
   if(lv<=0) return texts.map(t=>`<div class="vline">${esc(t)}</div>`).join("");
   const r=maskRatio(lv);
-  return texts.map((t,li)=>{
+  return texts.map((t,k)=>{
+    const li=k+off;
     let idx=0;
     const inner=tokenize(t).map(tok=>{
       if(!tok.trim() && lv<4) return esc(tok);
@@ -70372,11 +70440,18 @@ document.addEventListener("click", function(e){
   const el = e.target && e.target.closest ? e.target.closest(".vbody .ch.masked") : null;
   if(!el) return;
   el.classList.remove("masked"); el.classList.add("revealed");
+  if(IMAGERY_RE.test(el.textContent||"")) el.classList.add("imagery"); // 意象字淡入强调
   const body = el.closest(".vbody"); if(!body || !currentPoemId) return;
   const tip = document.querySelector("#maskTip");
   if(!body.querySelectorAll(".ch.masked").length){
-    const days = bumpReview(currentPoemId);
-    if(tip) tip.textContent = days ? " —— 全部揭示，已记一过，"+days+" 天后再温。" : " —— 全部揭示。";
+    const p = POEMS.find(x=>x.id===currentPoemId);
+    const total = segCountOf(p ? (p.lines||[]).length : 0);
+    if(curSeg>=0) segDone.add(curSeg);
+    const allDone = curSeg<0 || (total>0 && segDone.size>=total);
+    const days = allDone ? bumpReview(currentPoemId) : 0;
+    if(tip) tip.textContent = allDone
+      ? (days ? " —— 全部揭示，已记一过，"+days+" 天后再温。" : " —— 全部揭示。")
+      : " —— 本段完成，还有 "+(total-segDone.size)+" 段。";
   } else if(tip){
     tip.textContent = " —— 还剩 "+body.querySelectorAll(".ch.masked").length+" 字，继续。";
   }

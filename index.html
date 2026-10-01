@@ -135,6 +135,10 @@
   body.layout-horizontal .vbody{writing-mode:horizontal-tb;height:auto;display:block;padding:4px 0;}
   body.layout-horizontal .vline{display:block;writing-mode:horizontal-tb;font-size:var(--reader-fs);line-height:var(--reader-lh);letter-spacing:normal;padding:8px 2px;border-block-start:none;border-bottom:1px dashed var(--line-soft);}
   body.layout-horizontal .vline:last-child{border-bottom:none;}
+  /* 背诵语言=原文时，外语原文在竖排卷轴内自动横排呈现（round4-recite） */
+  .vpoem.orig-lang .vbody{writing-mode:horizontal-tb;height:auto;display:block;}
+  .vpoem.orig-lang .vline{display:block;writing-mode:horizontal-tb;font-size:var(--reader-fs);line-height:var(--reader-lh);letter-spacing:normal;padding:8px 2px;border-block-start:none;border-bottom:1px dashed var(--line-soft);}
+  .vpoem.orig-lang .vline:last-child{border-bottom:none;}
 
   /* 阅读设置浮层（排版 + 字体） */
   .rset-overlay{position:absolute;inset:0;background:rgba(43,38,32,.5);z-index:300;display:none;align-items:center;justify-content:center;padding:24px;}
@@ -433,6 +437,7 @@
         <div><div class="dt" id="dTitle">标题</div><div class="da" id="dAuthor">作者</div></div>
         <button class="btn btn-primary read-btn" onclick="readAloud()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 8a5 5 0 010 8"/></svg>听朗读</button>
         <button class="btn read-btn" id="layoutBtn" onclick="toggleLayout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span id="layoutBtnTxt">竖排</span></button>
+        <button class="btn read-btn" id="reciteBtn" onclick="toggleRecite()" style="display:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.6 3 14.4 0 18-3-3.6-3-14.4 0-18"/></svg><span id="reciteBtnTxt">背原文</span></button>
       </div>
       <div class="original" id="dOriginal"></div>
       <div class="tabs" id="dTabs">
@@ -7602,8 +7607,8 @@ const POEMS = [
  },
  {
   "id": "w_harold",
-  "title": "恰尔德·哈罗尔德游记（节选）",
-  "author": "〔英〕拜伦",
+  "title": "我孤独地漫游，像一朵云",
+  "author": "〔英〕华兹华斯",
   "category": "外国诗",
 
   "orig_lang": "en",
@@ -8703,7 +8708,7 @@ const POEMS = [
  {
   "id": "w_yueni",
   "title": "我想和你一起生活",
-  "author": "〔俄〕茨维塔耶娃",
+  "author": "〔俄〕传茨维塔耶娃（存疑）",
   "category": "外国诗",
 
   "orig_lang": "ru",
@@ -25573,6 +25578,8 @@ const POEMS = [
    "新月派"
   ],
   "anim": "moon",
+  "no_paraphrase": 1,
+  "charm": "三个「轻轻的」以动作之轻写不舍之重；首尾「轻轻的我走了／正如我轻轻的来」回环成环，是新月派音乐美的样本。",
   "lines": [
    {
     "o": "轻轻的我走了，正如我轻轻的来；",
@@ -25652,6 +25659,8 @@ const POEMS = [
    "哲思"
   ],
   "anim": "distant",
+  "no_paraphrase": 1,
+  "charm": "云影投波心，一触即散；「你记得也好，最好你忘掉」用最轻的口吻说最重的放手，两节对称如交错的船辙。",
   "lines": [
    {
     "o": "我是天空里的一片云，偶尔投影在你的波心——",
@@ -25719,6 +25728,8 @@ const POEMS = [
    "惆怅"
   ],
   "anim": "rain",
+  "no_paraphrase": 1,
+  "charm": "「悠长、悠长」的复沓与「彷徨／惆怅」的韵脚共振，油纸伞与丁香撑起全篇意象；叶圣陶称它「替新诗的音节开了一个新纪元」。",
   "lines": [
    {
     "o": "撑着油纸伞，独自彷徨在悠长、悠长又寂寥的雨巷，",
@@ -25790,6 +25801,8 @@ const POEMS = [
    "格律"
   ],
   "anim": "rain",
+  "no_paraphrase": 1,
+  "charm": "以翡翠、桃花、珍珠等艳词写腐臭死水——以美写丑的反讽是全诗的眼；每行四顿整齐，是闻一多「三美」主张的现身说法。",
   "lines": [
    {
     "o": "这是一沟绝望的死水，清风吹不起半点漪沦。",
@@ -25852,6 +25865,7 @@ const POEMS = [
    "七律"
   ],
   "anim": "autumn",
+  "charm": "冷嘲是皮、硬骨是里；「横眉冷对千夫指，俯首甘为孺子牛」一联怒与爱对撞，对仗工稳如金石。",
   "lines": [
    {
     "o": "运交华盖欲何求，未敢翻身已碰头。",
@@ -25919,6 +25933,8 @@ const POEMS = [
    "她字首创"
   ],
   "anim": "moon",
+  "no_paraphrase": 1,
+  "charm": "四段以「教我如何不想她？」收束回环；指女性的「她」字正由刘半农首倡，此诗是这个字的成名现场。",
   "lines": [
    {
     "o": "天上飘着些微云，地上吹着些微风。",
@@ -69438,15 +69454,22 @@ function openDetail(id){
   const EXPAND_HTML = `<div class="tip"><div class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M7 8l5-5 5 5"/></svg></div><div><div class="tt">拓展收录</div><div class="td">本篇为拓展收录，已附串讲、助记与化用场景；逐句译文与更详尽背景仍在陆续补充。</div></div></div>`;
   const tlen = (p.title||"").length;
   const tcls = tlen>10 ? "xlong" : (tlen>6 ? "long" : "");
-  $("#dOriginal").innerHTML = `<div class="vpoem">
+  const isOrigRe=/[A-Za-z\u00C0-\u024F\u0370-\u03FF\u0400-\u04FF\u0600-\u06FF\u0900-\u097F\u0980-\u09FF\u0E00-\u0E7F\u3040-\u30FF]/;
+  const hasOrig = lines.some(l=>isOrigRe.test(l.m||""));
+  const showOrig = getRecite()==="orig" && hasOrig;
+  const bodyLines = showOrig ? lines.map(l=>l.m||l.o) : lines.map(l=>l.o);
+  $("#dOriginal").innerHTML = `<div class="vpoem${showOrig?" orig-lang":""}">
       <div class="vtitle ${tcls}"><span class="vt-name">${esc(p.title)}</span><span class="vt-author">${esc(p.author)}</span></div>
-      <div class="vscroll" id="vscroll"><div class="vbody">${lines.map(l=>`<div class="vline">${l.o}</div>`).join("")}</div></div>
+      <div class="vscroll" id="vscroll"><div class="vbody">${bodyLines.map(t=>`<div class="vline">${t}</div>`).join("")}</div></div>
     </div>`
-    + `<div class="note">全篇 ${lines.length} 句 · ${p.category} · ${(p.tags||[]).join("·")}${expand?" · 拓展篇":""}。${expand?"本篇为拓展收录，已附串讲与助记；逐句译文陆续补充。":"诗句自右向左竖读；点击下方标签，从五个维度吃透它。"}</div>`;
-  // 解读翻译（拓展篇若有原文附注则同样走完整渲染，仅纯中文拓展篇保持 o 单栏）
-  const hasOrig = lines.some(l=>/[A-Za-z\u00C0-\u024F\u0370-\u03FF\u0400-\u04FF\u0600-\u06FF\u0900-\u097F\u0980-\u09FF\u0E00-\u0E7F\u3040-\u30FF]/.test(l.m||""));
-  $("#panel-tr").innerHTML = (expand && !hasOrig) ? `<div class="tr">`+lines.map(l=>`<div class="row"><div class="o">${l.o}</div></div>`).join("")+`</div><div class="note">本篇为拓展收录，逐句译文正在补充中。</div>`
-    : `<div class="tr">`+lines.map(l=>{const isOrig=/[A-Za-z\u00C0-\u024F\u0370-\u03FF\u0400-\u04FF\u0600-\u06FF\u0900-\u097F\u0980-\u09FF\u0E00-\u0E7F\u3040-\u30FF]/.test(l.m||"");const oc=isOrig?" orig":"";const tag=isOrig?`<span class="orig-tag">原文</span> `:"";return `<div class="row"><div class="o">${l.o}</div><div class="m${oc}">${tag}${l.m||""}</div></div>`;}).join("")+`</div>`;
+    + `<div class="note">全篇 ${lines.length} 句 · ${p.category} · ${(p.tags||[]).join("·")}${expand?" · 拓展篇":""}。${expand?"本篇为拓展收录，已附串讲与助记；逐句译文陆续补充。":"诗句自右向左竖读；点击下方标签，从五个维度吃透它。"}${showOrig?"（背诵语言：原文）":""}</div>`;
+  if($("#reciteBtn")){ $("#reciteBtn").style.display = hasOrig ? "" : "none"; if(hasOrig) $("#reciteBtnTxt").textContent = showOrig ? "背中文" : "背原文"; }
+  // 解读翻译（拓展篇若有原文附注则同样走完整渲染；白话现代诗不重复白话对照，改显妙处点拨）
+  const rowO = `<div class="tr">`+lines.map(l=>`<div class="row"><div class="o">${l.o}</div></div>`).join("")+`</div>`;
+  const rowOM = `<div class="tr">`+lines.map(l=>{const isOrig=isOrigRe.test(l.m||"");const oc=isOrig?" orig":"";const tag=isOrig?`<span class="orig-tag">原文</span> `:"";return `<div class="row"><div class="o">${l.o}</div><div class="m${oc}">${tag}${l.m||""}</div></div>`;}).join("")+`</div>`;
+  const charmNote = p.charm ? `<div class="note">【妙处】${p.charm}</div>` : "";
+  $("#panel-tr").innerHTML = (expand && !hasOrig) ? rowO+`<div class="note">本篇为拓展收录，逐句译文正在补充中。</div>`+charmNote
+    : (p.no_paraphrase ? rowO : rowOM) + charmNote;
   // 动画可视化
   $("#panel-viz").innerHTML = `<div class="viz" id="vizScene">${renderViz(p.anim)}<button class="replay" onclick="replayViz()">↻ 重播</button></div>`;
   // 记忆技巧
@@ -70043,6 +70066,14 @@ function setFont(k,v){
   applyFont();
   if($("#view-detail") && $("#view-detail").classList.contains("active")) openDetail(currentPoemId);
   renderReadingSettings();
+}
+
+/* ============ 背诵语言切换（原文/中文，外国诗专用，round4-recite） ============ */
+function getRecite(){ try{ return localStorage.getItem("xjy_recite")==="orig" ? "orig" : "zh"; }catch(e){ return "zh"; } }
+function setRecite(v){ try{ localStorage.setItem("xjy_recite", v); }catch(e){} }
+function toggleRecite(){
+  setRecite(getRecite()==="orig" ? "zh" : "orig");
+  if($("#view-detail") && $("#view-detail").classList.contains("active")) openDetail(currentPoemId);
 }
 
 applyLayout(); applyFont();

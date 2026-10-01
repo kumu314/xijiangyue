@@ -273,6 +273,23 @@
   .rv-i-t{font-size:13px;font-weight:600;color:var(--ink);}
   .rv-i-a{font-size:11px;color:var(--ink-3);margin-top:2px;}
   .rv-note{margin-top:8px;font-size:11.5px;color:var(--ink-3);line-height:1.6;}
+  /* #63④ 记忆曲线：我的记忆视图 */
+  .mem-entry{cursor:pointer;}
+  .mem-entry .rv-empty{color:var(--ink-3);}
+  .mem-entry:hover{ border-color:var(--cinnabar); }
+  #view-memory .mem-summary{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;}
+  #view-memory .mem-kpi{flex:1;min-width:72px;background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;}
+  #view-memory .mem-kpi .mk-v{font-size:19px;font-weight:700;color:var(--cinnabar);}
+  #view-memory .mem-kpi .mk-l{font-size:11px;color:var(--ink-3);margin-top:2px;}
+  #view-memory .mem-block{background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px;margin-bottom:14px;}
+  #view-memory .mem-h{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px;}
+  #view-memory .mem-donut-wrap{display:flex;align-items:center;gap:14px;}
+  #view-memory .mem-legend{flex:1;display:flex;flex-direction:column;gap:6px;}
+  #view-memory .mem-lg{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink);}
+  #view-memory .mem-lg b{margin-left:auto;font-weight:700;}
+  #view-memory .mem-dot{width:10px;height:10px;border-radius:50%;flex:none;}
+  #view-memory .mem-curve-cap{font-size:11px;color:var(--ink-3);margin-top:8px;}
+
   .rv-more{margin-top:6px;font-size:11px;color:var(--ink-3);text-align:right;}
   .ci-item{background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);padding:13px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s ease;}
   .ci-item.done{background:rgba(110,139,106,.12);border-color:rgba(110,139,106,.4);}
@@ -519,7 +536,15 @@
       <div class="rec-list" id="learnTasks"></div>
     </section>
 
-    <!-- ============ 我的 ============ -->
+    <!-- ============ 我的记忆（#63④ 记忆曲线） ============ -->
+    <section class="view" id="view-memory">
+      <div class="page-head"><div><div class="title">我的记忆</div><div class="sub">遗忘与复习的节律</div></div><div class="seal" onclick="showView('view-learn')">回</div></div>
+      <div class="mem-summary" id="memSummary"></div>
+      <div class="mem-block"><div class="mem-h">复习桶分布</div><div class="mem-donut-wrap"><div id="memDonut"></div><div class="mem-legend" id="memLegend"></div></div></div>
+      <div class="mem-block"><div class="mem-h">未来 30 天到期队列</div><div id="memCurve"></div><div class="mem-curve-cap">每日新到期的诗数（若一直不温，积压会越积越多——看见进步，就是坚持的理由）</div></div>
+    </section>
+
+        <!-- ============ 我的 ============ -->
     <section class="view" id="view-me">
       <div class="me-head card" id="meHead"></div>
       <div class="stats" id="meStats"></div>
@@ -69427,7 +69452,7 @@ const ENCOURAGE=[
 
 /* ============ 工具 ============ */
 const $ = s=>document.querySelector(s);
-function showView(id){ stopSpeech(); document.querySelectorAll(".view").forEach(v=>v.classList.remove("active")); $("#"+id).classList.add("active"); $("#views").scrollTop=0; }
+function showView(id){ stopSpeech(); document.querySelectorAll(".view").forEach(v=>v.classList.remove("active")); $("#"+id).classList.add("active"); $("#views").scrollTop=0; if(id==="view-memory") renderMemory(); }
 function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1800); }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function dayIndex(){ return Math.floor(Date.now()/86400000); }
@@ -69957,6 +69982,9 @@ function renderCheckin(){
       <div><div class="ct">${it.t}</div><div class="cd">${it.d}</div></div>${d?`<div class="stamp ${justStampKey===it.key?'stamp-in':''}">${it.se}</div>`:''}</div>`;
   }).join("")+`</div>`;
   html += renderReviewCard(); // 今日温故卡（到期队列，每日上限 10）
+  html += `<div class="rv-card mem-entry" onclick="showView('view-memory')">
+      <div class="rv-t">我的记忆<span class="rv-n">桶分布 · 到期曲线</span></div>
+      <div class="rv-empty">看自己的遗忘与复习节律 →</div></div>`;
   html += `<div class="ci-encourage">${allDone? "太棒了！今日诗词满勤，习惯正在长成 🌱" : enc}</div>`;
   if(stampAlbum.length){
     const shown = stampAlbum.slice(-8);
@@ -70562,6 +70590,46 @@ function renderReviewCard(){
     ${due.length>cap.length?`<div class="rv-note">今日上限 ${REVIEW_DAILY_CAP} 首，余 ${due.length-cap.length} 首明日继续。</div>`:""}
     ${cap.length>3?`<div class="rv-more">还有 ${cap.length-3} 首，温完上面几首再来。</div>`:""}
   </div>`;
+}
+function dayAfter(n){ const d=new Date(); d.setDate(d.getDate()+n); return localDay(d); }
+/* #63④ 记忆曲线：桶分布环图 + 到期队列曲线，复用 xjy_review 桶数据（朱砂风） */
+function renderMemory(){
+  const r=getReview(); const ids=Object.keys(r); const total=ids.length;
+  const bc=[0,0,0,0,0,0];
+  ids.forEach(k=>{ const b=Math.max(0,Math.min(5,(r[k]&&r[k].bucket)||0)); bc[b]++; });
+  const unreviewed = POEMS.length - total;
+  const labels=['新入队','1 天','3 天','7 天','14 天','30 天'];
+  const palette=['#B23A2E','#C56A52','#D98E6A','#E0A982','#E6C19A','#EBD3B5'];
+  const segs=[];
+  for(let b=0;b<6;b++) if(bc[b]) segs.push({v:bc[b],c:palette[b],l:labels[b]});
+  if(unreviewed>0) segs.push({v:unreviewed,c:'#C9BFAE',l:'未温故'});
+  const whole=(total+unreviewed)||1;
+  const R=52, C=2*Math.PI*R, cx=70, cy=70, sw=16;
+  let off=0; const arcs=segs.map(seg=>{
+    const len=seg.v/whole*C, rot=off/C*360-90; off+=len;
+    return '<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="none" stroke="'+seg.c+'" stroke-width="'+sw+'" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" transform="rotate('+rot.toFixed(2)+' '+cx+' '+cy+')"/>';
+  }).join("");
+  $("#memDonut").innerHTML = '<svg viewBox="0 0 140 140" width="132" height="132">'+arcs+
+    '<circle cx="'+cx+'" cy="'+cy+'" r="'+(R-sw/2)+'" fill="none" stroke="var(--line)" stroke-width="1"/>'+
+    '<text x="'+cx+'" y="'+(cy-3)+'" text-anchor="middle" font-size="22" font-weight="700" fill="var(--ink)">'+total+'</text>'+
+    '<text x="'+cx+'" y="'+(cy+15)+'" text-anchor="middle" font-size="10" fill="var(--ink-3)">已温故</text></svg>';
+  $("#memLegend").innerHTML = segs.map(seg=>'<div class="mem-lg"><span class="mem-dot" style="background:'+seg.c+'"></span>'+seg.l+'<b>'+seg.v+'</b></div>').join("");
+  // KPI
+  const due=reviewDueList().length;
+  let maxB=0; ids.forEach(k=>{ const b=(r[k]&&r[k].bucket)||0; if(b>maxB) maxB=b; });
+  const kpi=[['已温故',total],['未温故',unreviewed],['今日到期',due],['最长桶',maxB+' 天']];
+  $("#memSummary").innerHTML = kpi.map(x=>'<div class="mem-kpi"><div class="mk-v">'+x[1]+'</div><div class="mk-l">'+x[0]+'</div></div>').join("");
+  // 到期曲线：未来 30 天，每日新到期数
+  const days=[]; let maxDue=0;
+  for(let i=0;i<30;i++){ const d=dayAfter(i); let c=0; ids.forEach(k=>{ if(r[k]&&r[k].due===d) c++; }); days.push(c); if(c>maxDue) maxDue=c; }
+  const W=300,H=92,pad=6,maxY=Math.max(1,maxDue);
+  const pts=days.map((c,i)=>{ const x=pad+i/29*(W-2*pad); const y=H-pad-c/maxY*(H-2*pad); return [x,y]; });
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const area=line+' L '+pts[29][0].toFixed(1)+' '+(H-pad)+' L '+pts[0][0].toFixed(1)+' '+(H-pad)+' Z';
+  $("#memCurve").innerHTML = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" preserveAspectRatio="none">'+
+    '<path d="'+area+'" fill="rgba(178,58,46,.12)"/>'+
+    '<path d="'+line+'" fill="none" stroke="#B23A2E" stroke-width="2"/>'+
+    pts.map(p=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="1.6" fill="#B23A2E"/>').join('')+'</svg>';
 }
 /* v2 迁移：第一刀期间 openDetail 无条件入队，会把「只读打开」的诗塞进温故队列。
    一次性清除无 v 标记且 bucket=0 的干净记录；有 leech/slip 痕迹的一律保留（温故期产物）。 */

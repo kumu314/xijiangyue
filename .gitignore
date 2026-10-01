@@ -4,3 +4,21 @@ backend/data.sqlite*
 
 # 本地工具产物
 .mimosa/
+
+# ── out/ 下的中间产物与截图（不入库）──────────────────────────────
+# 依据：SPEC「产出物未跟踪、png 不入库」；批量产出合入 index.html 后即弃。
+# 目的：让 `git status --porcelain` 不再显示它们 → 不会被「同步前清未跟踪文件」
+#       的操作移走（2026-10-01 曾因此把 out/ 下未跟踪产物整体 mv 走，见黑板 note #1467）。
+# 注意：out/*.md（复核报告、规格、备忘录）是交付物，**不 ignore，应及时入库**。
+out/content_production/
+out/content_pilot/
+out/game_icons/
+out/r4-font/
+out/r4-foreign/
+out/r4-layout/
+out/r4-orig/
+out/r4-verify/
+out/ui_decard/
+out/ui_review/
+out/checkin_stamp/
+out/**/*.png

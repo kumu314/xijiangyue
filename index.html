@@ -446,7 +446,7 @@
       <div class="detail-head">
         <div class="back" onclick="backFromDetail()"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 3l-6 6 6 6"/></svg></div>
         <div><div class="dt" id="dTitle">标题</div><div class="da" id="dAuthor">作者</div></div>
-        <button class="btn btn-primary read-btn" onclick="readAloud()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 8a5 5 0 010 8"/></svg>听朗读</button>
+        <button class="btn btn-primary read-btn" onclick="readAloud()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 8a5 5 0 010 8"/></svg><span id="readBtnTxt">听朗读</span></button>
         <button class="btn read-btn" id="layoutBtn" onclick="toggleLayout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span id="layoutBtnTxt">竖排</span></button>
         <button class="btn read-btn" id="reciteBtn" onclick="toggleRecite()" style="display:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.6 3 14.4 0 18-3-3.6-3-14.4 0-18"/></svg><span id="reciteBtnTxt">背原文</span></button>
       </div>
@@ -4929,21 +4929,22 @@ const POEMS = [
   "id": "tagore",
   "title": "吉檀迦利（节选）",
   "author": "〔印度〕泰戈尔",
+  "ed_note": "泰戈尔自译英文 Gitanjali：英文即通行原文（孟加拉原稿另体）。",
   "category": "外国诗",
 
-  "orig_lang": "bn",
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "神性"
   ],
   "lines": [
    {
-    "o": "生如夏花之绚烂，死如秋叶之静美。",
-    "m": "Let life be beautiful like summer flowers, and death like autumn leaves."
+    "o": "你已经使我永生，这样做是你的欢乐。",
+    "m": "Thou hast made me endless, such is thy pleasure."
    },
    {
-    "o": "世界以痛吻我，要我报之以歌。",
-    "m": "The world has kissed my soul with its pain, asking for its return in songs."
+    "o": "这脆薄的杯儿，你不断地倒空，又不断地以新生命充满。",
+    "m": "This frail vessel thou emptiest again and again, / and fillest it ever with fresh life."
    }
   ],
   "memory": [
@@ -7125,6 +7126,7 @@ const POEMS = [
   "id": "w_prometheus",
   "title": "普罗米修斯",
   "author": "〔德〕歌德",
+  "ed_note": "节译：首句出歌德《普罗米修斯》(1774) 开篇；次句为改写，原诗无「锁链」之意。",
   "category": "外国诗",
 
   "orig_lang": "de",
@@ -7135,7 +7137,7 @@ const POEMS = [
   "lines": [
    {
     "o": "你用云和雾蒙住我的天空，",
-    "m": ""
+    "m": "Bedecke deinen Himmel, Zeus, / Mit Wolkendunst,"
    },
    {
     "o": "却终将承认：锁链是我自己锻造。",
@@ -7180,6 +7182,7 @@ const POEMS = [
   "id": "w_zhongde",
   "title": "中德四季晨昏杂咏（节选）",
   "author": "〔德〕歌德",
+  "ed_note": "节译：o2 混入《漫游者夜歌》意象，非《中德四季晨昏杂咏》其八原句。",
   "category": "外国诗",
 
   "orig_lang": "de",
@@ -7190,7 +7193,7 @@ const POEMS = [
   "lines": [
    {
     "o": "暮色徐徐下沉，群峰吞没日光，",
-    "m": ""
+    "m": "Dämmrung senkte sich von oben, / Schon ist alle Nähe fern;"
    },
    {
     "o": "吹过枞树的风，带来一阵清凉。",
@@ -7290,6 +7293,7 @@ const POEMS = [
   "id": "w_beihai",
   "title": "北海（节选）",
   "author": "〔德〕海涅",
+  "ed_note": "节译：海涅《北海》组诗，德文原文待补。",
   "category": "外国诗",
 
   "orig_lang": "de",
@@ -7345,6 +7349,7 @@ const POEMS = [
   "id": "w_mianbao",
   "title": "面包与美酒",
   "author": "〔德〕荷尔德林",
+  "ed_note": "讹正：此句实出荷尔德林《帕特莫斯》(Patmos) 末节，非《面包与美酒》。",
   "category": "外国诗",
 
   "orig_lang": "de",
@@ -7355,7 +7360,7 @@ const POEMS = [
   "lines": [
    {
     "o": "何处危难，哪里便有拯救，",
-    "m": ""
+    "m": "Wo aber Gefahr ist, wächst / Das Rettende auch."
    },
    {
     "o": "而最坚韧者，仍为人所赞美。",
@@ -7410,11 +7415,11 @@ const POEMS = [
   "lines": [
    {
     "o": "谁，若独自听见，便再难诉说，",
-    "m": ""
+    "m": "Wer, wenn ich schriee, hörte mich denn / aus der Engel Ordnungen?"
    },
    {
     "o": "天使的行列中，有一位令我震颤。",
-    "m": ""
+    "m": "Ein jeder Engel ist schrecklich."
    }
   ],
   "anim": "distant",
@@ -7510,6 +7515,7 @@ const POEMS = [
   "id": "w_adonis",
   "title": "阿多尼司（节选）",
   "author": "〔英〕雪莱",
+  "ed_note": "节译：雪莱《阿多尼司》(1821)，英文原文待补。",
   "category": "外国诗",
 
   "orig_lang": "en",
@@ -7565,6 +7571,7 @@ const POEMS = [
   "id": "w_guxuan",
   "title": "希腊古瓮颂",
   "author": "〔英〕济慈",
+  "ed_note": "节译：济慈《希腊古瓮颂》(1819) 首节；次句为改写。",
   "category": "外国诗",
 
   "orig_lang": "en",
@@ -7575,7 +7582,7 @@ const POEMS = [
   "lines": [
    {
     "o": "你这沉默的形体，如永恒一般，",
-    "m": ""
+    "m": "Thou still unravish'd bride of quietness, / Thou foster-child of silence and slow time,"
    },
    {
     "o": "冷眼旁观，笑看人间悲欢。",
@@ -7630,11 +7637,11 @@ const POEMS = [
   "lines": [
    {
     "o": "我独自游荡，像一朵流云，",
-    "m": ""
+    "m": "I wandered lonely as a cloud / That floats on high o'er vales and hills,"
    },
    {
-    "o": "不为谁停留，也不知归处。",
-    "m": ""
+    "o": "忽然我看见一大群，一片金色的水仙。",
+    "m": "When all at once I saw a crowd, / A host, of golden daffodils;"
    }
   ],
   "anim": "distant",
@@ -8170,6 +8177,7 @@ const POEMS = [
   "id": "w_france",
   "title": "啊，法兰西的星",
   "author": "〔美〕惠特曼",
+  "ed_note": "节译：惠特曼《啊，法兰西的星》(1871)，英文原文待补。",
   "category": "外国诗",
 
   "orig_lang": "en",
@@ -8225,6 +8233,7 @@ const POEMS = [
   "id": "w_venus",
   "title": "金星号遇难",
   "author": "〔美〕朗费罗",
+  "ed_note": "节译：朗费罗《金星号遇难》(1842) 首节。",
   "category": "外国诗",
 
   "orig_lang": "en",
@@ -8235,7 +8244,7 @@ const POEMS = [
   "lines": [
    {
     "o": "船沉了，水手们，在冰冷的海底，",
-    "m": ""
+    "m": "It was the schooner Hesperus, / That sailed the wintry sea;"
    },
    {
     "o": "他们的歌，成了海风的低语。",
@@ -8390,6 +8399,7 @@ const POEMS = [
   "id": "w_demo",
   "title": "恶魔（节选）",
   "author": "〔俄〕莱蒙托夫",
+  "ed_note": "节译：莱蒙托夫《恶魔》(1829—1839) 开篇。",
   "category": "外国诗",
 
   "orig_lang": "ru",
@@ -8400,7 +8410,7 @@ const POEMS = [
   "lines": [
    {
     "o": "他是个邪恶的精灵，蔑视一切，",
-    "m": ""
+    "m": "Печальный Демон, дух изгнанья, / Летал над грешною землей,"
    },
    {
     "o": "却在美面前，低下了高傲的头。",
@@ -8500,6 +8510,7 @@ const POEMS = [
   "id": "w_damen",
   "title": "大门前（节选）",
   "author": "〔俄〕涅克拉索夫",
+  "ed_note": "节译：涅克拉索夫《大门前的沉思》(1858)，俄文原文待补。",
   "category": "外国诗",
 
   "orig_lang": "ru",
@@ -8555,6 +8566,7 @@ const POEMS = [
   "id": "w_gemao",
   "title": "割草人",
   "author": "〔俄〕叶赛宁",
+  "ed_note": "篇目待核：叶赛宁名下未见《割草人》；俄语名篇《Косарь（刈草人）》为柯尔佐夫（Кольцов）所作，疑作者错置。",
   "category": "外国诗",
 
   "orig_lang": "ru",
@@ -8610,6 +8622,7 @@ const POEMS = [
   "id": "w_yun",
   "title": "穿裤子的云（节选）",
   "author": "〔俄〕马雅可夫斯基",
+  "ed_note": "节译：马雅可夫斯基《穿裤子的云》(1915)，俄文原文待补。",
   "category": "外国诗",
 
   "orig_lang": "ru",
@@ -8731,11 +8744,11 @@ const POEMS = [
   "lines": [
    {
     "o": "我想和你一起生活，在小镇，",
-    "m": ""
+    "m": "Я бы хотела жить с Вами / В маленьком городе,"
    },
    {
     "o": "共听钟声，看灯火次第暗去。",
-    "m": ""
+    "m": "где вечные сумерки / и вечные колокола."
    }
   ],
   "anim": "festival",
@@ -8776,6 +8789,7 @@ const POEMS = [
   "id": "w_zuihou",
   "title": "最后一首",
   "author": "〔俄〕阿赫玛托娃",
+  "ed_note": "篇目待核：阿赫玛托娃名下未查得《最后一首》，疑与其《最后一次相见》(1911)、《最后的玫瑰》混淆。",
   "category": "外国诗",
 
   "orig_lang": "ru",
@@ -8829,11 +8843,12 @@ const POEMS = [
  },
  {
   "id": "w_yuanding",
-  "title": "飞鸟集（节选）",
+  "title": "飞鸟集（节选·其六）",
   "author": "〔印度〕泰戈尔",
+  "ed_note": "泰戈尔自译英文 Stray Birds 第 6 首：英文即通行原文。",
   "category": "外国诗",
 
-  "orig_lang": "bn",
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "爱"
@@ -8886,9 +8901,10 @@ const POEMS = [
   "id": "w_xinyue",
   "title": "新月集（节选）",
   "author": "〔印度〕泰戈尔",
+  "ed_note": "泰戈尔自译英文 The Crescent Moon 之《云与波》：英文即通行原文。",
   "category": "外国诗",
 
-  "orig_lang": "bn",
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "童真"
@@ -8896,11 +8912,11 @@ const POEMS = [
   "lines": [
    {
     "o": "我做云，你做月亮，",
-    "m": ""
+    "m": "I am the cloud and you are the moon."
    },
    {
-    "o": "我用千只手，为你遮住太阳。",
-    "m": ""
+    "o": "我用两只手遮住你，我们的屋顶就是青天。",
+    "m": "I cover you with both my hands, and our roof-top is the sky."
    }
   ],
   "anim": "moon",
@@ -8939,11 +8955,12 @@ const POEMS = [
  },
  {
   "id": "w_yanlei",
-  "title": "眼泪与微笑（节选）",
+  "title": "我曾七次鄙视自己的灵魂",
   "author": "〔黎巴嫩〕纪伯伦",
+  "ed_note": "出纪伯伦英文散文诗 Sand and Foam；原题《眼泪与微笑》与正文不符，已按正文改题。",
   "category": "外国诗",
 
-  "orig_lang": "ar",
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "哲思"
@@ -8951,11 +8968,11 @@ const POEMS = [
   "lines": [
    {
     "o": "我曾七次鄙视自己的灵魂，",
-    "m": ""
+    "m": "Seven times have I despised my soul:"
    },
    {
-    "o": "第一次，是它见庙宇便说：这是废墟。",
-    "m": ""
+    "o": "第一次，是它为了攀高而故作谦卑。",
+    "m": "The first time when I saw her being meek that she might attain height."
    }
   ],
   "anim": "distant",
@@ -8996,9 +9013,10 @@ const POEMS = [
   "id": "w_kezhan",
   "title": "客栈",
   "author": "〔波斯〕鲁米",
+  "ed_note": "鲁米原作为波斯语，通行本经 Coleman Barks 英译转译，此处为英译文本。",
   "category": "外国诗",
 
-  "orig_lang": "fa",
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "苏菲"
@@ -9006,11 +9024,11 @@ const POEMS = [
   "lines": [
    {
     "o": "人是一间客栈，每天清晨都有新客，",
-    "m": ""
+    "m": "This being human is a guest house. / Every morning a new arrival."
    },
    {
     "o": "欢愉、沮丧、卑吝，一一到来。",
-    "m": ""
+    "m": "A joy, a depression, a meanness, / some momentary awareness comes as an unexpected visitor."
    }
   ],
   "anim": "distant",
@@ -9049,8 +9067,9 @@ const POEMS = [
  },
  {
   "id": "w_hafei",
-  "title": "诗",
+  "title": "抒情诗（无题）",
   "author": "〔波斯〕哈菲兹",
+  "ed_note": "哈菲兹抒情诗（ghazal）本无题名，原「诗」过于笼统；波斯语原文待择定具体篇目后补录。",
   "category": "外国诗",
 
   "orig_lang": "fa",
@@ -9106,6 +9125,7 @@ const POEMS = [
   "id": "w_qiangwei",
   "title": "蔷薇园（节选）",
   "author": "〔波斯〕萨迪",
+  "ed_note": "节译：萨迪《蔷薇园》(1258)，波斯语原文待补。",
   "category": "外国诗",
 
   "orig_lang": "fa",
@@ -9161,6 +9181,7 @@ const POEMS = [
   "id": "w_bike",
   "title": "马克丘·毕克丘之巅（节选）",
   "author": "〔智利〕聂鲁达",
+  "ed_note": "节译：聂鲁达《马克丘·毕克丘之巅》第一章首句（原译「闪电的网」为讹，原文 red vacía＝空网）。",
   "category": "外国诗",
 
   "orig_lang": "es",
@@ -9170,8 +9191,8 @@ const POEMS = [
   ],
   "lines": [
    {
-    "o": "从空到空，你如闪电的网，",
-    "m": ""
+    "o": "从空到空，如一张空网，",
+    "m": "Del aire al aire, como una red vacía,"
    },
    {
     "o": "在峻岭间升起，石与花同眠。",
@@ -9216,6 +9237,7 @@ const POEMS = [
   "id": "w_migong",
   "title": "迷宫",
   "author": "〔阿根廷〕博尔赫斯",
+  "ed_note": "节译：博尔赫斯《迷宫》；次句「迷宫就是建造它的人」为改写。",
   "category": "外国诗",
 
   "orig_lang": "es",
@@ -9226,7 +9248,7 @@ const POEMS = [
   "lines": [
    {
     "o": "宙斯不能解开那缠绕的线，",
-    "m": ""
+    "m": "Zeus no podría desatar la red / de piedra que me cierra."
    },
    {
     "o": "迷宫就是建造它的人。",
@@ -9271,6 +9293,7 @@ const POEMS = [
   "id": "w_taiyang",
   "title": "太阳石（节选）",
   "author": "〔墨〕帕斯",
+  "ed_note": "节译：帕斯《太阳石》(1957)，西语原文待补。",
   "category": "外国诗",
 
   "orig_lang": "es",
@@ -9326,6 +9349,7 @@ const POEMS = [
   "id": "w_huayuan",
   "title": "远方的花园",
   "author": "〔西〕希梅内斯",
+  "ed_note": "篇目待核：「远方的花园」为希梅内斯诗选书名（赵振江译，商务印书馆 2022），非单篇诗题。",
   "category": "外国诗",
 
   "orig_lang": "es",
@@ -9436,6 +9460,7 @@ const POEMS = [
   "id": "w_xin",
   "title": "我的心略大于宇宙",
   "author": "〔葡〕佩索阿",
+  "ed_note": "「我的心略大于宇宙」为佩索阿流传诗句（异名 Alberto Caeiro 组诗），非独立诗题；待择定具体篇目后补葡语原文。",
   "category": "外国诗",
 
   "orig_lang": "pt",
@@ -9491,6 +9516,7 @@ const POEMS = [
   "id": "w_yingxiong",
   "title": "英雄的挽歌",
   "author": "〔希〕埃利蒂斯",
+  "ed_note": "节译：埃利蒂斯《理所当然》(1959)，希腊文原文待补。",
   "category": "外国诗",
 
   "orig_lang": "el",
@@ -9546,6 +9572,7 @@ const POEMS = [
   "id": "w_zhuanzhe",
   "title": "转折点",
   "author": "〔希〕塞弗里斯",
+  "ed_note": "节译：塞弗里斯《转折点》(1931)，希腊文原文待补。",
   "category": "外国诗",
 
   "orig_lang": "el",
@@ -9601,17 +9628,18 @@ const POEMS = [
   "id": "w_liwu",
   "title": "礼物",
   "author": "〔波〕米沃什",
+  "ed_note": "米沃什《Dar》波兰语原文待补，此处据通行英译节译。",
   "category": "外国诗",
 
-  "orig_lang": "pl",
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "宁静"
   ],
   "lines": [
    {
-    "o": "如此幸福的一天，雾散，钟声在响，",
-    "m": ""
+    "o": "如此幸福的一天，雾早早散去，我在园中劳作。",
+    "m": "A day so happy. / Fog lifted early, I worked in the garden."
    },
    {
     "o": "我愿无所求，也无愧于人。",
@@ -10261,9 +10289,10 @@ const POEMS = [
   "id": "w_feiniao",
   "title": "飞鸟集（节选）",
   "author": "〔印度〕泰戈尔",
+  "ed_note": "泰戈尔自译英文 Stray Birds 第 82、167 首：英文即通行原文。",
   "category": "外国诗",
 
-  "orig_lang": "bn",
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "哲思"
@@ -10271,11 +10300,11 @@ const POEMS = [
   "lines": [
    {
     "o": "生如夏花之绚烂，死如秋叶之静美。",
-    "m": "Let life be beautiful like summer flowers."
+    "m": "Let life be beautiful like summer flowers and death like autumn leaves."
    },
    {
     "o": "世界以痛吻我，要我报之以歌。",
-    "m": "The world has kissed my soul with its pain."
+    "m": "The world has kissed my soul with its pain, asking for its return in songs."
    }
   ],
   "anim": "autumn",
@@ -10315,10 +10344,11 @@ const POEMS = [
  {
   "id": "w_zuiyaoyuan",
   "title": "世界上最遥远的距离",
-  "author": "〔印度〕泰戈尔",
+  "author": "佚名（误传为泰戈尔）",
+  "ed_note": "作者无确证：常误署泰戈尔（《飞鸟集》无此篇），亦传为张小娴《荷包里的单人床》段落；中文即通行原文，原附英译为网络流传译本，已撤去以免误称「原文」。",
   "category": "外国诗",
 
-  "orig_lang": "bn",
+  "orig_lang": "zh",
   "tags": [
    "译诗",
    "爱情"
@@ -10326,11 +10356,11 @@ const POEMS = [
   "lines": [
    {
     "o": "世界上最遥远的距离，不是生与死，",
-    "m": "The furthest distance in the world is not between life and death."
+    "m": ""
    },
    {
     "o": "而是我就站在你面前，你却不知道我爱你。",
-    "m": "But when I stand in front of you, yet you don't know I love you."
+    "m": ""
    }
   ],
   "anim": "love",
@@ -10371,9 +10401,10 @@ const POEMS = [
   "id": "w_xianzhi",
   "title": "先知（节选）",
   "author": "〔黎巴嫩〕纪伯伦",
+  "ed_note": "纪伯伦以英文写作 The Prophet：英文即原文，非阿拉伯语译本。",
   "category": "外国诗",
 
-  "orig_lang": "ar",
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "哲思"
@@ -10426,9 +10457,10 @@ const POEMS = [
   "id": "w_shayumo",
   "title": "沙与沫（节选）",
   "author": "〔黎巴嫩〕纪伯伦",
+  "ed_note": "纪伯伦以英文写作 Sand and Foam：英文即原文，非阿拉伯语译本。",
   "category": "外国诗",
 
-  "orig_lang": "ar",
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "哲思"
@@ -10756,6 +10788,7 @@ const POEMS = [
   "id": "w_chunti",
   "title": "春的临终",
   "author": "〔日〕谷川俊太郎",
+  "ed_note": "此处为英译；谷川俊太郎日文原文待补。",
   "category": "外国诗",
 
   "orig_lang": "ja",
@@ -26001,9 +26034,10 @@ const POEMS = [
   "id": "jinsehua_tge",
   "title": "金色花",
   "author": "〔印度〕泰戈尔（郑振铎 译）",
+  "ed_note": "泰戈尔自译英文 The Champa Flower：英文即通行原文。",
   "category": "外国诗",
 
-  "orig_lang": "bn",
+  "orig_lang": "en",
   "level": "拓展",
   "tags": [
    "译诗",
@@ -26061,9 +26095,10 @@ const POEMS = [
   "id": "zhichuan_tge",
   "title": "纸船——寄母亲",
   "author": "〔印度〕泰戈尔（郑振铎 译）",
+  "ed_note": "泰戈尔自译英文 The Crescent Moon 之《纸船》：英文即通行原文。",
   "category": "外国诗",
 
-  "orig_lang": "bn",
+  "orig_lang": "en",
   "level": "拓展",
   "tags": [
    "译诗",
@@ -69359,7 +69394,7 @@ const ENCOURAGE=[
 
 /* ============ 工具 ============ */
 const $ = s=>document.querySelector(s);
-function showView(id){ document.querySelectorAll(".view").forEach(v=>v.classList.remove("active")); $("#"+id).classList.add("active"); $("#views").scrollTop=0; }
+function showView(id){ stopSpeech(); document.querySelectorAll(".view").forEach(v=>v.classList.remove("active")); $("#"+id).classList.add("active"); $("#views").scrollTop=0; }
 function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1800); }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function dayIndex(){ return Math.floor(Date.now()/86400000); }
@@ -69455,6 +69490,7 @@ function doSearch(q){
 /* ============ 渲染：详情（五维） ============ */
 let currentPoemId=null, detailFrom="view-home";
 function openDetail(id){
+  stopSpeech(); // 离开/换诗必须打断旧朗读，防止叠音
   const p = POEMS.find(x=>x.id===id); if(!p) return;
   const active=document.querySelector(".view.active");
   if(active && active.id!=="view-detail") detailFrom=active.id;
@@ -69605,29 +69641,102 @@ function replayViz(){
   svg.querySelectorAll(".moon,.glow,.drift,.rain,.sway").forEach(el=>{ el.style.animation="none"; void el.offsetWidth; el.style.animation=""; });
 }
 
-/* ============ 朗读（Web Speech API） ============ */
-let utter=null;
+/* ============ 朗读（Web Speech API） ============
+   round5-③：分段 utterance 队列（整首单 utterance 在 Chrome ~15s 截断）、
+   zh 语音 voiceschanged 检测、离页 cancel、破音字覆盖表 v1、单句循环。 */
+let zhVoice=null;
+function pickZhVoice(){
+  const vs = ("speechSynthesis" in window) ? window.speechSynthesis.getVoices() : [];
+  zhVoice = vs.find(v=>/^zh/i.test(v.lang)) || vs.find(v=>/zh|Chinese|中文|普通话/i.test(v.lang+v.name)) || null;
+  return zhVoice;
+}
+if("speechSynthesis" in window){
+  pickZhVoice();
+  window.speechSynthesis.onvoiceschanged = pickZhVoice; // Chrome 首调 getVoices() 返回 []，必须等此事件
+}
+/* 破音字覆盖表 v1（24 条）：同音字替换，仅作用于喂给 TTS 的文本，不影响显示。
+   优先词组锚定防误伤；全局仅低误伤 3 条（斜/浣/阙）。 */
+const TTS_FIXES=[
+  ["斜","霞"],                                        // 远上寒山石径斜（施工单口径 xiá）
+  ["鬓毛衰","鬓毛崔"],                                 // 乡音无改鬓毛衰 cuī
+  ["一骑","一寄"],["铁骑","铁寄"],["千骑","千寄"],      // 名词 jì（动词 qí 不动）
+  ["野旷","雅旷"],                                    // 施工单口径 yǎ
+  ["见牛羊","现牛羊"],                                 // 通假 xiàn
+  ["可汗","克含"],                                    // 木兰诗 kè hán
+  ["单于","蝉于"],                                    // chán yú
+  ["燕山","焉山"],["燕然","焉然"],                     // 地名 yān
+  ["金柝","金拓"],                                    // tuò
+  ["机杼","机柱"],                                    // zhù
+  ["著我","卓我"],                                    // zhuó（木兰诗）
+  ["溅溅","间间"],                                    // 鸣溅溅 jiān
+  ["塞外","赛外"],                                    // sài
+  ["荷锄","贺锄"],["荷笠","贺笠"],                     // 动词 hè
+  ["浣","换"],                                        // 浣溪沙 huàn
+  ["阙","却"],                                        // 宫阙 què
+  ["嗟","皆"],                                        // jiē
+  ["舴艋","责猛"],                                    // zé měng
+  ["戍鼓","树鼓"],                                    // shù
+  ["龟兹","丘慈"],                                    // qiū cí
+];
+function ttsFix(text){ let s=String(text); for(const [a,b] of TTS_FIXES) s=s.split(a).join(b); return s; }
+
+/* 分段朗读队列。代际计数：stop/loop 切换后旧 utterance 的回调按代次作废，防 cancel 竞态 */
+const speechState={mode:"idle", idx:0, lines:[], loopIdx:-1};
+let speechGen=0;
+function setReadBtn(txt){ const b=$("#readBtnTxt"); if(b) b.textContent=txt; }
+function stopSpeech(){
+  speechGen++;
+  speechState.mode="idle"; speechState.idx=0; speechState.loopIdx=-1;
+  if("speechSynthesis" in window) window.speechSynthesis.cancel();
+  setReadBtn("听朗读");
+}
+function speakNext(gen){
+  if(gen!==speechGen || speechState.mode==="idle") return;
+  const raw = speechState.mode==="loop" ? speechState.lines[speechState.loopIdx] : speechState.lines[speechState.idx];
+  if(raw===undefined){
+    speechState.mode="idle"; setReadBtn("听朗读"); toast("朗读结束"); return;
+  }
+  const u = new SpeechSynthesisUtterance(raw);
+  u.lang="zh-CN"; u.rate=0.85; u.pitch=1;   // 语速 0.85（round5-③ 口径）
+  if(zhVoice) u.voice=zhVoice;
+  u.onend=()=>{
+    if(gen!==speechGen) return;
+    if(speechState.mode==="loop") return speakNext(gen);  // 单句循环：同句重播
+    speechState.idx++; speakNext(gen);                    // 整首：下一句
+  };
+  u.onerror=()=>{ if(gen===speechGen && speechState.mode!=="idle") stopSpeech(); };
+  window.speechSynthesis.speak(u);
+}
+function startSpeech(lines){
+  if(!("speechSynthesis" in window)){ toast("当前浏览器不支持朗读"); return; }
+  speechGen++;
+  window.speechSynthesis.cancel();
+  speechState.lines = lines.map(ttsFix);
+  speechState.idx = 0; speechState.loopIdx = -1;
+  speechState.mode = "playing";
+  if(!pickZhVoice()) toast("未检测到中文语音，可能无声或发音异常");  // 明确降级提示，不静默
+  setReadBtn("停止");
+  speakNext(speechGen);
+  if(speechState.mode!=="idle") toast("正在朗读…（点诗句可单句循环）");
+}
 function readPoem(id){
   const p = POEMS.find(x=>x.id===id); if(!p) return;
-  readAloudText(p.lines.map(l=>l.o).join("。"));
+  startSpeech(p.lines.map(l=>l.o));
 }
 function readAloud(){
   if(!currentPoemId) return;
+  if(speechState.mode!=="idle"){ stopSpeech(); toast("已停止朗读"); return; }
   const p = POEMS.find(x=>x.id===currentPoemId);
-  readAloudText(p.lines.map(l=>l.o).join("。"));
+  startSpeech(p.lines.map(l=>l.o));
 }
-function readAloudText(text){
-  try{
-    if(!("speechSynthesis" in window)){ toast("当前浏览器不支持朗读"); return; }
-    window.speechSynthesis.cancel();
-    utter = new SpeechSynthesisUtterance(text);
-    utter.lang="zh-CN"; utter.rate=0.85; utter.pitch=1;
-    const zh = window.speechSynthesis.getVoices().find(v=>/zh|Chinese/i.test(v.lang+v.name));
-    if(zh) utter.voice=zh;
-    utter.onend=()=>toast("朗读结束");
-    window.speechSynthesis.speak(utter);
-    toast("正在朗读…");
-  }catch(e){ toast("朗读失败："+e.message); }
+/* 单句循环：朗读中点详情页某句 → 该句循环；点其他句切换；点「停止」结束 */
+function loopLine(idx){
+  if(speechState.mode==="idle" || idx<0 || idx>=speechState.lines.length) return;
+  speechGen++;
+  speechState.mode="loop"; speechState.loopIdx=idx;
+  window.speechSynthesis.cancel();       // 打断当前句；代次已更新，旧回调作废
+  speakNext(speechGen);
+  toast("循环第 "+(idx+1)+" 句 · 点「停止」结束");
 }
 
 /* ============ 学习页：打卡 ============ */
@@ -69856,6 +69965,13 @@ function goHome(){
 }
 
 /* ============ 底部 Tab 绑定 ============ */
+/* 单句循环入口：朗读中点详情页竖排某句 → 该句循环（事件委托，openDetail 重渲染无需重绑） */
+$("#dOriginal").addEventListener("click", (e)=>{
+  const vl = e.target.closest(".vline"); if(!vl) return;
+  if(speechState.mode==="idle") return;
+  const body = vl.parentElement;
+  loopLine([...body.children].indexOf(vl));
+});
 document.querySelectorAll("#tabbar .tb").forEach(tb=>{
   tb.addEventListener("click", ()=>switchTab(tb.dataset.view));
 });

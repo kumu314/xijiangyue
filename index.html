@@ -166,6 +166,7 @@
   .rset-opt{flex:1 1 auto;min-width:72px;padding:11px 6px;text-align:center;font-size:13.5px;border:1px solid var(--line);border-radius:var(--r-pill);cursor:pointer;background:var(--paper);color:var(--ink-2);transition:all .15s ease;}
   .rset-opt.on{background:var(--cinnabar);color:#fff;border-color:var(--cinnabar);font-weight:600;}
   .rset-opt:active{transform:scale(.97);}
+.rset-note{margin-top:9px;font-size:12px;color:var(--ink-3);line-height:1.55;}
 
   .tabs{display:flex;gap:6px;overflow-x:auto;padding:4px;margin-bottom:14px;background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-pill);}
   .tabs::-webkit-scrollbar{display:none;}
@@ -69657,40 +69658,96 @@ function replayViz(){
    round5-③：分段 utterance 队列（整首单 utterance 在 Chrome ~15s 截断）、
    zh 语音 voiceschanged 检测、离页 cancel、破音字覆盖表 v1、单句循环。 */
 let zhVoice=null;
-function pickZhVoice(){
+/* 朗读设置（#58 打回项）：语速 + 音色，存 localStorage xjy_tts；voice="auto" 走优选 */
+const TTS_RATE_MAP={"慢":0.75,"常":0.85,"快":1.0};
+function getTts(){ let t={}; try{ t=JSON.parse(localStorage.getItem("xjy_tts")||"{}"); }catch(e){} return {rate:t.rate??0.85, voice:t.voice||"auto"}; }
+function setTts(k,v){
+  const t=getTts(); t[k]=v; localStorage.setItem("xjy_tts", JSON.stringify(t));
+  renderReadingSettings();
+}
+/* 音色优选（#58 打回项）：多个中文语音时打分排序，而不是取第一个
+   打分口径：大陆普通话 > 其他 zh > 港台/粤（降权）；普通话/Mandarin 名 > 常见女声名 > 其他；本地离线加分 */
+function voiceScore(v){
+  let s=0;
+  const tag=(v.lang||"")+" "+(v.name||"");
+  if(/^zh[-_]?CN/i.test(v.lang||"")) s+=60; else if(/^zh/i.test(v.lang||"")) s+=20;
+  if(/普通话|Mandarin|Chinese/i.test(v.name||"")) s+=15;
+  if(/Xiaoxiao|晓晓|Yaoyao|Huihui|Female|女声/i.test(v.name||"")) s+=8;
+  if(v.localService) s+=10;                                      // 本地离线音色更稳（不依赖网络合成）
+  if(/TW|HK|Taiwan|Hong ?Kong|粤/i.test(tag)) s-=25;             // 港台音色读古诗韵调偏，降权
+  return s;
+}
+function listZhVoices(){
   const vs = ("speechSynthesis" in window) ? window.speechSynthesis.getVoices() : [];
-  zhVoice = vs.find(v=>/^zh/i.test(v.lang)) || vs.find(v=>/zh|Chinese|中文|普通话/i.test(v.lang+v.name)) || null;
+  return vs.filter(v=>/^zh|Chinese|中文|普通话/i.test((v.lang||"")+(v.name||"")));
+}
+function pickZhVoice(){
+  const zhs = listZhVoices();
+  zhVoice = zhs.length ? zhs.slice().sort((a,b)=>voiceScore(b)-voiceScore(a))[0] : null;
+  return zhVoice;
+}
+/* 取当前生效音色：用户在朗读设置里指定则按名字找，否则用优选结果 */
+function currentVoice(){
+  const pick=getTts().voice;
+  if(pick && pick!=="auto"){
+    const hit = listZhVoices().find(v=>v.name===pick);
+    if(hit) return hit;
+  }
   return zhVoice;
 }
 if("speechSynthesis" in window){
   pickZhVoice();
   window.speechSynthesis.onvoiceschanged = pickZhVoice; // Chrome 首调 getVoices() 返回 []，必须等此事件
 }
-/* 破音字覆盖表 v1（24 条）：同音字替换，仅作用于喂给 TTS 的文本，不影响显示。
-   优先词组锚定防误伤；全局仅低误伤 3 条（斜/浣/阙）。 */
+/* 破音字覆盖表 v2（灵玉复核 #58 返工后）：同音字替换，仅作用于喂给 TTS 的文本，不影响显示。
+
+   【定性】两类规则分开写，避免下一个复核者按《1985 普通话异读词审音表》反复判错：
+     甲·风格选择（叶韵/传统诵读，非纠错）——斜(xiá)、鬓毛衰(cuī)、一骑/铁骑/千骑(jì)。
+        这些字现代审音表统读 xié / shuāi / qí，读旧音是诵读传统，不是纠系统的错。
+     乙·纠错（避免 TTS 读错）——其余条目，属生僻字/多音字/通假的正确读音。
+
+   编写纪律：优先**词组/音律锚定**，全局替换只留极低误伤 2 条（浣、嗟）。
+   已按灵玉全量审计（970 首/5787 句）返工：删「斜」全局（70 处中 60+ 误改）、删「野旷」误改、收窄「阙」。 */
 const TTS_FIXES=[
-  ["斜","霞"],                                        // 远上寒山石径斜（施工单口径 xiá）
-  ["鬓毛衰","鬓毛崔"],                                 // 乡音无改鬓毛衰 cuī
-  ["一骑","一寄"],["铁骑","铁寄"],["千骑","千寄"],      // 名词 jì（动词 qí 不动）
-  ["野旷","雅旷"],                                    // 施工单口径 yǎ
-  ["见牛羊","现牛羊"],                                 // 通假 xiàn
-  ["可汗","克含"],                                    // 木兰诗 kè hán
-  ["单于","蝉于"],                                    // chán yú
-  ["燕山","焉山"],["燕然","焉然"],                     // 地名 yān
-  ["金柝","金拓"],                                    // tuò
-  ["机杼","机柱"],                                    // zhù
-  ["著我","卓我"],                                    // zhuó（木兰诗）
-  ["溅溅","间间"],                                    // 鸣溅溅 jiān
-  ["塞外","赛外"],                                    // sài
-  ["荷锄","贺锄"],["荷笠","贺笠"],                     // 动词 hè
-  ["浣","换"],                                        // 浣溪沙 huàn
-  ["阙","却"],                                        // 宫阙 què
-  ["嗟","皆"],                                        // jiē
-  ["舴艋","责猛"],                                    // zé měng
-  ["戍鼓","树鼓"],                                    // shù
-  ["龟兹","丘慈"],                                    // qiū cí
+  ["鬓毛衰","鬓毛崔"],                                 // 甲·风格：乡音无改鬓毛衰 cuī（叶韵/旧读）
+  ["一骑","一寄"],["铁骑","铁寄"],["千骑","千寄"],      // 甲·风格：名词 jì（动词 qí 不动）
+  ["见牛羊","现牛羊"],                                 // 乙·纠错：通假 xiàn（★0 命中：敕勒歌未入库，待语料扩容后生效）
+  ["可汗","克含"],                                     // 乙·纠错：kè hán（★0 命中：库内木兰诗为节选，待扩容后生效）
+  ["著我","卓我"],                                     // 乙·纠错：zhuó（★0 命中：同上）
+  ["单于","蝉于"],                                     // 乙·纠错：chán yú
+  ["燕山","焉山"],["燕然","焉然"],                     // 乙·纠错：地名 yān
+  ["金柝","金拓"],                                     // 乙·纠错：tuò
+  ["机杼","机柱"],                                     // 乙·纠错：zhù
+  ["溅溅","间间"],                                     // 乙·纠错：鸣溅溅 jiān
+  ["塞外","赛外"],                                     // 乙·纠错：sài
+  ["荷锄","贺锄"],["荷笠","贺笠"],                     // 乙·纠错：动词 hè
+  ["宫阙","宫却"],["城阙","城却"],["凤阙","凤却"],      // 乙·纠错：què（收窄为词白名单，
+  ["金阙","金却"],["北阙","北却"],["贝阙","贝却"],      //   避免误伤通"缺"的 quē 用法：
+  ["魏阙","魏却"],["瑶阙","瑶却"],["双阙","双却"],      //   「自小阙内训」「圣朝无阙事」）
+  ["朝天阙","朝天却"],
+  ["舴艋","责猛"],                                     // 乙·纠错：zé měng
+  ["戍鼓","树鼓"],                                     // 乙·纠错：shù
+  ["龟兹","丘慈"],                                     // 乙·纠错：qiū cí
+  ["浣","换"],                                         // 乙·纠错：浣溪沙 huàn（全局，低误伤）
+  ["嗟","皆"],                                         // 乙·纠错：jiē（全局，同音无害）
 ];
-function ttsFix(text){ let s=String(text); for(const [a,b] of TTS_FIXES) s=s.split(a).join(b); return s; }
+/* 麻韵常用句末字（叶韵判据）：斜读 xiá 只在句末且该诗押麻韵时成立 */
+const MA_RHYME="家花纱华沙茶麻瓜娃芽鸦葩笳奢衙槎夸斜";
+/* 韵脚判据按「分句」算：数据里一行常含两句（"石径斜，白云生处有人家。"），
+   「斜」处于分句末而非整行末——只看整行末字会漏判。 */
+function poemRhymesMa(lines){
+  return (lines||[]).some(l=>{
+    const toks=String(l).split(/[，。！？、；：,.!?;:'"]/);
+    return toks.some(t=>{ const last=t.trim().slice(-1); return last && MA_RHYME.includes(last); });
+  });
+}
+function ttsFix(line, rhymeMa){
+  let s=String(line);
+  for(const [a,b] of TTS_FIXES) s=s.split(a).join(b);
+  // 斜（甲·风格）：仅当「处于分句末（后接标点或行尾）+ 本诗押麻韵」才叶韵读 xiá，否则保持统读 xié
+  if(rhymeMa) s = s.replace(/斜(?=[，。！？、；：,.!?;:]|$)/g, "霞");
+  return s;
+}
 
 /* 分段朗读队列。代际计数：stop/loop 切换后旧 utterance 的回调按代次作废，防 cancel 竞态 */
 const speechState={mode:"idle", idx:0, lines:[], loopIdx:-1};
@@ -69709,8 +69766,8 @@ function speakNext(gen){
     speechState.mode="idle"; setReadBtn("听朗读"); toast("朗读结束"); return;
   }
   const u = new SpeechSynthesisUtterance(raw);
-  u.lang="zh-CN"; u.rate=0.85; u.pitch=1;   // 语速 0.85（round5-③ 口径）
-  if(zhVoice) u.voice=zhVoice;
+  u.lang="zh-CN"; u.rate=Number(getTts().rate)||0.85; u.pitch=1;  // 语速走朗读设置（默认 0.85）
+  const vo=currentVoice(); if(vo) u.voice=vo;
   u.onend=()=>{
     if(gen!==speechGen) return;
     if(speechState.mode==="loop") return speakNext(gen);  // 单句循环：同句重播
@@ -69723,7 +69780,8 @@ function startSpeech(lines){
   if(!("speechSynthesis" in window)){ toast("当前浏览器不支持朗读"); return; }
   speechGen++;
   window.speechSynthesis.cancel();
-  speechState.lines = lines.map(ttsFix);
+  const rhymeMa = poemRhymesMa(lines);            // 「斜」叶韵判据：本诗是否押麻韵
+  speechState.lines = lines.map(l=>ttsFix(l, rhymeMa));
   speechState.idx = 0; speechState.loopIdx = -1;
   speechState.mode = "playing";
   if(!pickZhVoice()) toast("未检测到中文语音，可能无声或发音异常");  // 明确降级提示，不静默
@@ -70167,6 +70225,10 @@ function renderReadingSettings(){
   const lay=getLayout(), f=getFont();
   const sz=f.size||"中", fm=f.family||"楷体", sp=f.spacing||"适中";
   const opt=(arr,cur,k)=>arr.map(x=>`<div class="rset-opt ${cur===x?"on":""}" onclick="setFont('${k}','${x}')">${x}</div>`).join("");
+  // 朗读设置区
+  const rateName=ttsRateName(), voices=listZhVoices(), voiceOpts=ttsVoiceOpts();
+  const curVoice=getTts().voice;
+  const voiceName = (!curVoice || curVoice==="auto") ? "自动优选" : String(curVoice).replace(/\s*\(.*\)/,"").slice(0,14);
   $("#rsetBody").innerHTML = `
     <div class="rset-sec">
       <div class="rset-sec-t">读诗排版<span class="cur">${lay==="vertical"?"竖排手卷":"横排现代式"}</span></div>
@@ -70186,9 +70248,31 @@ function renderReadingSettings(){
     <div class="rset-sec">
       <div class="rset-sec-t">行距<span class="cur">${sp}</span></div>
       <div class="rset-opts">${opt(["紧","适中","松"],sp,"spacing")}</div>
+    </div>
+    <div class="rset-sec">
+      <div class="rset-sec-t">朗读语速<span class="cur">${rateName}</span></div>
+      <div class="rset-opts">${["慢","常","快"].map(x=>`<div class="rset-opt ${rateName===x?"on":""}" onclick="setTts('rate',${TTS_RATE_MAP[x]})">${x}</div>`).join("")}</div>
+    </div>
+    <div class="rset-sec">
+      <div class="rset-sec-t">朗读音色<span class="cur">${voiceName}</span></div>
+      <div class="rset-opts">${voiceOpts}</div>
+      ${voices.length?"":`<div class="rset-note">未检测到中文语音（系统未安装或浏览器不支持），朗读可能无声。</div>`}
     </div>`;
 }
-function openReadingSettings(){ renderReadingSettings(); $("#rsetOverlay").classList.add("active"); }
+/* 朗读设置区：语速名与音色选项（音色最多展示前 8 个，其余可 auto 优选） */
+function ttsRateName(){ const r=Number(getTts().rate)||0.85; return Object.keys(TTS_RATE_MAP).find(k=>TTS_RATE_MAP[k]===r)||"常"; }
+function ttsVoiceOpts(){
+  const cur=getTts().voice, voices=listZhVoices();
+  const names = voices.slice().sort((a,b)=>voiceScore(b)-voiceScore(a)).slice(0,8).map(v=>v.name);
+  const list = [["auto","自动优选"]].concat(names.map(n=>[n,n.replace(/\s*\(.*\)/,"")]));
+  return list.map(([val,label])=>`<div class="rset-opt ${cur===val?"on":""}" onclick="setTts('voice','${String(val).replace(/'/g,"")}')" title="${String(label).replace(/"/g,"")}">${label}</div>`).join("");
+}
+function openReadingSettings(){
+  pickZhVoice();                 // 刷新音色列表（voices 常异步加载完才可用）
+  renderReadingSettings();
+  $("#rsetOverlay").classList.add("active");
+  setTimeout(()=>{ if($("#rsetOverlay").classList.contains("active")) renderReadingSettings(); }, 300); // voiceschanged 兜底重渲染
+}
 function closeReadingSettings(){ $("#rsetOverlay").classList.remove("active"); }
 
 /* ============ 阅读设置：字体自定义（round4-③） ============ */

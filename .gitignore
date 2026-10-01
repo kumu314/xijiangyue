@@ -23,3 +23,10 @@ out/ui_decard/
 out/ui_review/
 out/checkin_stamp/
 out/**/*.png
+
+# ── 依赖目录（永不入库）────────────────────────────────────────────
+# 依据：node_modules 是本地安装产物，体积大、随平台/版本变化，入库无意义且会污染 diff。
+# 触发：2026-10-02 tests/ 入库时发现 tests/node_modules/ 裸露在未跟踪区——
+#       该次侥幸只 git add 了具体文件；但任何 `git add -A` / `git add tests/`
+#       都会把依赖树提交进去。且未跟踪目录会被「同步前清未跟踪文件」类操作 mv 走（见上）。
+node_modules/

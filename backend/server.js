@@ -31,6 +31,10 @@ const ALLOW_ORIGINS = (process.env.ALLOW_ORIGINS || "https://kumu314.github.io")
                重启/休眠/重部署不丢（Render 免费档本地文件系统是临时的）。
    本地模式：任一缺失则回退内置 node:sqlite（现状行为，本地开发不受影响）。 */
 const TURSO_URL = process.env.TURSO_URL || "";
+// 启动期校验：只允许 https://*.turso.io（防环境变量被配成内网/任意地址形成 SSRF 面）
+if (TURSO_URL && !/^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+)*\.turso\.io\/?$/i.test(TURSO_URL)) {
+  throw new Error("TURSO_URL 必须是 https://<db>.turso.io 形式");
+}
 const TURSO_TOKEN = process.env.TURSO_TOKEN || "";
 const USE_TURSO = Boolean(TURSO_URL && TURSO_TOKEN);
 

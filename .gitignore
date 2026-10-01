@@ -10,8 +10,9 @@ backend/data.sqlite*
 # 目的：让 `git status --porcelain` 不再显示它们 → 不会被「同步前清未跟踪文件」
 #       的操作移走（2026-10-01 曾因此把 out/ 下未跟踪产物整体 mv 走，见黑板 note #1467）。
 # 注意：out/*.md（复核报告、规格、备忘录）是交付物，**不 ignore，应及时入库**。
-out/content_production/
-out/content_pilot/
+# content_production / content_pilot 不整目录 ignore：批次 JSON 是合入源（合入前丢不得），
+# SPEC/LEDGER/README 是交付物——按 zcode×灵玉 商定的交付政策入库（见黑板 note #1398/#1448）。
+# 批次合入并经抽检放行后，旧批次 JSON 可由台账标记归档。png 仍一律不入库（见下方全局 png 规则）。
 out/game_icons/
 out/r4-font/
 out/r4-foreign/

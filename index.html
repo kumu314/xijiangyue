@@ -69715,9 +69715,9 @@ function startSpeech(lines){
   speechState.idx = 0; speechState.loopIdx = -1;
   speechState.mode = "playing";
   if(!pickZhVoice()) toast("未检测到中文语音，可能无声或发音异常");  // 明确降级提示，不静默
+  else toast("正在朗读…（点诗句可单句循环）");
   setReadBtn("停止");
   speakNext(speechGen);
-  if(speechState.mode!=="idle") toast("正在朗读…（点诗句可单句循环）");
 }
 function readPoem(id){
   const p = POEMS.find(x=>x.id===id); if(!p) return;

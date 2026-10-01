@@ -1,0 +1,16 @@
+{
+  "name": "xijiangyue-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "西江阅前端回归测试（朗读 TTS / 温故 / 破音字麻韵审计）。用系统 Chrome 无头跑真实页面上下文，断言全部在页面内调用 index.html 自带函数。",
+  "type": "module",
+  "scripts": {
+    "tts": "node tts-test-v2.mjs && node tts-test-v3.mjs",
+    "review": "node review-test.mjs",
+    "audit": "node audit-tts-rhyme.mjs",
+    "all": "node tts-test-v2.mjs && node tts-test-v3.mjs && node review-test.mjs && node audit-tts-rhyme.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.48.0"
+  }
+}

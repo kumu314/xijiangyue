@@ -74,11 +74,17 @@ python -m http.server 8080
 
 ---
 
+## 🧪 前端回归测试
+
+朗读（TTS / 破音字）、温故、麻韵全量审计的自动化用例见 [`tests/`](./tests/README.md)，
+用本机 Chrome 无头加载 `index.html` 后断言页面内函数（详见该目录 README）。
+
 ## 📁 仓库结构
 
 ```
 xijiangyue/
 ├── index.html      # 站点本体（单文件，零依赖）
+├── tests/          # 前端回归测试（playwright-core + 系统 Chrome 无头）
 ├── README.md       # 本文件
 └── LICENSE         # 许可
 ```

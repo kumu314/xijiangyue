@@ -7,6 +7,7 @@
 | qoder-01 | 拓展中文 m 译文（seed42，排除 pilot-01） | 20（180 句） | 译文线 v1 | out/content_pilot/qoder-01.json（23:56 清理扫掉，**qoder 工作目录完好可原样重建**） | 灵玉 PASS（#51） | 待重建入库 |
 | #61 校勘 | 全库异文/题名/作者疑点 | 起步 5+ | 轻量校勘 | 待 qoder | — | 排产中 |
 | batch-03 | 拓展中文（seed44，排除前两批） | 30 | v2.1 | out/content_production/batch-03.json（已入库） | 待灵玉抽检 | README-03.md 已附，五项自检 283/283 引文全过 |
+| batch-04 | 拓展中文（seed45，排除前三批，样本预锁） | 30 | v2.1 | out/content_production/batch-04.json（已入库） | 待灵玉抽检 | 六项自检含跨篇反模板 0 复用；缺陷上报 4 条见 README-04（永遇乐缺字/残篇/示儿同题异篇/tags 粒度） |
 
 ## 附录：pilot-01 的 30 个 id（源：灵玉 #46 抽检报告）
 

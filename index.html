@@ -136,6 +136,9 @@
   .tr .row{background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px 16px;}
   .tr .row .o{font-family:var(--serif);font-size:16px;color:var(--ink);letter-spacing:1px;}
   .tr .row .m{margin-top:7px;font-size:13px;line-height:1.7;color:var(--ink-2);}
+  /* 外国诗：原文（拉丁字母）以「原文附注」横排呈现，区别于中文译文 */
+  .tr .row .m.orig{font-style:italic;color:var(--ink-3);font-family:var(--serif);letter-spacing:.3px;}
+  .tr .row .m.orig .orig-tag{display:inline-block;font-size:10px;font-style:normal;letter-spacing:1px;color:var(--cinnabar);border:1px solid var(--cinnabar);border-radius:3px;padding:0 4px;margin-right:6px;vertical-align:middle;}
 
   .viz{background:linear-gradient(180deg,#1E2A3A 0%,#2E3B4E 55%,#4A5266 100%);border-radius:var(--r-card);overflow:hidden;position:relative;height:260px;}
   .viz svg{position:absolute;inset:0;width:100%;height:100%;}
@@ -4368,6 +4371,8 @@ const POEMS = [
   "title": "假如生活欺骗了你",
   "author": "〔俄〕普希金",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "译诗",
    "鼓励"
@@ -4441,6 +4446,8 @@ const POEMS = [
   "title": "我曾经爱过你",
   "author": "〔俄〕普希金",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "译诗",
    "爱情"
@@ -4510,34 +4517,36 @@ const POEMS = [
   "title": "Sonnet 18（十四行诗第18首）",
   "author": "〔英〕莎士比亚",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "爱情"
   ],
   "lines": [
    {
-    "o": "Shall I compare thee to a summer's day?",
-    "m": "我能否把你比作夏日？"
+    "o": "我能否把你比作夏日？",
+    "m": "Shall I compare thee to a summer's day?"
    },
    {
-    "o": "Thou art more lovely and more temperate.",
-    "m": "你却更可爱也更温婉。"
+    "o": "你却更可爱也更温婉。",
+    "m": "Thou art more lovely and more temperate."
    },
    {
-    "o": "But thy eternal summer shall not fade,",
-    "m": "但你永恒的夏天不会凋零，"
+    "o": "但你永恒的夏天不会凋零，",
+    "m": "But thy eternal summer shall not fade,"
    },
    {
-    "o": "Nor shall Death brag thou wander'st in his shade,",
-    "m": "死神也不能夸你徘徊其阴影，"
+    "o": "死神也不能夸你徘徊其阴影，",
+    "m": "Nor shall Death brag thou wander'st in his shade,"
    },
    {
-    "o": "So long as men can breathe or eyes can see,",
-    "m": "只要人能呼吸、眼能看见，"
+    "o": "只要人能呼吸、眼能看见，",
+    "m": "So long as men can breathe or eyes can see,"
    },
    {
-    "o": "So long lives this, and this gives life to thee.",
-    "m": "这诗便长存，并赋予你生命。"
+    "o": "这诗便长存，并赋予你生命。",
+    "m": "So long lives this, and this gives life to thee."
    }
   ],
   "memory": [
@@ -4587,30 +4596,32 @@ const POEMS = [
   "title": "Sonnet 116（十四行诗第116首）",
   "author": "〔英〕莎士比亚",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "誓约"
   ],
   "lines": [
    {
-    "o": "Let me not to the marriage of true minds",
-    "m": "别让我承认真心的结合"
+    "o": "别让我承认真心的结合",
+    "m": "Let me not to the marriage of true minds"
    },
    {
-    "o": "Admit impediments. Love is not love",
-    "m": "会有障碍。若遇变故就改变，"
+    "o": "会有障碍。若遇变故就改变，",
+    "m": "Admit impediments. Love is not love"
    },
    {
-    "o": "Which alters when it alteration finds,",
-    "m": "那便不是真正的爱——"
+    "o": "那便不是真正的爱——",
+    "m": "Which alters when it alteration finds,"
    },
    {
-    "o": "It is an ever-fixed mark,",
-    "m": "爱是恒久的灯塔，"
+    "o": "爱是恒久的灯塔，",
+    "m": "It is an ever-fixed mark,"
    },
    {
-    "o": "That looks on tempests and is never shaken.",
-    "m": "任凭风暴也不动摇。"
+    "o": "任凭风暴也不动摇。",
+    "m": "That looks on tempests and is never shaken."
    }
   ],
   "memory": [
@@ -4660,26 +4671,28 @@ const POEMS = [
   "title": "西风颂（节选）",
   "author": "〔英〕雪莱",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "自由"
   ],
   "lines": [
    {
-    "o": "O Wild West Wind, thou breath of Autumn's being,",
-    "m": "啊，狂野的西风，秋之生命的气息，"
+    "o": "啊，狂野的西风，秋之生命的气息，",
+    "m": "O Wild West Wind, thou breath of Autumn's being,"
    },
    {
-    "o": "Thou, from whose unseen presence the leaves dead",
-    "m": "你无形中驱赶枯叶，"
+    "o": "你无形中驱赶枯叶，",
+    "m": "Thou, from whose unseen presence the leaves dead"
    },
    {
-    "o": "Are driven, like ghosts from an enchanter fleeing.",
-    "m": "如群鬼逃离巫师。"
+    "o": "如群鬼逃离巫师。",
+    "m": "Are driven, like ghosts from an enchanter fleeing."
    },
    {
-    "o": "If Winter comes, can Spring be far behind?",
-    "m": "如果冬天来了，春天还会远吗？"
+    "o": "如果冬天来了，春天还会远吗？",
+    "m": "If Winter comes, can Spring be far behind?"
    }
   ],
   "memory": [
@@ -4729,6 +4742,8 @@ const POEMS = [
   "title": "当你老了",
   "author": "〔爱尔兰〕叶芝",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "爱情"
@@ -4806,6 +4821,8 @@ const POEMS = [
   "title": "自由与爱情",
   "author": "〔匈〕裴多菲",
   "category": "外国诗",
+
+  "orig_lang": "hu",
   "tags": [
    "译诗",
    "自由"
@@ -4867,6 +4884,8 @@ const POEMS = [
   "title": "吉檀迦利（节选）",
   "author": "〔印度〕泰戈尔",
   "category": "外国诗",
+
+  "orig_lang": "bn",
   "tags": [
    "译诗",
    "神性"
@@ -4929,6 +4948,8 @@ const POEMS = [
   "title": "你好像一朵鲜花",
   "author": "〔德〕海涅",
   "category": "外国诗",
+
+  "orig_lang": "de",
   "tags": [
    "译诗",
    "爱情"
@@ -4997,6 +5018,8 @@ const POEMS = [
   "title": "啊，船长！我的船长！",
   "author": "〔美〕惠特曼",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "悼念"
@@ -5074,42 +5097,44 @@ const POEMS = [
   "title": "希望是长着羽毛的东西",
   "author": "〔美〕狄金森",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "希望"
   ],
   "lines": [
    {
-    "o": "Hope is the thing with feathers",
-    "m": "希望是长着羽毛的东西——"
+    "o": "希望是长着羽毛的东西——",
+    "m": "Hope is the thing with feathers"
    },
    {
-    "o": "That perches in the soul,",
-    "m": "栖在灵魂里，"
+    "o": "栖在灵魂里，",
+    "m": "That perches in the soul,"
    },
    {
-    "o": "And sings the tune without the words,",
-    "m": "唱着无词的歌，"
+    "o": "唱着无词的歌，",
+    "m": "And sings the tune without the words,"
    },
    {
-    "o": "And never stops at all,",
-    "m": "却一刻也不停息；"
+    "o": "却一刻也不停息；",
+    "m": "And never stops at all,"
    },
    {
-    "o": "And sweetest in the gale is heard;",
-    "m": "最凄厉的风里听得最甜；"
+    "o": "最凄厉的风里听得最甜；",
+    "m": "And sweetest in the gale is heard;"
    },
    {
-    "o": "And sore must be the storm",
-    "m": "要掀翻这小鸟的风暴"
+    "o": "要掀翻这小鸟的风暴",
+    "m": "And sore must be the storm"
    },
    {
-    "o": "That could abash the little bird",
-    "m": "该有多狂暴——"
+    "o": "该有多狂暴——",
+    "m": "That could abash the little bird"
    },
    {
-    "o": "That kept so many warm.",
-    "m": "它曾温暖过如此多的人。"
+    "o": "它曾温暖过如此多的人。",
+    "m": "That kept so many warm."
    }
   ],
   "memory": [
@@ -5159,6 +5184,8 @@ const POEMS = [
   "title": "我喜欢你是寂静的",
   "author": "〔智利〕聂鲁达",
   "category": "外国诗",
+
+  "orig_lang": "es",
   "tags": [
    "译诗",
    "爱情"
@@ -5228,6 +5255,8 @@ const POEMS = [
   "title": "雨",
   "author": "〔阿根廷〕博尔赫斯",
   "category": "外国诗",
+
+  "orig_lang": "es",
   "tags": [
    "译诗",
    "哲思"
@@ -7051,6 +7080,8 @@ const POEMS = [
   "title": "普罗米修斯",
   "author": "〔德〕歌德",
   "category": "外国诗",
+
+  "orig_lang": "de",
   "tags": [
    "译诗",
    "反抗"
@@ -7104,6 +7135,8 @@ const POEMS = [
   "title": "中德四季晨昏杂咏（节选）",
   "author": "〔德〕歌德",
   "category": "外国诗",
+
+  "orig_lang": "de",
   "tags": [
    "译诗",
    "自然"
@@ -7157,6 +7190,8 @@ const POEMS = [
   "title": "欢乐颂",
   "author": "〔德〕席勒",
   "category": "外国诗",
+
+  "orig_lang": "de",
   "tags": [
    "译诗",
    "欢庆"
@@ -7210,6 +7245,8 @@ const POEMS = [
   "title": "北海（节选）",
   "author": "〔德〕海涅",
   "category": "外国诗",
+
+  "orig_lang": "de",
   "tags": [
    "译诗",
    "海"
@@ -7263,6 +7300,8 @@ const POEMS = [
   "title": "面包与美酒",
   "author": "〔德〕荷尔德林",
   "category": "外国诗",
+
+  "orig_lang": "de",
   "tags": [
    "译诗",
    "神性"
@@ -7316,6 +7355,8 @@ const POEMS = [
   "title": "杜伊诺哀歌（节选）",
   "author": "〔奥〕里尔克",
   "category": "外国诗",
+
+  "orig_lang": "de",
   "tags": [
    "译诗",
    "哀歌"
@@ -7369,6 +7410,8 @@ const POEMS = [
   "title": "死亡赋格",
   "author": "〔罗〕策兰",
   "category": "外国诗",
+
+  "orig_lang": "ro",
   "tags": [
    "译诗",
    "记忆"
@@ -7422,6 +7465,8 @@ const POEMS = [
   "title": "阿多尼司（节选）",
   "author": "〔英〕雪莱",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "悼亡"
@@ -7475,6 +7520,8 @@ const POEMS = [
   "title": "希腊古瓮颂",
   "author": "〔英〕济慈",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "艺术"
@@ -7528,6 +7575,8 @@ const POEMS = [
   "title": "恰尔德·哈罗尔德游记（节选）",
   "author": "〔英〕拜伦",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "漫游"
@@ -7581,6 +7630,8 @@ const POEMS = [
   "title": "我的前公爵夫人",
   "author": "〔英〕勃朗宁",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "叙事"
@@ -7634,6 +7685,8 @@ const POEMS = [
   "title": "瑞丁监狱之歌（节选）",
   "author": "〔英〕王尔德",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "悲悯"
@@ -7687,6 +7740,8 @@ const POEMS = [
   "title": "第二次降临",
   "author": "〔爱尔兰〕叶芝",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "预言"
@@ -7740,6 +7795,8 @@ const POEMS = [
   "title": "驶向拜占庭",
   "author": "〔爱尔兰〕叶芝",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "译诗",
    "永恒"
@@ -7793,6 +7850,8 @@ const POEMS = [
   "title": "J·阿尔弗雷德·普鲁弗洛克的情歌（节选）",
   "author": "〔英〕艾略特",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "现代"
@@ -7846,6 +7905,8 @@ const POEMS = [
   "title": "火与冰",
   "author": "〔美〕弗罗斯特",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "美诗",
    "哲思"
@@ -7899,6 +7960,8 @@ const POEMS = [
   "title": "在地铁车站",
   "author": "〔美〕庞德",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "美诗",
    "意象"
@@ -7952,6 +8015,8 @@ const POEMS = [
   "title": "芝加哥",
   "author": "〔美〕桑德堡",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "美诗",
    "城市"
@@ -8005,6 +8070,8 @@ const POEMS = [
   "title": "我的生命是一杆装上底的枪",
   "author": "〔美〕狄金森",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "美诗",
    "力量"
@@ -8058,6 +8125,8 @@ const POEMS = [
   "title": "啊，法兰西的星",
   "author": "〔美〕惠特曼",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "美诗",
    "自由"
@@ -8111,6 +8180,8 @@ const POEMS = [
   "title": "金星号遇难",
   "author": "〔美〕朗费罗",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "美诗",
    "海难"
@@ -8164,6 +8235,8 @@ const POEMS = [
   "title": "乌鸦（节选）",
   "author": "〔美〕爱伦·坡",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "美诗",
    "哥特"
@@ -8217,6 +8290,8 @@ const POEMS = [
   "title": "致大海",
   "author": "〔俄〕普希金",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "俄诗",
    "自由"
@@ -8270,6 +8345,8 @@ const POEMS = [
   "title": "恶魔（节选）",
   "author": "〔俄〕莱蒙托夫",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "俄诗",
    "哲思"
@@ -8323,6 +8400,8 @@ const POEMS = [
   "title": "沉默吧",
   "author": "〔俄〕丘特切夫",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "俄诗",
    "哲思"
@@ -8376,6 +8455,8 @@ const POEMS = [
   "title": "大门前（节选）",
   "author": "〔俄〕涅克拉索夫",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "俄诗",
    "苦难"
@@ -8429,6 +8510,8 @@ const POEMS = [
   "title": "割草人",
   "author": "〔俄〕叶赛宁",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "俄诗",
    "乡野"
@@ -8482,6 +8565,8 @@ const POEMS = [
   "title": "穿裤子的云（节选）",
   "author": "〔俄〕马雅可夫斯基",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "俄诗",
    "未来"
@@ -8535,6 +8620,8 @@ const POEMS = [
   "title": "二月",
   "author": "〔俄〕帕斯捷尔纳克",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "俄诗",
    "冬"
@@ -8588,6 +8675,8 @@ const POEMS = [
   "title": "我想和你一起生活",
   "author": "〔俄〕茨维塔耶娃",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "俄诗",
    "爱情"
@@ -8641,6 +8730,8 @@ const POEMS = [
   "title": "最后一首",
   "author": "〔俄〕阿赫玛托娃",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "俄诗",
    "诀别"
@@ -8694,6 +8785,8 @@ const POEMS = [
   "title": "园丁集（节选）",
   "author": "〔印度〕泰戈尔",
   "category": "外国诗",
+
+  "orig_lang": "bn",
   "tags": [
    "译诗",
    "爱"
@@ -8747,6 +8840,8 @@ const POEMS = [
   "title": "新月集（节选）",
   "author": "〔印度〕泰戈尔",
   "category": "外国诗",
+
+  "orig_lang": "bn",
   "tags": [
    "译诗",
    "童真"
@@ -8800,6 +8895,8 @@ const POEMS = [
   "title": "眼泪与微笑（节选）",
   "author": "〔黎巴嫩〕纪伯伦",
   "category": "外国诗",
+
+  "orig_lang": "ar",
   "tags": [
    "译诗",
    "哲思"
@@ -8853,6 +8950,8 @@ const POEMS = [
   "title": "客栈",
   "author": "〔波斯〕鲁米",
   "category": "外国诗",
+
+  "orig_lang": "fa",
   "tags": [
    "译诗",
    "苏菲"
@@ -8906,6 +9005,8 @@ const POEMS = [
   "title": "诗",
   "author": "〔波斯〕哈菲兹",
   "category": "外国诗",
+
+  "orig_lang": "fa",
   "tags": [
    "译诗",
    "酒"
@@ -8959,6 +9060,8 @@ const POEMS = [
   "title": "蔷薇园（节选）",
   "author": "〔波斯〕萨迪",
   "category": "外国诗",
+
+  "orig_lang": "fa",
   "tags": [
    "译诗",
    "哲言"
@@ -9012,6 +9115,8 @@ const POEMS = [
   "title": "马克丘·毕克丘之巅（节选）",
   "author": "〔智利〕聂鲁达",
   "category": "外国诗",
+
+  "orig_lang": "es",
   "tags": [
    "西诗",
    "史诗"
@@ -9065,6 +9170,8 @@ const POEMS = [
   "title": "迷宫",
   "author": "〔阿根廷〕博尔赫斯",
   "category": "外国诗",
+
+  "orig_lang": "es",
   "tags": [
    "译诗",
    "哲思"
@@ -9118,6 +9225,8 @@ const POEMS = [
   "title": "太阳石（节选）",
   "author": "〔墨〕帕斯",
   "category": "外国诗",
+
+  "orig_lang": "es",
   "tags": [
    "译诗",
    "时间"
@@ -9171,6 +9280,8 @@ const POEMS = [
   "title": "远方的花园",
   "author": "〔西〕希梅内斯",
   "category": "外国诗",
+
+  "orig_lang": "es",
   "tags": [
    "西诗",
    "童真"
@@ -9224,17 +9335,19 @@ const POEMS = [
   "title": "行者",
   "author": "〔西〕马查多",
   "category": "外国诗",
+
+  "orig_lang": "es",
   "tags": [
    "西诗",
    "行路"
   ],
   "lines": [
    {
-    "o": "traveler，你的脚印是唯一的路，",
+    "o": "旅人，你的脚印是唯一的路，",
     "m": ""
    },
    {
-    "o": "再无别的，traveler。",
+    "o": "再无别的，旅人。",
     "m": ""
    }
   ],
@@ -9277,6 +9390,8 @@ const POEMS = [
   "title": "我的心略大于宇宙",
   "author": "〔葡〕佩索阿",
   "category": "外国诗",
+
+  "orig_lang": "pt",
   "tags": [
    "译诗",
    "自我"
@@ -9330,6 +9445,8 @@ const POEMS = [
   "title": "英雄的挽歌",
   "author": "〔希〕埃利蒂斯",
   "category": "外国诗",
+
+  "orig_lang": "el",
   "tags": [
    "译诗",
    "英雄"
@@ -9383,6 +9500,8 @@ const POEMS = [
   "title": "转折点",
   "author": "〔希〕塞弗里斯",
   "category": "外国诗",
+
+  "orig_lang": "el",
   "tags": [
    "译诗",
    "记忆"
@@ -9436,6 +9555,8 @@ const POEMS = [
   "title": "礼物",
   "author": "〔波〕米沃什",
   "category": "外国诗",
+
+  "orig_lang": "pl",
   "tags": [
    "译诗",
    "宁静"
@@ -9489,6 +9610,8 @@ const POEMS = [
   "title": "不要温和地走进那个良夜",
   "author": "〔英〕狄兰·托马斯",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "抗争"
@@ -9542,6 +9665,8 @@ const POEMS = [
   "title": "野玫瑰",
   "author": "〔德〕歌德",
   "category": "外国诗",
+
+  "orig_lang": "de",
   "tags": [
    "译诗",
    "爱情"
@@ -9595,6 +9720,8 @@ const POEMS = [
   "title": "漫游者之夜歌",
   "author": "〔德〕歌德",
   "category": "外国诗",
+
+  "orig_lang": "de",
   "tags": [
    "译诗",
    "静夜"
@@ -9648,6 +9775,8 @@ const POEMS = [
   "title": "乘着歌声的翅膀",
   "author": "〔德〕海涅",
   "category": "外国诗",
+
+  "orig_lang": "de",
   "tags": [
    "译诗",
    "爱情"
@@ -9701,6 +9830,8 @@ const POEMS = [
   "title": "罗雷莱",
   "author": "〔德〕海涅",
   "category": "外国诗",
+
+  "orig_lang": "de",
   "tags": [
    "译诗",
    "传说"
@@ -9754,6 +9885,8 @@ const POEMS = [
   "title": "致云雀",
   "author": "〔英〕雪莱",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "自由"
@@ -9764,7 +9897,7 @@ const POEMS = [
     "m": "Hail to thee, blithe Spirit! Bird thou never wert."
    },
    {
-    "o": "从天堂或天堂的邻边，以酣醒Song 倾泻。",
+    "o": "从天堂或天堂的邻边，以酣醒歌 倾泻。",
     "m": "从天边倾泻欢歌。"
    }
   ],
@@ -9807,6 +9940,8 @@ const POEMS = [
   "title": "她走在美的光影里",
   "author": "〔英〕拜伦",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "爱情"
@@ -9860,6 +9995,8 @@ const POEMS = [
   "title": "夜莺颂",
   "author": "〔英〕济慈",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "哲思"
@@ -9913,6 +10050,8 @@ const POEMS = [
   "title": "秋日",
   "author": "〔奥〕里尔克",
   "category": "外国诗",
+
+  "orig_lang": "de",
   "tags": [
    "译诗",
    "秋意"
@@ -9966,6 +10105,8 @@ const POEMS = [
   "title": "豹",
   "author": "〔奥〕里尔克",
   "category": "外国诗",
+
+  "orig_lang": "de",
   "tags": [
    "译诗",
    "困顿"
@@ -10019,6 +10160,8 @@ const POEMS = [
   "title": "我是怎样地爱你",
   "author": "〔英〕勃朗宁夫人",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "誓约"
@@ -10072,6 +10215,8 @@ const POEMS = [
   "title": "飞鸟集（节选）",
   "author": "〔印度〕泰戈尔",
   "category": "外国诗",
+
+  "orig_lang": "bn",
   "tags": [
    "译诗",
    "哲思"
@@ -10125,6 +10270,8 @@ const POEMS = [
   "title": "世界上最遥远的距离",
   "author": "〔印度〕泰戈尔",
   "category": "外国诗",
+
+  "orig_lang": "bn",
   "tags": [
    "译诗",
    "爱情"
@@ -10178,6 +10325,8 @@ const POEMS = [
   "title": "先知（节选）",
   "author": "〔黎巴嫩〕纪伯伦",
   "category": "外国诗",
+
+  "orig_lang": "ar",
   "tags": [
    "译诗",
    "哲思"
@@ -10231,6 +10380,8 @@ const POEMS = [
   "title": "沙与沫（节选）",
   "author": "〔黎巴嫩〕纪伯伦",
   "category": "外国诗",
+
+  "orig_lang": "ar",
   "tags": [
    "译诗",
    "哲思"
@@ -10284,6 +10435,8 @@ const POEMS = [
   "title": "醉舟",
   "author": "〔法〕兰波",
   "category": "外国诗",
+
+  "orig_lang": "fr",
   "tags": [
    "法诗",
    "奔放"
@@ -10337,6 +10490,8 @@ const POEMS = [
   "title": "黄昏的和谐",
   "author": "〔法〕波德莱尔",
   "category": "外国诗",
+
+  "orig_lang": "fr",
   "tags": [
    "法诗",
    "黄昏"
@@ -10390,6 +10545,8 @@ const POEMS = [
   "title": "青春",
   "author": "〔波兰〕密茨凯维奇",
   "category": "外国诗",
+
+  "orig_lang": "pl",
   "tags": [
    "译诗",
    "青春"
@@ -10443,6 +10600,8 @@ const POEMS = [
   "title": "梦游人谣",
   "author": "〔西〕洛尔迦",
   "category": "外国诗",
+
+  "orig_lang": "es",
   "tags": [
    "西诗",
    "歌谣"
@@ -10496,6 +10655,8 @@ const POEMS = [
   "title": "海涛",
   "author": "〔意〕夸西莫多",
   "category": "外国诗",
+
+  "orig_lang": "it",
   "tags": [
    "译诗",
    "海"
@@ -10549,6 +10710,8 @@ const POEMS = [
   "title": "春的临终",
   "author": "〔日〕谷川俊太郎",
   "category": "外国诗",
+
+  "orig_lang": "ja",
   "tags": [
    "译诗",
    "春"
@@ -10602,6 +10765,8 @@ const POEMS = [
   "title": "致凯恩",
   "author": "〔俄〕普希金",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "俄诗",
    "爱情"
@@ -10655,6 +10820,8 @@ const POEMS = [
   "title": "自由颂",
   "author": "〔俄〕普希金",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "俄诗",
    "自由"
@@ -10708,6 +10875,8 @@ const POEMS = [
   "title": "帆",
   "author": "〔俄〕莱蒙托夫",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "俄诗",
    "孤独"
@@ -10761,6 +10930,8 @@ const POEMS = [
   "title": "我愿意是急流",
   "author": "〔匈〕裴多菲",
   "category": "外国诗",
+
+  "orig_lang": "hu",
   "tags": [
    "译诗",
    "爱情"
@@ -10814,6 +10985,8 @@ const POEMS = [
   "title": "人生礼赞",
   "author": "〔美〕朗费罗",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "美诗",
    "励志"
@@ -10867,6 +11040,8 @@ const POEMS = [
   "title": "未选择的路",
   "author": "〔美〕弗罗斯特",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "美诗",
    "抉择"
@@ -10920,6 +11095,8 @@ const POEMS = [
   "title": "自我之歌（节选）",
   "author": "〔美〕惠特曼",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "美诗",
    "自我"
@@ -10973,6 +11150,8 @@ const POEMS = [
   "title": "因为你不能停步等候死亡",
   "author": "〔美〕狄金森",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "美诗",
    "死亡"
@@ -11026,6 +11205,8 @@ const POEMS = [
   "title": "六月之夜",
   "author": "〔法〕雨果",
   "category": "外国诗",
+
+  "orig_lang": "fr",
   "tags": [
    "法诗",
    "夏夜"
@@ -11079,6 +11260,8 @@ const POEMS = [
   "title": "月光",
   "author": "〔法〕魏尔伦",
   "category": "外国诗",
+
+  "orig_lang": "fr",
   "tags": [
    "法诗",
    "月光"
@@ -11132,6 +11315,8 @@ const POEMS = [
   "title": "海滨墓园（节选）",
   "author": "〔法〕瓦雷里",
   "category": "外国诗",
+
+  "orig_lang": "fr",
   "tags": [
    "法诗",
    "哲思"
@@ -11185,6 +11370,8 @@ const POEMS = [
   "title": "二十首情诗（节选）",
   "author": "〔智利〕聂鲁达",
   "category": "外国诗",
+
+  "orig_lang": "es",
   "tags": [
    "西诗",
    "爱情"
@@ -11238,13 +11425,15 @@ const POEMS = [
   "title": "老虎的金黄",
   "author": "〔阿根廷〕博尔赫斯",
   "category": "外国诗",
+
+  "orig_lang": "es",
   "tags": [
    "译诗",
    "哲思"
   ],
   "lines": [
    {
-    "o": "我一次次地面对，那 Bengala 的虎，那黄金的虎。",
+    "o": "我一次次地面对，那 孟加拉 的虎，那黄金的虎。",
     "m": "I have perceived the tiger's yellow."
    },
    {
@@ -11291,6 +11480,8 @@ const POEMS = [
   "title": "典型的夜晚",
   "author": "〔墨〕帕斯",
   "category": "外国诗",
+
+  "orig_lang": "es",
   "tags": [
    "译诗",
    "夜"
@@ -11344,6 +11535,8 @@ const POEMS = [
   "title": "柏拉特罗与我（节选）",
   "author": "〔西〕希梅内斯",
   "category": "外国诗",
+
+  "orig_lang": "es",
   "tags": [
    "西诗",
    "童真"
@@ -11397,6 +11590,8 @@ const POEMS = [
   "title": "俄罗斯语言",
   "author": "〔俄〕屠格涅夫",
   "category": "外国诗",
+
+  "orig_lang": "ru",
   "tags": [
    "俄诗",
    "乡愁"
@@ -11450,6 +11645,8 @@ const POEMS = [
   "title": "茅屋",
   "author": "〔丹〕安徒生",
   "category": "外国诗",
+
+  "orig_lang": "da",
   "tags": [
    "译诗",
    "乡愁"
@@ -11503,6 +11700,8 @@ const POEMS = [
   "title": "秋颂",
   "author": "〔英〕济慈",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "秋"
@@ -11556,6 +11755,8 @@ const POEMS = [
   "title": "五月之夜",
   "author": "〔法〕缪塞",
   "category": "外国诗",
+
+  "orig_lang": "fr",
   "tags": [
    "法诗",
    "夜"
@@ -11609,6 +11810,8 @@ const POEMS = [
   "title": "生命",
   "author": "〔英〕勃朗特",
   "category": "外国诗",
+
+  "orig_lang": "en",
   "tags": [
    "英诗",
    "生命"
@@ -25741,6 +25944,8 @@ const POEMS = [
   "title": "金色花",
   "author": "〔印度〕泰戈尔（郑振铎 译）",
   "category": "外国诗",
+
+  "orig_lang": "bn",
   "level": "拓展",
   "tags": [
    "译诗",
@@ -25799,6 +26004,8 @@ const POEMS = [
   "title": "纸船——寄母亲",
   "author": "〔印度〕泰戈尔（郑振铎 译）",
   "category": "外国诗",
+
+  "orig_lang": "bn",
   "level": "拓展",
   "tags": [
    "译诗",
@@ -69208,7 +69415,7 @@ function openDetail(id){
     + `<div class="note">全篇 ${lines.length} 句 · ${p.category} · ${(p.tags||[]).join("·")}${expand?" · 拓展篇":""}。${expand?"本篇为拓展收录，已附串讲与助记；逐句译文陆续补充。":"诗句自右向左竖读；点击下方标签，从五个维度吃透它。"}</div>`;
   // 解读翻译
   $("#panel-tr").innerHTML = expand ? `<div class="tr">`+lines.map(l=>`<div class="row"><div class="o">${l.o}</div></div>`).join("")+`</div><div class="note">本篇为拓展收录，逐句译文正在补充中。</div>`
-    : `<div class="tr">`+lines.map(l=>`<div class="row"><div class="o">${l.o}</div><div class="m">${l.m||""}</div></div>`).join("")+`</div>`;
+    : `<div class="tr">`+lines.map(l=>{const isOrig=/[A-Za-z]/.test(l.m||"");const oc=isOrig?" orig":"";const tag=isOrig?`<span class="orig-tag">原文</span> `:"";return `<div class="row"><div class="o">${l.o}</div><div class="m${oc}">${tag}${l.m||""}</div></div>`;}).join("")+`</div>`;
   // 动画可视化
   $("#panel-viz").innerHTML = `<div class="viz" id="vizScene">${renderViz(p.anim)}<button class="replay" onclick="replayViz()">↻ 重播</button></div>`;
   // 记忆技巧

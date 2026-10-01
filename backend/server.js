@@ -7,7 +7,8 @@
    - 学习进度 / 每日打卡 云同步（HMAC Bearer 令牌鉴权）
    - 同源托管前端静态文件（本地一条命令跑通整站演示）
    运行：node backend/server.js        （数据落 backend/data.sqlite）
-   配置：PORT / SECRET / SMS_PROVIDER_URL / SMS_PROVIDER_KEY / WX_APPID / WX_SECRET
+   配置：PORT / SECRET / TURSO_URL / TURSO_TOKEN / SMS_PROVIDER_URL / SMS_PROVIDER_KEY / WX_APPID / WX_SECRET
+         TURSO_URL + TURSO_TOKEN 都配置时走 Turso 云库（数据持久）；缺任一则回退本地 node:sqlite
    ========================================================= */
 "use strict";
 const http = require("node:http");
@@ -25,10 +26,72 @@ fs.mkdirSync(path.dirname(DB_PATH), { recursive: true }); // DATA_DIR 指向的�
 /* CORS 白名单：线上前端（GitHub Pages）。本地同源托管无 Origin 头不受影响；额外环境用逗号分隔 ALLOW_ORIGINS 追加 */
 const ALLOW_ORIGINS = (process.env.ALLOW_ORIGINS || "https://kumu314.github.io").split(",").map(s => s.trim()).filter(Boolean);
 
-/* ---------- 数据库 ---------- */
-const db = new DatabaseSync(DB_PATH);
-db.exec(`
-PRAGMA journal_mode=WAL;
+/* ---------- 数据库（双模式） ----------
+   Turso 模式：TURSO_URL 与 TURSO_TOKEN 都配置时启用，数据走云库（SQL over HTTP，零依赖 fetch），
+               重启/休眠/重部署不丢（Render 免费档本地文件系统是临时的）。
+   本地模式：任一缺失则回退内置 node:sqlite（现状行为，本地开发不受影响）。 */
+const TURSO_URL = process.env.TURSO_URL || "";
+const TURSO_TOKEN = process.env.TURSO_TOKEN || "";
+const USE_TURSO = Boolean(TURSO_URL && TURSO_TOKEN);
+
+function toArg(v) {
+  if (v === null || v === undefined) return { type: "null" };
+  if (typeof v === "number") {
+    return Number.isInteger(v) ? { type: "integer", value: String(v) } : { type: "float", value: String(v) };
+  }
+  return { type: "text", value: String(v) };
+}
+function fromVal(v) {
+  if (v && typeof v === "object" && "type" in v) {
+    if (v.type === "null") return null;
+    if (v.type === "integer" || v.type === "float") return Number(v.value);
+    return v.value;
+  }
+  return v;
+}
+/* Turso SQL over HTTP：POST /v2/pipeline，Bearer 鉴权。
+   凭据纪律：本函数错误信息只含 HTTP 状态与响应片段（不含 token）。 */
+async function tursoFetch(statements) {
+  const res = await fetch(TURSO_URL.replace(/\/+$/, "") + "/v2/pipeline", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + TURSO_TOKEN },
+    body: JSON.stringify({
+      requests: statements.map((s) => ({ type: "execute", stmt: { sql: s.sql, args: s.args.map(toArg) } })).concat([{ type: "close" }]),
+    }),
+  });
+  if (!res.ok) throw new Error("turso http " + res.status + " " + (await res.text()).slice(0, 200));
+  const data = await res.json();
+  const results = (data.results || []).slice(0, statements.length);
+  for (const r of results) {
+    if (r && r.type === "error") throw new Error("turso: " + (r.error && r.error.message));
+  }
+  return results.map((r) => {
+    // 响应嵌套在不同协议版本下不一致，做防御性取值
+    const body = (r && r.response && r.response.result) || (r && r.response) || r || {};
+    // 关键：rows 是值的数组，必须按响应的 cols 还原成「按列名取值」的对象
+    const colNames = (body.cols || []).map((c) => (c && typeof c === "object" && "name" in c) ? c.name : c);
+    const rows = (body.rows || []).map((row) => {
+      const o = {};
+      row.forEach((v, i) => { o[colNames[i] || ("c" + i)] = fromVal(v); });
+      return o;
+    });
+    return { rows, affected: body.affected_row_count || 0, lastId: body.last_insert_rowid ?? null };
+  });
+}
+const tursoSql = async (statement, ...args) => (await tursoFetch([{ sql: statement, args }]))[0];
+const tursoSqlOne = async (statement, ...args) => (await tursoSql(statement, ...args)).rows[0] || null;
+/* 多条语句一次性下发（建表用），按分号拆分（schema 无含分号的字符串字面量） */
+const tursoMultiple = async (sqlText) => tursoFetch(sqlText.split(";").map((s) => s.trim()).filter(Boolean).map((sql) => ({ sql, args: [] })));
+
+const db = USE_TURSO ? null : new DatabaseSync(DB_PATH);
+/* 两模式同签名：sql(stmt, ...args) → {rows, affected, lastId}；sqlOne(...) → 首行对象或 null */
+const sql = USE_TURSO ? tursoSql : (statement, ...args) => {
+  const r = db.prepare(statement).run(...args);
+  return { rows: [], affected: Number(r.changes), lastId: r.lastInsertRowid };
+};
+const sqlOne = USE_TURSO ? tursoSqlOne : (statement, ...args) => db.prepare(statement).get(...args) ?? null;
+
+const SCHEMA = `
 CREATE TABLE IF NOT EXISTS users(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   phone TEXT UNIQUE, provider TEXT, openid TEXT, name TEXT,
@@ -44,8 +107,11 @@ CREATE TABLE IF NOT EXISTS progress(
 CREATE TABLE IF NOT EXISTS checkin(
   user_id INTEGER PRIMARY KEY, date TEXT, done TEXT DEFAULT '{}', counted TEXT DEFAULT '{}',
   updated_at TEXT DEFAULT (datetime('now'))
-);
-`);
+);`;
+async function initDb() {
+  if (USE_TURSO) await tursoMultiple(SCHEMA); // 幂等建表：IF NOT EXISTS，重复启动不报错
+  else db.exec("PRAGMA journal_mode=WAL;\n" + SCHEMA);
+}
 
 /* ---------- 工具 ---------- */
 const nowISO = () => new Date().toISOString().replace("T", " ").slice(0, 19);
@@ -137,8 +203,7 @@ async function route(req, res, url) {
     if (!rateLimit("req:" + phone, 1, 60 * 1000)) return json(res, 429, { ok: false, error: "发送太频繁，稍后再试" });
     if (!rateLimit("ip:" + req.socket.remoteAddress, 10, 3600 * 1000)) return json(res, 429, { ok: false, error: "请求过多" });
     const code = String(crypto.randomInt(0, 1e6)).padStart(6, "0");
-    db.prepare("INSERT OR REPLACE INTO codes(phone,code,exp,sent_at) VALUES(?,?,?,?)")
-      .run(phone, code, Date.now() + 5 * 60 * 1000, Date.now());
+    await sql("INSERT OR REPLACE INTO codes(phone,code,exp,sent_at) VALUES(?,?,?,?)", phone, code, Date.now() + 5 * 60 * 1000, Date.now());
     const r = await sendSms(phone, code);
     return json(res, 200, r.dev ? { ok: true, dev_code: code } : { ok: true });
   }
@@ -147,12 +212,12 @@ async function route(req, res, url) {
   if (P === "/api/auth/phone/verify" && req.method === "POST") {
     const body = JSON.parse((await readBody(req)) || "{}");
     const phone = String(body.phone || ""), code = String(body.code || "");
-    const row = db.prepare("SELECT code, exp FROM codes WHERE phone=?").get(phone);
+    const row = await sqlOne("SELECT code, exp FROM codes WHERE phone=?", phone);
     if (!row || row.code !== code || row.exp < Date.now()) return json(res, 401, { ok: false, error: "验证码错误或已过期" });
-    db.prepare("DELETE FROM codes WHERE phone=?").run(phone);
-    db.prepare("INSERT OR IGNORE INTO users(phone) VALUES(?)").run(phone);
-    const user = db.prepare("SELECT id, phone, name FROM users WHERE phone=?").get(phone);
-    if (!user.name) db.prepare("UPDATE users SET name=? WHERE id=?").run(phone.slice(-4) + "诗友", user.id);
+    await sql("DELETE FROM codes WHERE phone=?", phone);
+    await sql("INSERT OR IGNORE INTO users(phone) VALUES(?)", phone);
+    const user = await sqlOne("SELECT id, phone, name FROM users WHERE phone=?", phone);
+    if (!user.name) await sql("UPDATE users SET name=? WHERE id=?", phone.slice(-4) + "诗友", user.id);
     return json(res, 200, { ok: true, token: issueToken(user.id), user: { type: "手机号", phone, name: user.name || phone.slice(-4) + "诗友" } });
   }
 
@@ -172,8 +237,8 @@ async function route(req, res, url) {
       openid = d.openid;
     }
     if (!openid) return json(res, 400, { ok: false, error: "缺少 openid（网页演示请本地登录）" });
-    db.prepare("INSERT OR IGNORE INTO users(provider, openid) VALUES(?,?)").run(provider, String(openid));
-    const user = db.prepare("SELECT id FROM users WHERE provider=? AND openid=?").get(provider, String(openid));
+    await sql("INSERT OR IGNORE INTO users(provider, openid) VALUES(?,?)", provider, String(openid));
+    const user = await sqlOne("SELECT id FROM users WHERE provider=? AND openid=?", provider, String(openid));
     return json(res, 200, { ok: true, token: issueToken(user.id), user: { type: provider, name: provider + "用户" } });
   }
 
@@ -185,10 +250,10 @@ async function route(req, res, url) {
   const uid = payload.uid;
 
   if (P === "/api/me" && req.method === "GET") {
-    const user = db.prepare("SELECT phone, provider, name FROM users WHERE id=?").get(uid);
+    const user = await sqlOne("SELECT phone, provider, name FROM users WHERE id=?", uid);
     if (!user) return json(res, 401, { ok: false, error: "用户不存在" });
-    const prog = db.prepare("SELECT learned, streak, updated_at FROM progress WHERE user_id=?").get(uid) || { learned: 0, streak: 0, updated_at: "" };
-    const chk = db.prepare("SELECT date, done, counted, updated_at FROM checkin WHERE user_id=?").get(uid) || null;
+    const prog = await sqlOne("SELECT learned, streak, updated_at FROM progress WHERE user_id=?", uid) || { learned: 0, streak: 0, updated_at: "" };
+    const chk = await sqlOne("SELECT date, done, counted, updated_at FROM checkin WHERE user_id=?", uid) || null;
     return json(res, 200, { ok: true, user, progress: prog, checkin: chk });
   }
 
@@ -196,9 +261,9 @@ async function route(req, res, url) {
     const b = JSON.parse((await readBody(req)) || "{}");
     const learned = Math.max(0, Math.min(9999, Number(b.learned) || 0));
     const streak = Math.max(0, Math.min(9999, Number(b.streak) || 0));
-    db.prepare(`INSERT INTO progress(user_id, learned, streak, updated_at) VALUES(?,?,?,?)
-                ON CONFLICT(user_id) DO UPDATE SET learned=excluded.learned, streak=excluded.streak, updated_at=excluded.updated_at`)
-      .run(uid, learned, streak, nowISO());
+    await sql(`INSERT INTO progress(user_id, learned, streak, updated_at) VALUES(?,?,?,?)
+                ON CONFLICT(user_id) DO UPDATE SET learned=excluded.learned, streak=excluded.streak, updated_at=excluded.updated_at`,
+      uid, learned, streak, nowISO());
     return json(res, 200, { ok: true });
   }
 
@@ -206,9 +271,9 @@ async function route(req, res, url) {
     const b = JSON.parse((await readBody(req)) || "{}");
     const date = String(b.date || ""), done = JSON.stringify(b.done || {}), counted = JSON.stringify(b.counted || {});
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return json(res, 400, { ok: false, error: "date 格式不对" });
-    db.prepare(`INSERT INTO checkin(user_id, date, done, counted, updated_at) VALUES(?,?,?,?,?)
-                ON CONFLICT(user_id) DO UPDATE SET date=excluded.date, done=excluded.done, counted=excluded.counted, updated_at=excluded.updated_at`)
-      .run(uid, date, done, counted, nowISO());
+    await sql(`INSERT INTO checkin(user_id, date, done, counted, updated_at) VALUES(?,?,?,?,?)
+                ON CONFLICT(user_id) DO UPDATE SET date=excluded.date, done=excluded.done, counted=excluded.counted, updated_at=excluded.updated_at`,
+      uid, date, done, counted, nowISO());
     return json(res, 200, { ok: true });
   }
 
@@ -250,4 +315,13 @@ const server = http.createServer(async (req, res) => {
     if (!res.headersSent) return json(res, 500, { ok: false, error: "server error" });
   }
 });
-server.listen(PORT, () => console.log(`西江阅后端已启动: http://127.0.0.1:${PORT}  (静态同源托管 /  API /api/*)`));
+/* ---------- 启动：先建库，后监听 ---------- */
+initDb()
+  .then(() => {
+    console.log(USE_TURSO ? "数据库模式: Turso 云库（数据持久，重启/休眠不丢）" : "数据库模式: 本地 node:sqlite (" + DB_PATH + ")");
+    server.listen(PORT, () => console.log(`西江阅后端已启动: http://127.0.0.1:${PORT}  (静态同源托管 /  API /api/*)`));
+  })
+  .catch((e) => {
+    console.error("[fatal] 数据库初始化失败:", e.message);
+    process.exit(1);
+  });

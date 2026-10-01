@@ -1,4 +1,6 @@
 # Render 配置（西江阅后端）— 在 Render 控制台 New → Blueprint 指向本仓库即可
+# 数据持久化走 Turso 云库（免费档无持久磁盘，本地文件系统重启/休眠即清空）：
+# 在 Render 服务环境变量里配置 TURSO_URL / TURSO_TOKEN 即启用；不配置则回退本地 sqlite（免费档会丢数据）。
 services:
   - type: web
     name: xijiangyue-api
@@ -13,8 +15,4 @@ services:
       - key: SECRET
         generateValue: true        # Render 自动生成强随机值
       - key: DATA_DIR
-        value: /var/data           # 挂 free 磁盘
-    disk:
-      name: xijiangyue-data
-      mountPath: /var/data
-      sizeGB: 1
+        value: /var/data           # 仅本地 sqlite 兜底模式使用（Turso 模式忽略）；免费档磁盘不可持久

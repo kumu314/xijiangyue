@@ -17,6 +17,7 @@ node backend/server.js            # 默认 127.0.0.1:8787（被占用则 PORT=88
 |---|---|
 | `PORT` | 监听端口（默认 8787） |
 | `SECRET` | 令牌签名密钥（不设则每次重启随机生成，所有登录态失效；生产必设） |
+| `TURSO_URL` + `TURSO_TOKEN` | **都配置时启用 Turso 云库模式**（数据持久，重启/休眠/重部署不丢）；**缺任一**则回退本地 `node:sqlite`（本地开发行为不变）。URL 形如 `https://<db>.turso.io`，在 [turso.tech](https://turso.tech) 免费创建。实现为 SQL over HTTP（`POST /v2/pipeline`，Bearer 鉴权，Node 内置 `fetch`），零 npm 依赖 |
 | `DATA_DIR` | sqlite 存放目录（默认 backend/） |
 | `SMS_PROVIDER_URL` / `SMS_PROVIDER_KEY` | 配置后验证码走真实短信（POST JSON `{phone, code}`，Bearer 鉴权）；不配置为 dev 模式，验证码直接返回给前端并自动填入 |
 | `WX_APPID` / `WX_SECRET` | 配置后 `/api/auth/third` 支持小程序 `wx.login` 的 code 换 openid（code2session） |
@@ -49,6 +50,7 @@ node backend/server.js            # 默认 127.0.0.1:8787（被占用则 PORT=88
 
 ```bash
 SECRET=$(openssl rand -hex 32) PORT=8787 node backend/server.js
+# 加上 TURSO_URL / TURSO_TOKEN 即为云库模式，Render 免费档等临时文件系统上数据不丢
 ```
 
 建议前面挂一层 Nginx/Caddy 做 HTTPS。小程序端联调时再把域名加进微信后台 request 合法域名列表。

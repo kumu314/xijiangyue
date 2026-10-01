@@ -69533,7 +69533,7 @@ function openDetail(id){
   if($("#maskBtn")){ $("#maskBtnTxt").textContent=MASK_LABEL[maskLv];
     $("#maskBtn").title = maskOn ? ("当前遮 "+Math.round(maskRatio(maskLv)*100)+"%，点按循环下一档") : "开启遮字背诵（四级递减）";
     $("#maskBtn").classList.toggle("reciting", maskOn); }
-  touchReview(p);
+  if(maskLv>=1) touchReview(p); // 温故入队语义：仅开遮字档位/通背才入队，打开详情只读不入队
   if($("#reciteBtn")){ $("#reciteBtn").style.display = hasOrig ? "" : "none"; if(hasOrig) $("#reciteBtnTxt").textContent = showOrig ? "背中文" : "背原文"; }
   // 解读翻译（拓展篇若有原文附注则同样走完整渲染；白话现代诗不重复白话对照，改显妙处点拨）
   const rowO = `<div class="tr">`+lines.map(l=>`<div class="row"><div class="o">${l.o}</div></div>`).join("")+`</div>`;
@@ -70354,7 +70354,7 @@ function touchReview(p){
   if(!reviewable(p)) return;
   const r=getReview(); if(r[p.id]) return;
   const d=new Date(); d.setDate(d.getDate()+reviewSteps((p.lines||[]).length)[0]);
-  r[p.id]={bucket:0,due:localDay(d),last:localDay()};
+  r[p.id]={bucket:0,due:localDay(d),last:localDay(),v:2};
   saveReview(r);
 }
 function bumpReview(id){
@@ -70363,7 +70363,7 @@ function bumpReview(id){
   const it=r[id]||{bucket:0,due:localDay(),last:localDay()};
   it.bucket=Math.min(steps.length-1,(it.bucket||0)+1);
   const d=new Date(); d.setDate(d.getDate()+steps[it.bucket]);
-  it.due=localDay(d); it.last=localDay();
+  it.due=localDay(d); it.last=localDay(); it.v=2;
   r[id]=it; saveReview(r);
   return steps[it.bucket];
 }
@@ -70449,6 +70449,22 @@ function renderReviewCard(){
     ${cap.length>3?`<div class="rv-more">还有 ${cap.length-3} 首，温完上面几首再来。</div>`:""}
   </div>`;
 }
+/* v2 迁移：第一刀期间 openDetail 无条件入队，会把「只读打开」的诗塞进温故队列。
+   一次性清除无 v 标记且 bucket=0 的干净记录；有 leech/slip 痕迹的一律保留（温故期产物）。 */
+function migrateReviewV2(){
+  try{
+    if(localStorage.getItem("xjy_review_v2")) return;
+    const r=getReview(); let n=0;
+    for(const k in r){
+      const it=r[k]||{};
+      if(!("v" in it) && (it.bucket||0)===0 && !it.leech && !it.slip){ delete r[k]; n++; }
+      else r[k].v=2;
+    }
+    saveReview(r); localStorage.setItem("xjy_review_v2","1");
+    if(n) console.log("[review] v2 迁移：清除只读入队 "+n+" 条");
+  }catch(e){}
+}
+migrateReviewV2();
 function getRecite(){ try{ return localStorage.getItem("xjy_recite")==="orig" ? "orig" : "zh"; }catch(e){ return "zh"; } }
 function setRecite(v){ try{ localStorage.setItem("xjy_recite", v); }catch(e){} }
 function toggleRecite(){

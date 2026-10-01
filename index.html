@@ -69999,7 +69999,9 @@ function setLayout(v){
 }
 function toggleLayout(){ setLayout(getLayout()==="vertical" ? "horizontal" : "vertical"); }
 function renderReadingSettings(){
-  const lay=getLayout();
+  const lay=getLayout(), f=getFont();
+  const sz=f.size||"中", fm=f.family||"楷体", sp=f.spacing||"适中";
+  const opt=(arr,cur,k)=>arr.map(x=>`<div class="rset-opt ${cur===x?"on":""}" onclick="setFont('${k}','${x}')">${x}</div>`).join("");
   $("#rsetBody").innerHTML = `
     <div class="rset-sec">
       <div class="rset-sec-t">读诗排版<span class="cur">${lay==="vertical"?"竖排手卷":"横排现代式"}</span></div>
@@ -70007,12 +70009,42 @@ function renderReadingSettings(){
         <div class="rset-opt ${lay==="vertical"?"on":""}" onclick="setLayout('vertical')">竖排手卷</div>
         <div class="rset-opt ${lay==="horizontal"?"on":""}" onclick="setLayout('horizontal')">横排现代式</div>
       </div>
+    </div>
+    <div class="rset-sec">
+      <div class="rset-sec-t">字号<span class="cur">${sz}</span></div>
+      <div class="rset-opts">${opt(["小","中","大","特大"],sz,"size")}</div>
+    </div>
+    <div class="rset-sec">
+      <div class="rset-sec-t">字体<span class="cur">${fm}</span></div>
+      <div class="rset-opts">${opt(["楷体","宋体","黑体"],fm,"family")}</div>
+    </div>
+    <div class="rset-sec">
+      <div class="rset-sec-t">行距<span class="cur">${sp}</span></div>
+      <div class="rset-opts">${opt(["紧","适中","松"],sp,"spacing")}</div>
     </div>`;
 }
 function openReadingSettings(){ renderReadingSettings(); $("#rsetOverlay").classList.add("active"); }
 function closeReadingSettings(){ $("#rsetOverlay").classList.remove("active"); }
 
-applyLayout();
+/* ============ 阅读设置：字体自定义（round4-③） ============ */
+const FONT_SIZE_MAP={"小":"15px","中":"18px","大":"21px","特大":"24px"};
+const FONT_FAM_MAP={"楷体":"var(--kai)","宋体":"var(--serif)","黑体":"var(--hei)"};
+const FONT_LH_MAP={"紧":"1.5","适中":"2","松":"2.5"};
+function getFont(){ let f={}; try{ f=JSON.parse(localStorage.getItem("xjy_font")||"{}"); }catch(e){} return f; }
+function applyFont(){
+  const f=getFont(), root=document.documentElement.style;
+  root.setProperty("--reader-fs", FONT_SIZE_MAP[f.size]||"18px");
+  root.setProperty("--reader-ff", FONT_FAM_MAP[f.family]||"var(--kai)");
+  root.setProperty("--reader-lh", FONT_LH_MAP[f.spacing]||"2");
+}
+function setFont(k,v){
+  const f=getFont(); f[k]=v; localStorage.setItem("xjy_font", JSON.stringify(f));
+  applyFont();
+  if($("#view-detail") && $("#view-detail").classList.contains("active")) openDetail(currentPoemId);
+  renderReadingSettings();
+}
+
+applyLayout(); applyFont();
 if(API_BASE && currentUser && currentUser.token) syncPull();
 </script>
 

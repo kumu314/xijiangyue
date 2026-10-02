@@ -69875,7 +69875,13 @@ function openDetail(id){
   const rowOM = `<div class="tr">`+lines.map(l=>{const isOrig=isOrigRe.test(l.m||"");const oc=isOrig?" orig":"";const tag=isOrig?`<span class="orig-tag">原文</span> `:"";return `<div class="row"><div class="o">${l.o}</div><div class="m${oc}">${tag}${l.m||""}</div></div>`;}).join("")+`</div>`;
   const charmNote = p.charm ? `<div class="note">【妙处】${p.charm}</div>` : "";
   const edNote = p.ed_note ? `<div class="note">【版本】${esc(p.ed_note)}</div>` : "";
-  $("#panel-tr").innerHTML = (expand && !hasOrig) ? rowO+`<div class="note">本篇为拓展收录，逐句译文正在补充中。</div>`+charmNote+edNote
+  // #68 修复：原判据 (expand && !hasOrig) 使「拓展篇且非外国诗」无论 lines[].m 有无内容
+  // 都走「译文正在补充中」分支、整篇丢弃译文（本批 60 首 100% 命中，合并价值归零）。
+  // 改为「拓展篇 **且无译文**」才提示补充中 → hasTrans 与层级解耦（同 #62「判据不绑层级」）。
+  // no_paraphrase 仍保持最高优先级：白话诗不重复白话对照（jiaowo_lbn / sishui_lyd 等），
+  // 与层级无关，不因本修复而改变行为。
+  const hasTrans = lines.some(l=>l.m && l.m.trim());
+  $("#panel-tr").innerHTML = (expand && !hasOrig && !hasTrans) ? rowO+`<div class="note">本篇为拓展收录，逐句译文正在补充中。</div>`+charmNote+edNote
     : (p.no_paraphrase ? rowO : rowOM) + charmNote + edNote;
   // 动画可视化
   $("#panel-viz").innerHTML = `<div class="viz" id="vizScene">${renderViz(p.anim)}<button class="replay" onclick="replayViz()">↻ 重播</button></div>`;

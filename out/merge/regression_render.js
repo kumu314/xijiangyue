@@ -69,21 +69,31 @@ async function probe(page, pid) {
     const samples = { before: [], after: [] };
     POEMS.forEach(p => {
       const j = judge(p);
-      // 修正前判据：(expand && !hasOrig) → 占位、丢译文
-      if (j.hasTrans && j.expand && !j.hasOrig) {
-        before++;
-        if (samples.before.length < 6) samples.before.push(p.id);
+      // 口径：本组只统计「拓展篇 **且有译文**」的篇（hasTrans 前置必需，
+      //       否则统计的是拓展篇总数；去掉它会把 82/0 变成 675/593，纯属口径漂移）。
+      if (j.expand && j.hasTrans) {
+        // 修正前判据：(expand && !hasOrig) → 走占位、整篇丢译文（不看有无译文）
+        if (!j.hasOrig) {
+          before++;
+          if (samples.before.length < 6) samples.before.push(p.id);
+        }
+        // 修正后判据：(expand && !hasOrig && !hasTrans) → 走占位
+        // 注：必须复刻「修正后」的三项合取本身，**不能**写成 `... && !j.hasTrans`
+        //     挂在 hasTrans 前置之下（那样恒假，断言退化成同义反复、拿不到证据）。
+        //     灵玉 2026-10-02 复核指出此点，zcode 复核亦要求消除伪证据。
+        if (!j.hasOrig && !j.hasTrans) { after++; }
       }
-      // 修正后判据：(expand && !hasOrig && !hasTrans) → 占位
-      if (j.hasTrans && j.expand && !j.hasOrig && !j.hasTrans) { after++; }
       if (j.hasTrans && j.noPP) { hiddenNoPP++; }
+      // 反向证据：拓展篇 **且无译文** → 仍走占位（与修正前 82 独立，可证伪）
       if (!j.hasTrans && j.expand && !j.hasOrig) placeholder++;
     });
     return { before, after, hiddenNoPP, placeholder, samples };
   });
-  // 修正前被挡 = 62（合并 trans-02 时读数）+ 20（trans-03 已并入）= 82
+  // 修正前被挡 = 62（合并 trans-02 时读数）+ 20（trans-03 已并入）= 82，全部命中 82 篇
+  // 修正后 = 0（拓展篇只要 lines[].m 有内容就不再走占位分支，82 篇全部解锁）
   ok("被挡数：修正前 82（含 trans-03）", blk.before === 82, blk.before);
-  ok("被挡数：修正后 0", blk.after === 0, blk.after);
+  ok("被挡数：修正后 0（82 篇全部解锁）", blk.after === 0, blk.after);
+  ok("被挡数：拓展无译文仍占位 593（反向证据）", blk.placeholder === 593, blk.placeholder);
   ok("no_paraphrase 有意隐藏（设计内）计数", blk.hiddenNoPP === 5, blk.hiddenNoPP);
   console.log("  · 拓展无译文→占位（正确）:", blk.placeholder, "篇");
 

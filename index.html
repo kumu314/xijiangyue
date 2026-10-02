@@ -320,6 +320,39 @@
   .ci-album .seal:nth-child(2n){transform:rotate(1.6deg);}
   .ci-album .al-n{font-size:10px;color:var(--ink-3);flex:0 0 auto;}
 
+  /* #63① 往日笺：月历回看 */
+  .ci-alm{margin-left:auto;font-size:12px;color:var(--cinnabar);border:1px solid rgba(178,58,46,.35);border-radius:var(--r-pill);padding:5px 11px;cursor:pointer;flex:0 0 auto;white-space:nowrap;}
+  #view-almanac .alm{padding:14px 12px;}
+  .alm-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .alm-nav{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:50%;cursor:pointer;color:var(--ink-2);background:var(--paper-card);font-size:15px;line-height:1;flex:0 0 auto;}
+  .alm-ym{font-family:var(--kai);font-weight:700;font-size:16px;letter-spacing:1px;}
+  .alm-week{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;}
+  .alm-week div{text-align:center;font-size:11px;color:var(--ink-3);}
+  .alm-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+  .alm-cell{height:42px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:6px;font-size:13px;color:var(--ink);cursor:pointer;border:1px solid transparent;box-sizing:border-box;}
+  .alm-cell.pad{visibility:hidden;pointer-events:none;}
+  .alm-cell.future{color:#C9BFAE;cursor:default;}
+  .alm-cell.today{border-color:var(--cinnabar);color:var(--cinnabar);font-weight:700;}
+  .alm-cell.sel{background:rgba(178,58,46,.09);}
+  .alm-mk{display:flex;gap:3px;margin-top:2px;height:6px;align-items:center;}
+  .am-s{width:6px;height:6px;background:var(--cinnabar);border-radius:1.5px;display:block;flex:0 0 auto;}
+  .am-r{width:6px;height:6px;border:1.4px solid var(--cinnabar);border-radius:50%;box-sizing:border-box;display:block;flex:0 0 auto;}
+  .alm-legend{display:flex;gap:14px;margin-top:12px;font-size:11px;color:var(--ink-3);align-items:center;}
+  .alm-legend span{display:flex;align-items:center;gap:4px;}
+  .alm-day{margin-top:var(--gap);padding:14px;background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);}
+  .ad-h{font-family:var(--kai);font-size:13px;color:var(--ink-2);letter-spacing:1px;margin-bottom:10px;}
+  .ad-poem{cursor:pointer;}
+  .ad-t{font-family:var(--kai);font-weight:700;font-size:18px;letter-spacing:1px;color:var(--ink);}
+  .ad-a{font-size:11px;color:var(--ink-3);margin-top:3px;}
+  .ad-v{font-size:13px;color:var(--ink-2);margin-top:8px;line-height:1.9;}
+  .ad-go{font-size:12px;color:var(--cinnabar);margin-top:8px;}
+  .ad-tip{font-size:12px;color:var(--ink-3);}
+  .ad-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+  .ad-tag{font-size:10px;color:var(--ink-3);border:1px solid var(--line);border-radius:var(--r-pill);padding:2px 8px;}
+  .ad-tag.on{color:var(--cinnabar);border-color:rgba(178,58,46,.4);background:rgba(178,58,46,.07);}
+  .alm-stat{margin-top:12px;text-align:center;font-size:11px;color:var(--ink-3);}
+  .alm-stat b{color:var(--cinnabar);font-weight:700;}
+
   /* 我的 */
   .me-head{display:flex;align-items:center;gap:16px;padding:18px 16px;margin-bottom:var(--gap);}
   .avatar{width:60px;height:60px;border-radius:50%;flex:0 0 auto;background:linear-gradient(150deg,var(--cinnabar),var(--cinnabar-deep));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:24px;}
@@ -380,6 +413,27 @@
 
   /* 飞花令全屏弹层 */
   .feihua-overlay{position:absolute;inset:0;background:var(--paper);z-index:200;display:none;flex-direction:column;overflow:hidden;}
+  /* #63② 诗笺分享卡 */
+  .share-layer{position:fixed;inset:0;background:rgba(20,16,12,.62);z-index:300;display:none;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;}
+  .share-layer.on{display:flex;}
+  .share-card{background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);max-width:420px;width:100%;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.28);}
+  .share-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line);}
+  .share-title{font-family:var(--kai);font-weight:700;font-size:15px;letter-spacing:2px;color:var(--ink);}
+  .share-close{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;color:var(--ink-3);font-size:15px;line-height:1;}
+  .share-body{flex:1;overflow:auto;padding:14px;display:flex;align-items:center;justify-content:center;background:var(--paper-card-2);}
+  .share-body img{max-width:100%;max-height:56vh;border-radius:4px;box-shadow:0 2px 10px rgba(0,0,0,.10);display:block;}
+  .share-actions{display:flex;gap:10px;padding:12px 14px;border-top:1px solid var(--line);}
+  .share-actions .btn{flex:1;justify-content:center;}
+  .share-tip{padding:0 14px 12px;font-size:10px;color:var(--ink-3);text-align:center;}
+  @media print{
+    #views,#tabbar,#feihuaOverlay,.toast{ display:none !important; }
+    .share-layer{ display:block !important; position:static; inset:auto; background:#fff; padding:0; }
+    .share-card{ max-width:none; width:100%; max-height:none; border:none; border-radius:0; box-shadow:none; }
+    .share-head,.share-actions,.share-tip{ display:none !important; }
+    .share-body{ padding:0; background:#fff; overflow:visible; }
+    .share-body img{ max-width:none; max-height:none; width:100%; box-shadow:none; }
+  }
+  @page{ size:A5 portrait; margin:8mm; }
   .feihua-overlay.active{display:flex;animation:fhIn .25s ease;}
   @keyframes fhIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
   .fh-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--paper-card-2);border-bottom:1px solid var(--line);}
@@ -514,6 +568,7 @@
           <button class="btn read-btn" id="maskBtn" onclick="cycleMask()" title="开启遮字背诵（四级递减）"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8M12 8v8"/></svg><span id="maskBtnTxt">背诵</span></button>
 
           <button class="btn read-btn" id="reciteBtn" onclick="toggleRecite()" style="display:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.6 3 14.4 0 18-3-3.6-3-14.4 0-18"/></svg><span id="reciteBtnTxt">背原文</span></button>
+          <button class="btn read-btn" id="shareBtn" onclick="openShare()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/><path d="M5 14v5h14v-5"/></svg><span>诗笺</span></button>
 
         </div>
       </div>
@@ -551,6 +606,23 @@
       <div class="mem-summary" id="memSummary"></div>
       <div class="mem-block"><div class="mem-h">复习桶分布</div><div class="mem-donut-wrap"><div id="memDonut"></div><div class="mem-legend" id="memLegend"></div></div></div>
       <div class="mem-block"><div class="mem-h">未来 30 天到期队列</div><div id="memCurve"></div><div class="mem-curve-cap">每日新到期的诗数（若一直不温，积压会越积越多——看见进步，就是坚持的理由）</div></div>
+    </section>
+
+    <!-- ============ 往日笺（#63① 月历回看） ============ -->
+    <section class="view" id="view-almanac">
+      <div class="page-head"><div><div class="title">往日笺</div><div class="sub">每日一诗的足迹 · 点日期回看</div></div><div class="seal" onclick="showView('view-learn')">回</div></div>
+      <div class="alm card">
+        <div class="alm-head">
+          <div class="alm-nav" onclick="almShift(-1)">‹</div>
+          <div class="alm-ym" id="almYM"></div>
+          <div class="alm-nav" onclick="almShift(1)">›</div>
+        </div>
+        <div class="alm-week" id="almWeek"></div>
+        <div class="alm-grid" id="almGrid"></div>
+        <div class="alm-legend" id="almLegend"></div>
+      </div>
+      <div class="alm-day" id="almDay"></div>
+      <div class="alm-stat" id="almStat"></div>
     </section>
 
         <!-- ============ 我的 ============ -->
@@ -606,6 +678,22 @@
       <button class="btn btn-primary fh-submit" onclick="submitAnswer()">提交</button>
       <button class="fh-skip" onclick="skipRound()">想不出 · 跳过</button>
       <div class="fh-result" id="fhResult"></div>
+    </div>
+  </div>
+
+  <!-- 诗笺分享卡（#63②） -->
+  <div class="share-layer" id="shareLayer">
+    <div class="share-card">
+      <div class="share-head">
+        <div class="share-title">诗笺</div>
+        <div class="share-close" onclick="closeShare()">✕</div>
+      </div>
+      <div class="share-body"><img id="shareImg" alt="诗笺"></div>
+      <div class="share-actions">
+        <button class="btn read-btn" onclick="saveShare()">保存图片</button>
+        <button class="btn read-btn" onclick="printShare()">打印</button>
+      </div>
+      <div class="share-tip">长按图片可保存 · 打印支持 A5 / A4</div>
     </div>
   </div>
 
@@ -69461,7 +69549,7 @@ const ENCOURAGE=[
 
 /* ============ 工具 ============ */
 const $ = s=>document.querySelector(s);
-function showView(id){ stopSpeech(); document.querySelectorAll(".view").forEach(v=>v.classList.remove("active")); $("#"+id).classList.add("active"); $("#views").scrollTop=0; if(id==="view-memory") renderMemory(); }
+function showView(id){ stopSpeech(); document.querySelectorAll(".view").forEach(v=>v.classList.remove("active")); $("#"+id).classList.add("active"); $("#views").scrollTop=0; if(id==="view-memory") renderMemory(); if(id==="view-almanac") renderAlmanac(); }
 function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1800); }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function dayIndex(){ return Math.floor(Date.now()/86400000); }
@@ -69626,8 +69714,122 @@ function openDetail(id){
   $("#tabbar").classList.add("hidden");
   const vs=$("#vscroll"); if(vs) vs.scrollLeft=vs.scrollWidth; // 竖排卷轴初始停在篇首（最右）
 }
+/* ============ #63② 诗笺分享卡（Canvas 手绘，零依赖） ============ */
+const SHARE_KAI='"KaiTi","STKaiti","Kaiti SC","楷体",serif';
+const SHARE_INK="#2B2620", SHARE_INK2="#5B4636", SHARE_CIN="#B23A2E", SHARE_PAPER="#FBF6EA";
+function sharePoemData(){
+  const p=POEMS.find(x=>x.id===currentPoemId); if(!p) return null;
+  return { title:p.title||"", author:p.author||"", lines:(p.lines||[]).map(l=>l.o).filter(Boolean) };
+}
+function roundRectPath(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+function drawSeal(ctx,x,y,size,txt){
+  ctx.save(); ctx.fillStyle=SHARE_CIN; roundRectPath(ctx,x,y,size,size,Math.round(size*0.14)); ctx.fill();
+  ctx.fillStyle="#fff"; ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.font="700 "+Math.round(size*0.54)+"px "+SHARE_KAI;
+  ctx.fillText(txt, x+size/2, y+size/2+size*0.03); ctx.restore();
+}
+/* 竖排：每句一列，从右往左；标题列字号更大，作者列更小 */
+function drawShareCard(d){
+  const lines=d.lines.slice(0,40);
+  const nCols=1+lines.length+1, colW=64, fsTitle=52, fsBody=40, fsAuth=26, charGap=14, PADX=70, TOP=190, BOT=170;
+  const maxLen=Math.max(d.title.length, d.author.length, ...lines.map(s=>s.length));
+  const needW=PADX*2+nCols*colW;
+  const W=Math.max(750, needW);
+  const H=TOP+BOT+maxLen*(fsBody+charGap);
+  const cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+  const ctx=cv.getContext("2d");
+  // 纸底
+  ctx.fillStyle=SHARE_PAPER; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle="rgba(178,58,46,.28)"; ctx.lineWidth=2;
+  ctx.strokeRect(26,26,W-52,H-52);
+  // 顶部题头
+  ctx.fillStyle=SHARE_CIN; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+  ctx.font="700 26px "+SHARE_KAI;
+  ctx.fillText("西 江 阅 · 诗 笺", W/2, 96);
+  ctx.strokeStyle="rgba(178,58,46,.35)"; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(W/2-120,124); ctx.lineTo(W/2+120,124); ctx.stroke();
+  // 竖排列
+  const startX=Math.round((W - nCols*colW)/2) + colW/2 + 8;
+  const colTexts=[{t:d.title,fs:fsTitle,bold:true,c:SHARE_INK}]
+    .concat(lines.map(s=>({t:s,fs:fsBody,bold:false,c:SHARE_INK})))
+    .concat([{t:d.author,fs:fsAuth,bold:false,c:SHARE_INK2}]);
+  ctx.textBaseline="middle";
+  colTexts.forEach((col,i)=>{
+    const cx=startX+(nCols-1-i)*colW;   // 传统竖排：从右往左，标题最右、正文次之、作者最左
+    ctx.fillStyle=col.c;
+    ctx.font=(col.bold?"700 ":"")+col.fs+"px "+SHARE_KAI;
+    for(let k=0;k<col.t.length;k++){
+      ctx.fillText(col.t[k], cx, TOP+k*(col.fs+charGap)+col.fs/2);
+    }
+  });
+  // 朱印 + 落款
+  drawSeal(ctx, W-PADX-46, H-BOT+34, 46, "阅");
+  const dt=new Date();
+  ctx.fillStyle=SHARE_INK2; ctx.font="24px "+SHARE_KAI; ctx.textAlign="left";
+  ctx.fillText(dt.getFullYear()+" 年 "+(dt.getMonth()+1)+" 月 "+dt.getDate()+" 日", PADX, H-BOT+62);
+  ctx.fillStyle="rgba(178,58,46,.8)"; ctx.font="22px "+SHARE_KAI;
+  ctx.fillText("每日一诗 · 西江阅", PADX, H-BOT+100);
+  return cv.toDataURL("image/png");
+}
+/* 横排兜底：句数多或单句过长（长诗/外国诗） */
+function drawShareCardFlat(d){
+  const lines=d.lines.slice(0,40);
+  const W=750, PADX=80, TOP=200, BOT=190, lineH=64;
+  const H=TOP+BOT+lines.length*lineH;
+  const cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+  const ctx=cv.getContext("2d");
+  ctx.fillStyle=SHARE_PAPER; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle="rgba(178,58,46,.28)"; ctx.lineWidth=2; ctx.strokeRect(26,26,W-52,H-52);
+  ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.fillStyle=SHARE_CIN; ctx.font="700 26px "+SHARE_KAI;
+  ctx.fillText("西 江 阅 · 诗 笺", W/2, 92);
+  ctx.fillStyle=SHARE_INK; ctx.font="700 46px "+SHARE_KAI;
+  ctx.fillText(d.title, W/2, 158);
+  ctx.font="26px "+SHARE_KAI; ctx.fillStyle=SHARE_INK2;
+  ctx.fillText(d.author, W/2, 202);
+  ctx.font="36px "+SHARE_KAI; ctx.fillStyle=SHARE_INK;
+  lines.forEach((s,i)=>ctx.fillText(s, W/2, TOP+40+i*lineH));
+  drawSeal(ctx, W-PADX-46, H-BOT+40, 46, "阅");
+  const dt=new Date();
+  ctx.textAlign="left"; ctx.fillStyle=SHARE_INK2; ctx.font="24px "+SHARE_KAI;
+  ctx.fillText(dt.getFullYear()+" 年 "+(dt.getMonth()+1)+" 月 "+dt.getDate()+" 日", PADX, H-BOT+68);
+  ctx.fillStyle="rgba(178,58,46,.8)"; ctx.font="22px "+SHARE_KAI;
+  ctx.fillText("每日一诗 · 西江阅", PADX, H-BOT+106);
+  return cv.toDataURL("image/png");
+}
+function useVerticalShare(d){
+  const ls=d.lines;
+  return ls.length>0 && ls.length<=8 && ls.every(s=>s.length<=12) && d.title.length<=16;
+}
+function openShare(){
+  const d=sharePoemData();
+  if(!d || !d.lines.length){ toast("这首诗暂时无法生成诗笺"); return; }
+  let url="";
+  try{ url = useVerticalShare(d) ? drawShareCard(d) : drawShareCardFlat(d); }
+  catch(e){ toast("诗笺生成失败"); return; }
+  document.querySelector("#shareImg").src=url;
+  document.querySelector("#shareLayer").classList.add("on");
+}
+function closeShare(){ document.querySelector("#shareLayer").classList.remove("on"); }
+function saveShare(){
+  const d=sharePoemData(); const img=document.querySelector("#shareImg");
+  if(!d || !img.src){ return; }
+  const a=document.createElement("a");
+  a.href=img.src; a.download="西江阅·"+(d.title||"诗笺")+".png";
+  document.body.appendChild(a); a.click(); a.remove();
+  toast("诗笺已保存");
+}
+function printShare(){ window.print(); }
+
 function backFromDetail(){
   if(detailFrom==="view-category"||detailFrom==="view-search"){ $("#tabbar").classList.add("hidden"); showView(detailFrom); }
+  else if(detailFrom==="view-almanac"){ showView("view-almanac"); }   // #63① 往日笺原路返回（子视图，tabbar 不隐藏）
   else goHome();
 }
 
@@ -69983,7 +70185,7 @@ function renderCheckin(){
   const doneCount = Object.values(checkin.done).filter(Boolean).length;
   const allDone = STREAK_ITEMS.every(it=>checkin.done && checkin.done[it.key]); // 满勤判定不含温项（温照展示计数）
   const enc = ENCOURAGE[Math.min(ENCOURAGE.length-1, (progress.streak-1+ENCOURAGE.length)%ENCOURAGE.length)].replace("{n}",progress.streak);
-  let html = `<div class="ci-head"><div><div class="ci-title">每日打卡</div><div class="ci-sub">${allDone?"今日已全部完成 🎉":`已完成 ${doneCount}/${CHECKIN_ITEMS.length}`}</div></div></div>`;
+  let html = `<div class="ci-head"><div><div class="ci-title">每日打卡</div><div class="ci-sub">${allDone?"今日已全部完成 🎉":`已完成 ${doneCount}/${CHECKIN_ITEMS.length}`}</div></div><div class="ci-alm" onclick="showView('view-almanac')">往日笺 ›</div></div>`;
   html += `<div class="ci-grid">`+CHECKIN_ITEMS.map(it=>{
     const d = checkin.done[it.key];
     return `<div class="ci-item ${d?'done':''}${it.wide?' wide':''}" onclick="toggleCheckin('${it.key}')">
@@ -70602,6 +70804,82 @@ function renderReviewCard(){
 }
 function dayAfter(n){ const d=new Date(); d.setDate(d.getDate()+n); return localDay(d); }
 /* #63④ 记忆曲线：桶分布环图 + 到期队列曲线，复用 xjy_review 桶数据（朱砂风） */
+/* ============ #63① 往日笺：月历回看 ============ */
+const ALM_WEEK=["日","一","二","三","四","五","六"];
+let almY=null, almM=null, almSelDate=null;
+function almSets(){
+  const stamp=new Set(); stampAlbum.forEach(a=>{ if(a&&a.date) stamp.add(a.date); });
+  const rev=new Set();
+  try{ const r=getReview(); Object.keys(r).forEach(k=>{ const v=r[k]; if(v&&v.last) rev.add(v.last); }); }catch(e){}
+  return {stamp:stamp, rev:rev};
+}
+function almKey(y,m,d){ return y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0"); }
+/* 指定日的「今日一诗」：与首页 POEMS[dayIndex()%N] 同口径（今天走 dayIndex 保持一致，历史走本地正午避时区错位） */
+function poemOfYMD(y,m,d){
+  const n=new Date();
+  if(y===n.getFullYear() && m===n.getMonth() && d===n.getDate()) return POEMS[dayIndex()%POEMS.length];
+  return POEMS[Math.floor(new Date(y,m,d,12,0,0).getTime()/86400000)%POEMS.length];
+}
+function almShift(n){
+  almM+=n; if(almM<0){ almM=11; almY--; } if(almM>11){ almM=0; almY++; }
+  almSelDate=null; renderAlmanac();
+}
+function almPick(el){
+  const k=el.getAttribute("data-k");
+  const n=new Date(), tk=almKey(n.getFullYear(),n.getMonth(),n.getDate());
+  almSelDate = (k===tk) ? null : k;   // 点今天＝回到默认
+  renderAlmanac();
+}
+function renderAlmanac(){
+  const n=new Date();
+  if(almY===null){ almY=n.getFullYear(); almM=n.getMonth(); }
+  const y=almY, m=almM, sets=almSets();
+  document.querySelector("#almYM").textContent = y+" 年 "+(m+1)+" 月";
+  document.querySelector("#almWeek").innerHTML = ALM_WEEK.map(w=>"<div>"+w+"</div>").join("");
+  const first=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate();
+  const cells=[];
+  for(let i=0;i<first;i++) cells.push('<div class="alm-cell pad"></div>');
+  let mStamp=0, mRev=0;
+  for(let d=1; d<=days; d++){
+    const k=almKey(y,m,d);
+    const isToday=(y===n.getFullYear()&&m===n.getMonth()&&d===n.getDate());
+    const isFuture=(new Date(y,m,d,12).getTime() > new Date(n.getFullYear(),n.getMonth(),n.getDate(),12).getTime());
+    const hasS=sets.stamp.has(k), hasR=sets.rev.has(k);
+    if(hasS) mStamp++; if(hasR) mRev++;
+    let mk="";
+    if(hasS||hasR) mk='<div class="alm-mk">'+(hasS?'<i class="am-s"></i>':'')+(hasR?'<i class="am-r"></i>':'')+'</div>';
+    cells.push('<div class="alm-cell'+(isToday?' today':'')+(isFuture?' future':'')+(almSelDate===k?' sel':'')+'" data-k="'+k+'" onclick="almPick(this)"><span>'+d+'</span>'+mk+'</div>');
+  }
+  document.querySelector("#almGrid").innerHTML = cells.join("");
+  document.querySelector("#almLegend").innerHTML = '<span><i class="am-s"></i>收印（四项全勤）</span><span><i class="am-r"></i>有温故</span>';
+  const tk=almKey(n.getFullYear(),n.getMonth(),n.getDate());
+  almRenderDay(almSelDate || tk, sets);
+  document.querySelector("#almStat").innerHTML = '本月 <b>'+mStamp+'</b> 天收印 · <b>'+mRev+'</b> 天温故';
+}
+function almRenderDay(k, sets){
+  const p=k.split("-"), y=+p[0], m=+p[1]-1, d=+p[2];
+  const n=new Date();
+  const isToday=(y===n.getFullYear()&&m===n.getMonth()&&d===n.getDate());
+  const isFuture=(new Date(y,m,d,12).getTime() > new Date(n.getFullYear(),n.getMonth(),n.getDate(),12).getTime());
+  const hasS=sets.stamp.has(k), hasR=sets.rev.has(k);
+  let html = '<div class="ad-h">'+(m+1)+' 月 '+d+' 日'+(isToday?' · 今天':'')+'</div>';
+  if(isFuture){
+    html += '<div class="ad-tip">这一页还没写下。</div>';
+  } else {
+    const poem=poemOfYMD(y,m,d);
+    html += `<div class="ad-poem" onclick="openDetail('${poem.id}')">`
+      + '<div class="ad-t">'+esc(poem.title)+'</div>'
+      + '<div class="ad-a">'+esc(poem.author)+' · 那天的今日一诗</div>'
+      + '<div class="ad-v">'+esc(((poem.lines||[])[0]||{}).o||"")+'</div>'
+      + '<div class="ad-go">读这首 →</div></div>';
+  }
+  const tags=[];
+  if(hasS) tags.push('<span class="ad-tag on">全勤印</span>');
+  if(hasR) tags.push('<span class="ad-tag">有温故</span>');
+  if(tags.length) html += '<div class="ad-tags">'+tags.join("")+'</div>';
+  document.querySelector("#almDay").innerHTML = html;
+}
+
 function renderMemory(){
   const r=getReview(); const ids=Object.keys(r); const total=ids.length;
   const bc=[0,0,0,0,0,0];

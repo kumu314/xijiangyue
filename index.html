@@ -249,6 +249,23 @@
   .cat-hero{padding:20px;margin-bottom:var(--gap);background:radial-gradient(120% 90% at 90% 0%,rgba(178,58,46,.12),transparent 60%),linear-gradient(160deg,#FCF8EE,#F4EBD8);border:1px solid var(--line);border-radius:var(--r-card);}
   .cat-hero .cn{font-family:var(--kai);font-weight:700;font-size:24px;letter-spacing:2px;}
   .cat-hero .cd{font-size:12px;color:var(--ink-2);margin-top:8px;line-height:1.6;}
+  /* #63⑤ 节令签：签面 2×2 网格（比 5 列体裁轴更宽，容纳季名 + 首数 + 节气提示） */
+  .jl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap);}
+  .jl-card{position:relative;background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-card);padding:18px 16px 16px;cursor:pointer;overflow:hidden;transition:transform .15s ease,box-shadow .15s ease;}
+  .jl-card:active{transform:scale(.98);}
+  .jl-card .jl-seal{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:6px;background:var(--cinnabar);color:#fff;font-family:var(--kai);font-weight:700;font-size:19px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(178,58,46,.28);}
+  .jl-card .jl-n{font-family:var(--kai);font-weight:700;font-size:22px;letter-spacing:3px;color:var(--ink);}
+  .jl-card .jl-sub{font-size:11px;color:var(--ink-3);margin-top:5px;letter-spacing:1px;}
+  .jl-card .jl-fest{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+  .jl-card .jl-fest span{font-size:11px;color:var(--cinnabar);background:rgba(178,58,46,.08);border:1px solid rgba(178,58,46,.22);border-radius:var(--r-pill);padding:2px 9px;}
+  .jl-card .jl-cnt{font-size:10px;color:var(--ink-3);margin-top:10px;}
+  /* 签详情：节令分组标签 */
+  .jl-bars{display:flex;flex-wrap:wrap;gap:8px;padding:14px 2px;border-bottom:1px solid var(--line-soft);}
+  .jl-bar{font-size:12px;color:var(--ink-2);background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-pill);padding:6px 12px;cursor:pointer;}
+  .jl-bar.on{background:var(--cinnabar);color:#fff;border-color:var(--cinnabar);}
+  .jl-bars-t{font-family:var(--kai);font-weight:700;font-size:15px;letter-spacing:1px;margin:16px 0 0;}
+  /* 节令小标（列表项内） */
+  .rec .jl-tag{font-size:10px;color:var(--cinnabar);border:1px solid rgba(178,58,46,.25);border-radius:var(--r-pill);padding:1px 7px;margin-left:6px;vertical-align:1px;}
 
   /* 搜索 */
   .search-input{width:100%;border:1px solid var(--line);background:var(--paper-card);border-radius:var(--r-pill);padding:11px 16px 11px 42px;font-size:14px;font-family:var(--sans);color:var(--ink);outline:none;}
@@ -499,7 +516,7 @@
         搜诗词 / 作者 / 名句
       </div>
       <div id="homeToday"></div>
-      <div class="section-title">按体裁漫游 <span class="more" onclick="goCategory('诗')">全部</span></div>
+      <div class="section-title">按体裁漫游 <span class="more" onclick="goJieling()">节令</span></div>
       <div class="cat-grid" id="homeCats"></div>
       <div class="progress card" id="homeProgress"></div>
       <div class="section-title">热学榜 <span class="more" onclick="hotMore()">换一批</span></div>
@@ -547,6 +564,29 @@
       </div>
       <div class="cat-hero" id="catHero"></div>
       <div class="rec-list" id="catList"></div>
+    </section>
+
+    <!-- ============ #63⑤ 节令签（四时令） ============ -->
+    <!-- 进：首页「按体裁漫游」标题右侧 .more「节令」→ goJieling() -->
+    <!-- 回：签详情页头 back → goJieling()；签面页 back → goHome()。原路返回，遵纪律 B -->
+    <section class="view" id="view-jieling">
+      <div class="cat-head">
+        <div class="back" onclick="goHome()"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 3l-6 6 6 6"/></svg></div>
+        <div><div class="dt" style="font-family:var(--serif);font-weight:900;font-size:22px;letter-spacing:2px;">节令</div></div>
+      </div>
+      <div class="cat-hero"><div class="cn">四时令</div><div class="cd">春生、夏长、秋收、冬藏。四时各有其诗，亦各有其节——元夕灯火、端午榴花、中秋拜月、除夕守岁，皆循季而至。点一枚签，看这一季的天时与人心。</div></div>
+      <div class="jl-grid" id="jlGrid"></div>
+    </section>
+
+    <!-- 签详情：单季诗词列表 -->
+    <section class="view" id="view-jieling-list">
+      <div class="cat-head">
+        <div class="back" onclick="goJieling()"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 3l-6 6 6 6"/></svg></div>
+        <div><div class="dt" id="jlTitle" style="font-family:var(--serif);font-weight:900;font-size:22px;letter-spacing:2px;">春</div></div>
+      </div>
+      <div class="cat-hero" id="jlHero"></div>
+      <div id="jlFestBars"></div>
+      <div class="rec-list" id="jlList"></div>
     </section>
 
     <!-- ============ 搜索 ============ -->
@@ -69540,6 +69580,45 @@ const CATS = [
   {name:"外国诗", icon:'<circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c3 3 3 13 0 16M12 4c-3 3-3 13 0 16"/>', desc:"跨越语言的诗意对话。从普希金到泰戈尔，东方读者也能在异域韵律里照见自己。", count:POEMS.filter(p=>p.category==="外国诗").length}
 ];
 
+/* ============ #63⑤ 节令签（四时令轴）============
+   缘起：任务卡写「分类轴加二十四节气签（tags 已有节日类）」。实测该前提不成立——
+   ① 全库无「节日」标签，节令标注零散；② 24 节气中仅清明/立春/白露/大雪/霜降 5 个
+   在库内有痕迹，且多作自然现象（大雪/白露）而非节气用；
+   ③ anim=festival 的 21 篇归属混杂（过故人庄/感遇 等与节日无关）。
+   若硬做二十四节气签 → 19 个空签，违反纪律 G「宁砍不移·勿硬塞」。
+   故改档为「四时令」：以季节为轴（春/夏/秋/冬），每签收纳该季诗词 + 归入该季的
+   传统节日作品。收益：每签 20+ 首真实落地（对比 9 个节日签仅 2-5 首/签），
+   零空签，且「节令专题入口」的用户意图完整保留。
+   成员 = 季节 tag 直标 + 该季节传统节日篇（来源可核：tags 字段实际标注）。 */
+const JIELING = [
+  {name:"春", seal:"春", season:"spring",
+   desc:"立春、雨水、惊蛰……春日迟迟，卉木萋萋。元夕灯火、寒食禁烟、清明踏青，皆在此季。",
+   tags:["春天","春","早春","暮春","春游","惜春","伤春"],
+   festivals:[{n:"元夕",ids:["qingyu","s_shengcha"]},{n:"寒食",ids:["t_hanshi","t3_d4508568"]},{n:"清明",ids:["qingming","t3_4e8dd720"]}]},
+  {name:"夏", seal:"夏", season:"summer",
+   desc:"立夏、小满、芒种……绿树阴浓夏日长。端午榴花照眼，是此季最盛的节。",
+   tags:["夏天","夏日","夏夜","夏"],
+   extra:["t3_621e1719","t3_1c476fe6","yq_846feec7","yq_8fcba2a3","t3_ba1fce0e"],
+   festivals:[{n:"端午",ids:["s3_05278334","s3_76acf982"]}]},
+  {name:"秋", seal:"秋", season:"autumn",
+   desc:"立秋、处暑、白露……自古逢秋悲寂寥。七夕乞巧、中秋拜月、重阳登高，秋是三节汇聚之季。",
+   tags:["秋天","秋","秋景","秋思","悲秋","秋意","秋居"],
+   festivals:[{n:"七夕",ids:["s_queqiao","h_tiaotiao"]},{n:"中秋",ids:["shuidiao","t3_202a993c","t3_225a8f2f","t3_4de7e319","t3_35297b56"]},{n:"重阳",ids:["jiuyuejiu","zuihuayin","y_zhegui","t3_25f89e8e"]}]},
+  {name:"冬", seal:"冬", season:"winter",
+   desc:"立冬、小雪、大雪……晚来天欲雪，能饮一杯无。岁除守夜、元日迎新，凛冬自有暖意。",
+   tags:["冬天","冬","岁暮"],
+   festivals:[{n:"除夕",ids:["t3_31bbbd0b","t3_52c652ac"]},{n:"春节",ids:["xf_cb911de7","t3_259f8ab0","t3_9fca23d5"]}]}
+];
+/* 取某季签的全部篇（季节 tag 直标 + 补录 + 节令挂靠，去重保序） */
+function jielingPoems(jl){
+  const out=[], seen=new Set();
+  const push=p=>{ if(p&&!seen.has(p.id)){ seen.add(p.id); out.push(p); } };
+  POEMS.forEach(p=>{ if((p.tags||[]).some(t=>jl.tags.includes(t))) push(p); });
+  (jl.extra||[]).forEach(id=> push(POEMS.find(p=>p.id===id)));
+  jl.festivals.forEach(f=>{ f.ids.forEach(id=> push(POEMS.find(p=>p.id===id))); });
+  return out;
+}
+
 /* ============ 状态 ============ */
 const LS_USER="shiyun_user", LS_CHECKIN="shiyun_checkin", LS_PROGRESS="shiyun_progress", LS_ALBUM="shiyun_album";
 let stampAlbum = JSON.parse(localStorage.getItem(LS_ALBUM)||"[]"); // 印谱：[{date:'YYYY-MM-DD'}] 每全勤日一印
@@ -69630,6 +69709,56 @@ function goCategory(name){
       <div class="arrow"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3l5 5-5 5"/></svg></div>
     </div>`).join("");
   showView("view-category");
+}
+
+/* ============ #63⑤ 节令签 渲染 ============ */
+/* 签面列表：四时令各一枚 */
+function goJieling(){
+  $("#jlGrid").innerHTML = JIELING.map((jl,i)=>{
+    const ps = jielingPoems(jl);
+    const fs = jl.festivals.map(f=>`<span>${f.n}</span>`).join("");
+    return `<div class="jl-card" onclick="openJieling(${i})">
+      <div class="jl-seal">${jl.seal}</div>
+      <div class="jl-n">${jl.name}</div>
+      <div class="jl-sub">${jl.desc.split("……")[0]}</div>
+      <div class="jl-fest">${fs}</div>
+      <div class="jl-cnt">共 ${ps.length} 首</div>
+    </div>`;
+  }).join("");
+  showView("view-jieling");
+}
+/* 签详情：某季全部诗词；可选按节令过滤（filter=-1 为全部） */
+let jlCur = -1;
+function openJieling(idx, filter){
+  const jl = JIELING[idx];
+  jlCur = (filter===undefined) ? -1 : filter;
+  $("#jlTitle").textContent = jl.name + "令";
+  $("#jlHero").innerHTML = `<div class="cn">${jl.seal} · ${jl.name}</div><div class="cd">${jl.desc}</div>`;
+  const seasonPs = jielingPoems(jl);
+  const inFest = id => {
+    for(const f of jl.festivals){ if(f.ids.includes(id)) return f.n; }
+    return null;
+  };
+  // 节令过滤条
+  const bars = [`<div class="jl-bar ${jlCur===-1?"on":""}" onclick="openJieling(${idx},-1)">全部 ${seasonPs.length}</div>`]
+    .concat(jl.festivals.map((f,fi)=>{
+      const n = f.ids.filter(id=>POEMS.some(p=>p.id===id)).length;
+      return `<div class="jl-bar ${jlCur===fi?"on":""}" onclick="openJieling(${idx},${fi})">${f.n} ${n}</div>`;
+    })).join("");
+  $("#jlFestBars").innerHTML = `<div class="jl-bars-t">${jl.name}令诗词</div><div class="jl-bars">${bars}</div>`;
+  // 列表：按当前过滤
+  let list = seasonPs;
+  if(jlCur >= 0){ const ids = new Set(jl.festivals[jlCur].ids); list = seasonPs.filter(p=>ids.has(p.id)); }
+  $("#jlList").innerHTML = list.map((p,i)=>{
+    const fn = inFest(p.id);
+    const tag = fn ? `<span class="jl-tag">${fn}</span>` : "";
+    return `<div class="rec" onclick="openDetail('${p.id}')">
+      <div class="no">${cnOrdinal(i+1)}</div>
+      <div class="body"><div class="t">${p.title}${tag}</div><div class="a">${p.author} · ${(p.tags||[]).join("·")}</div></div>
+      <div class="arrow"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3l5 5-5 5"/></svg></div>
+    </div>`;
+  }).join("") || `<div class="note" style="padding:16px">本季暂无对应诗篇。</div>`;
+  showView("view-jieling-list");
 }
 
 /* ============ 渲染：搜索 ============ */
@@ -69883,6 +70012,8 @@ function printShare(){ window.print(); }
 function backFromDetail(){
   if(detailFrom==="view-category"||detailFrom==="view-search"){ $("#tabbar").classList.add("hidden"); showView(detailFrom); }
   else if(detailFrom==="view-almanac"){ showView("view-almanac"); }   // #63① 往日笺原路返回（子视图，tabbar 不隐藏）
+  else if(detailFrom==="view-jieling-list"){ showView("view-jieling-list"); } // #63⑤ 节令签详情原路返回
+  else if(detailFrom==="view-jieling"){ showView("view-jieling"); }   // #63⑤ 签面页返回
   else goHome();
 }
 

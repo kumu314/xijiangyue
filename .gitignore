@@ -23,6 +23,17 @@ out/ui_decard/
 out/ui_review/
 out/checkin_stamp/
 out/**/*.png
+# out/merge/ 下的合并前基线副本（3.4MB，可由 merge_content.py 重跑再生）与中间日志不入库；
+# 合并脚本 *.py / *.js 与报告 out/merge-report-*.md 是交付物，照常入库。
+# 注：2026-10-02 曾出现 index.before-merge.html / index.before-trans02.html /
+#     index.baseline-git.html 三个副本，其中两个是被「写死 CRLF + 紧凑 lines」旧版脚本
+#     污染的产物（行尾 CRLF、LF 计数 71144→68925），误当基线用会得出错误的 diff 读数。
+#     已删除，真基线一律以 `git show HEAD:index.html` 为准。
+index.before*.html
+index.baseline*.html
+out/merge/index.*.html
+out/merge/_merge_*.txt
+out/merge/_merge_*.json
 
 # ── 依赖目录（永不入库）────────────────────────────────────────────
 # 依据：node_modules 是本地安装产物，体积大、随平台/版本变化，入库无意义且会污染 diff。

@@ -2,15 +2,15 @@
 
 | 批次 | 范围 | 数量 | 规格 | 产出 | 抽检 | 状态 |
 |------|------|------|------|------|------|------|
-| pilot-01 | 拓展中文（seed42） | 30 | v1（串讲+记忆技巧扁平字段） | out/content_pilot/pilot-01.json（已从备份恢复入库） | 灵玉 PASS（#46） | 待合入（merge #68）；v1 扁平记忆按单卡映射并入，后续可升 v2.1 结构化卡 |
-| batch-02 | 拓展中文（seed43，排除 pilot-01） | 30 | v2.1 | out/content_production/batch-02.json（已入库） | 灵玉 PASS（有条件）→ **三条件已清**：SPEC 口径✅ / t3_89bd9227✅ / 送李端→#55✅（#55 已 done） | 待合入（merge #68） |
-| qoder-01 | 拓展中文 m 译文（seed42，排除 pilot-01） | 20（180 句） | 译文线 v1 | out/content_pilot/qoder-01.json（已重建在库） | 灵玉 PASS（#51） | 待合入（merge #68） |
+| pilot-01 | 拓展中文（seed42） | 30 | v1（串讲+记忆技巧扁平字段） | out/content_pilot/pilot-01.json（已从备份恢复入库） | 灵玉 PASS（#46） | **✅ 已合入 5ea98c4**；v1 扁平记忆按单卡映射并入，后续可升 v2.1 结构化卡 |
+| batch-02 | 拓展中文（seed43，排除 pilot-01） | 30 | v2.1 | out/content_production/batch-02.json（已入库） | 灵玉 PASS（有条件）→ **三条件已清**：SPEC 口径✅ / t3_89bd9227✅ / 送李端→#55✅（#55 已 done） | **✅ 已合入 5ea98c4** |
+| qoder-01 | 拓展中文 m 译文（seed42，排除 pilot-01） | 20（180 句） | 译文线 v1 | out/content_pilot/qoder-01.json（已重建在库） | 灵玉 PASS（#51） | **✅ 已合入 5ea98c4** |
 | #61 校勘 | 全库异文/题名/作者疑点 | 起步 5+ | 轻量校勘 | out/review-r5-61-collation.md（3001bc8，320 行 17 节） | — | 已交付（建议清单不动 o，缺陷转 #55/#68 施工） |
-| batch-03 | 拓展中文（seed44，排除前两批） | 30 | v2.1 | out/content_production/batch-03.json（已入库） | **灵玉 PASS**（review-batch-03.md：机械项全量+内容抽读全过；2 条既有数据缺陷转 #61/#55，非本批引入） | 待合入（merge #68） |
-| batch-04 | 拓展中文（seed45，排除前三批，样本预锁） | 30 | v2.1 | out/content_production/batch-04.json（已入库） | **灵玉 PASS（#1677，f42481c，放行合入）** | 六项自检含跨篇反模板 0 复用；缺陷上报 4 条（永遇乐缺字/残篇/示儿同题异篇/tags 粒度）转 #61/#55，全在 lines.o/title/tags、非本批引入、不阻塞；**待合入（merge #68）** |
-| trans-01 | 拓展中文 m 译文（seed101，工具面 qoder-trans） | 20 首 133 句 | 译文线 v1 | out/content_production/trans-01.json（6169d0a，已随小羽推送） | **灵玉 PASS（out/review-trans-01.md，放行合入）** | 133/133 自检 + 灵玉独立复算零出入；o 一字不改照抄（头号不变量 0 失配）；A5 已剔出/B11 只动 o 不阻塞 m；唯一条件 B2/B5 若 #55 改字则 m 回改 |
-| trans-02 | 拓展中文 m 译文（seed102，工具面 trae 代 qoder） | 20 首 151 句 | 译文线 v1 | out/content_production/trans-02.json（5c7a4d8，已随小羽推送） | **灵玉 PASS（out/review-trans-02.md，放行合入）** | 六项自检全过；zcode 独立预检全过（漂移 0/151、m/o 比 1.32–2.17、m≥6 字、与前两批零 id 重叠）；新判阻塞曲 2 首已剔除补抽（yq_4cde9faa 宾白科介混入 / yq_b39e7036 片假名タ），转曲类手术 |
-| trans-03 | 拓展中文 m 译文（seed103，工具面 trae） | 20 首 151 句 | 译文线 v1 | out/content_production/trans-03.json + README-trans-03.md（e7f140c，未 push 待小羽统一） | **灵玉 PASS（out/review-trans-03.md，放行合入）** | 机械 151/151 全过；头号不变量「o 一字不改照抄库内」0 失配（独立逐句比对）；跨篇重复 0+自测 PASS；比率 1.125–2.167、最小 m=6；内容逐句全检 151/151 准确（沉江㛤姬→骊姬 o 照抄/m 训诂、混江龙旦末双全、云中君兮节奏、短句 m 处理均验）；曲类 31 首阻塞（4a 8+4b 20+双标点 3）抽样前已剔、非本批引入，转曲类手术 |
+| batch-03 | 拓展中文（seed44，排除前两批） | 30 | v2.1 | out/content_production/batch-03.json（已入库） | **灵玉 PASS**（review-batch-03.md：机械项全量+内容抽读全过；2 条既有数据缺陷转 #61/#55，非本批引入） | **✅ 已合入 5ea98c4** |
+| batch-04 | 拓展中文（seed45，排除前三批，样本预锁） | 30 | v2.1 | out/content_production/batch-04.json（已入库） | **灵玉 PASS（#1677，f42481c，放行合入）** | 六项自检含跨篇反模板 0 复用；缺陷上报 4 条（永遇乐缺字/残篇/示儿同题异篇/tags 粒度）转 #61/#55，全在 lines.o/title/tags、非本批引入、不阻塞；**✅ 已合入 5ea98c4** |
+| trans-01 | 拓展中文 m 译文（seed101，工具面 qoder-trans） | 20 首 133 句 | 译文线 v1 | out/content_production/trans-01.json（6169d0a，已随小羽推送） | **灵玉 PASS（out/review-trans-01.md，放行合入）** | 133/133 自检 + 灵玉独立复算零出入；o 一字不改照抄（头号不变量 0 失配）；A5 已剔出/B11 只动 o 不阻塞 m；唯一条件 B2/B5 若 #55 改字则 m 回改；**✅ 已合入 5ea98c4** |
+| trans-02 | 拓展中文 m 译文（seed102，工具面 trae 代 qoder） | 20 首 151 句 | 译文线 v1 | out/content_production/trans-02.json（5c7a4d8，已随小羽推送） | **灵玉 PASS（out/review-trans-02.md，放行合入）** | 六项自检全过；zcode 独立预检全过（漂移 0/151、m/o 比 1.32–2.17、m≥6 字、与前两批零 id 重叠）；新判阻塞曲 2 首已剔除补抽（yq_4cde9faa 宾白科介混入 / yq_b39e7036 片假名タ），转曲类手术；**✅ 已合入 5ea98c4** |
+| trans-03 | 拓展中文 m 译文（seed103，工具面 trae） | 20 首 151 句 | 译文线 v1 | out/content_production/trans-03.json + README-trans-03.md（e7f140c，已推 origin/main） | **灵玉 PASS（out/review-trans-03.md，放行合入）** | 机械 151/151 全过；头号不变量「o 一字不改照抄库内」0 失配（独立逐句比对）；跨篇重复 0+自测 PASS；比率 1.125–2.167、最小 m=6；内容逐句全检 151/151 准确（沉江㛤姬→骊姬 o 照抄/m 训诂、混江龙旦末双全、云中君兮节奏、短句 m 处理均验）；曲类 31 首阻塞（4a 8+4b 20+双标点 3）抽样前已剔、非本批引入，转曲类手术；**✅ 已合入（二遍合并，与 trans-01/02 同批）** |
 
 ## 附录：pilot-01 的 30 个 id（源：灵玉 #46 抽检报告）
 

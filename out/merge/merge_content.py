@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 """
 #68 西江阅内容大合并脚本
-把 pilot-01/batch-02/03/04（串讲+记忆）与 qoder-01/trans-01(/trans-02)（lines[].m）
+把 pilot-01/batch-02/03/04（串讲+记忆）与 qoder-01/trans-01(/trans-02/trans-03)（lines[].m）
 机械映射并入 index.html 的 const POEMS 数组。
 
+用法：
+    python merge_content.py dry|write [--trans02] [--trans03] [--report]
+    --trans02/--trans03 为并入门槛开关（灵玉放行后才加）。幂等：已并入的篇会被
+    识别为「同值」而零变化，因此二遍合并 trans-03 时只有第 7 文件那 20 首会变。
+
 设计要点：
-- 红线：970 首 id 与顺序逐位不变；未触及篇内容哈希零变化；只动 POEMS 数据。
+- 红线：970 首 id 与顺序逐位不变；未触及篇内容字节级零变化；只动 POEMS 数据。
 - 策略：不改整块 JSON 重序列化，而是逐篇定位对象文本边界，只对需改的篇做
-  定点插入/替换 → 未触及的篇逐字节不动 → 天然满足「内容哈希零变化」。
-- 幂等：重复跑读数一致（已并入的篇会被识别并跳过/覆盖为同值）。
+  定点插入/替换 → 未触及的篇逐字节不动 → 天然满足「内容零变化」。
+- 格式：新值排布风格与库内逐字符一致（多行展开 / 紧凑自适应，EOL 跟随输入）。
+- 幂等：重复跑读数一致。
 """
 import json, os, re, sys
 
@@ -17,6 +23,7 @@ os.chdir(REPO)
 
 MODE = "write" if "write" in sys.argv else "dry"
 INCLUDE_TRANS02 = ("--trans02" in sys.argv)
+INCLUDE_TRANS03 = ("--trans03" in sys.argv)
 REPORT_ONLY = ("--report" in sys.argv)
 
 SRC = [
@@ -27,8 +34,10 @@ SRC = [
     ("out/content_pilot/qoder-01.json",        "trans"),
     ("out/content_production/trans-01.json",   "trans"),
 ]
-if INCLUDE_TRANS02:
+if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))
+if INCLUDE_TRANS03:
+    SRC.append(("out/content_production/trans-03.json", "trans"))
 
 log = []
 def L(s):

@@ -75,7 +75,12 @@
 
   .section-title{font-family:var(--kai);font-weight:700;font-size:16px;letter-spacing:1px;margin:22px 0 12px;display:flex;align-items:center;gap:8px;}
   .section-title::before{content:"";width:4px;height:16px;background:var(--cinnabar);border-radius:2px;display:inline-block;}
-  .section-title .more{margin-left:auto;font-family:var(--sans);font-size:12px;font-weight:400;color:var(--ink-3);cursor:pointer;}
+  /* #62 P2-⑤ .more 实测热区仅 26×17 / 39×17（远低于 44px 可点最小尺寸）。
+     解法：用 ::after 伪元素向外扩张热区，本身不参与布局流 → 视觉位置与间距零变化。
+     不用 padding + 负 margin：section-title 是 flex 容器，margin-left:auto 已把元素推至最右，
+     再对 margin-right 取反会撑破容器边界（实测外扩 10px）。 */
+  .section-title .more{margin-left:auto;font-family:var(--sans);font-size:12px;font-weight:400;color:var(--ink-3);cursor:pointer;position:relative;}
+  .section-title .more::after{content:"";position:absolute;left:-10px;right:-10px;top:50%;transform:translateY(-50%);height:30px;}
 
   .cat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
   .cat{background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 4px 10px;text-align:center;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;}
@@ -185,9 +190,12 @@
   .rset-opt:active{transform:scale(.97);}
 .rset-note{margin-top:9px;font-size:12px;color:var(--ink-3);line-height:1.55;}
 
-  .tabs{display:flex;gap:6px;overflow-x:auto;padding:4px;margin-bottom:14px;background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-pill);}
+  /* #62 P1-③ 标签条：6 项原需 517px（可用 350px），第 6 项「故事背景」完全在屏外且滚动条被隐藏。
+     双管齐下：① 文案缩短（动画可视化→动画、使用场景→场景）把 6 项压进屏内；
+     ② 保留 overflow-x:auto 兜底 + 右侧渐隐遮罩，极窄屏/大字档下仍能提示「还有内容」。 */
+  .tabs{display:flex;gap:4px;overflow-x:auto;padding:4px;margin-bottom:14px;background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-pill);-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 22px),transparent);}
   .tabs::-webkit-scrollbar{display:none;}
-  .tab{flex:0 0 auto;padding:9px 15px;border-radius:var(--r-pill);cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-2);white-space:nowrap;transition:all .2s ease;}
+  .tab{flex:0 0 auto;padding:9px 11px;border-radius:var(--r-pill);cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-2);white-space:nowrap;transition:all .2s ease;}
   .tab.active{background:var(--cinnabar);color:#fff;box-shadow:0 4px 12px rgba(178,58,46,.3);}
   .panel{display:none;animation:fade .35s ease;}
   .panel.active{display:block;}
@@ -574,12 +582,12 @@
       </div>
       <div class="original" id="dOriginal"></div>
       <div class="tabs" id="dTabs">
-        <div class="tab active" data-tab="tr">解读翻译</div>
+        <div class="tab active" data-tab="tr">解读</div>
         <div class="tab" data-tab="lecture">串讲</div>
-        <div class="tab" data-tab="viz">动画可视化</div>
-        <div class="tab" data-tab="mem">记忆技巧</div>
-        <div class="tab" data-tab="use">使用场景</div>
-        <div class="tab" data-tab="story">故事背景</div>
+        <div class="tab" data-tab="viz">动画</div>
+        <div class="tab" data-tab="mem">记忆</div>
+        <div class="tab" data-tab="use">场景</div>
+        <div class="tab" data-tab="story">背景</div>
       </div>
       <div class="panel active" id="panel-tr"></div>
       <div class="panel" id="panel-lecture"></div>
@@ -10558,6 +10566,7 @@ const POEMS = [
    ]
   },
   "level": "精读",
+  "no_paraphrase": 1,
   "串讲": "常被误传为泰戈尔，实为现代情诗风致。它把『遥远』层层推翻：不是生与死，而是『我就站在你面前，你却不知道我爱你』。最远的距离，是咫尺的沉默与无法言说——爱而不得，才是真正的天涯。"
  },
  {
@@ -69642,6 +69651,45 @@ function doSearch(q){
     </div>`).join("")+`</div>`;
 }
 
+/* ============ #62 P1-② 量产模板检测器（跨篇重复度归一） ============
+   缘起：旧判据 /它是全篇的眼|每天慢读三遍/ 是硬编码字符串，被量产脚本的
+   「每天读三遍」变体（少一个「慢」字）绕过——40 首精读篇的量产模板被
+   当作真实记忆卡展示。硬编码判据本质是和生成脚本赛跑，而检测器已经输了。
+   改法：对文本做模板化归约（抹掉篇名/引文/数字），统计全库同范式出现次数，
+   超过阈值即判为量产模板。生成脚本再怎么换字，句式骨架不变，跑不掉。
+   归一语法（须与 content_production 的 spec 对齐）：
+     《篇名》→ 所有篇一致，抹平；「引文」→ 每篇不同，抹平；
+     数字 → 归一；全角/半角标点统一。 */
+const MEM_TPL_MIN = 10;          // 同范式全库出现 ≥10 次 → 判为量产模板（手写句式实测均 ≤2 次，间隔 40 倍）
+const TPL_USE_KEY = "\u0000USE";  // 场景范式在独立表里统计，避免与记忆卡范式撞号
+function tplNorm(s){
+  return String(s||"")
+    .replace(/《[^》]*》/g, "《T》")      // 篇名占位
+    .replace(/「[^」]*」/g, "「Q」")      // 引文占位
+    .replace(/[0-9０-９]+/g, "N")         // 数字归一
+    .replace(/[，。、；：！？,.!?;:\s]/g, "")  // 标点空白全抹（不同批次标点用法有别）
+    .trim();
+}
+let TPL_FREQ = null;              // {"范式": 次数}，首次 openDetail 时建一次
+function tplBuildFreq(){
+  const f = Object.create(null);
+  const bump = k => { if(k) f[k] = (f[k]||0) + 1; };
+  POEMS.forEach(p=>{
+    (p.memory||[]).forEach(m=> bump(tplNorm(m.d)));
+    (p.scenes||[]).forEach(s=> bump(TPL_USE_KEY + "|" + tplNorm(s.d)));
+  });
+  return f;
+}
+function tplFreq(){ if(!TPL_FREQ) TPL_FREQ = tplBuildFreq(); return TPL_FREQ; }
+function memUsesTemplate(p){
+  const f = tplFreq();
+  return (p.memory||[]).some(m=> (f[tplNorm(m.d)]||0) >= MEM_TPL_MIN);
+}
+function scnUseTemplate(p){
+  const f = tplFreq();
+  return (p.scenes||[]).some(s=> (f[TPL_USE_KEY + "|" + tplNorm(s.d)]||0) >= MEM_TPL_MIN);
+}
+
 /* ============ 渲染：详情（五维） ============ */
 let currentPoemId=null, detailFrom="view-home";
 function openDetail(id){
@@ -69693,13 +69741,18 @@ function openDetail(id){
   // 动画可视化
   $("#panel-viz").innerHTML = `<div class="viz" id="vizScene">${renderViz(p.anim)}<button class="replay" onclick="replayViz()">↻ 重播</button></div>`;
   // 记忆技巧
-  // 拓展篇 memory 多为内容量产模板（「它是全篇的眼」/「每天慢读三遍」两句式），非人工记忆卡 → 不渲染模板文本
-  const memTpl = expand && (!mem.length || mem.some(m=>/它是全篇的眼|每天慢读三遍/.test(m.d||"")));
+  // 量产模板检测（#62 P1-②）：判据 = 跨篇重复度，不再匹配硬编码字符串（旧判据被「每天读三遍」变体绕过）
+  // 拓展篇与精读篇同等对待——是否模板与层级无关，精读篇同样该诚实标注
+  const memTpl = !mem.length || memUsesTemplate(p);
   $("#panel-mem").innerHTML = memTpl
-    ? `<div class="mem-pending"><div class="mp-t">记忆要点待补</div><div class="mp-d">本篇为拓展收录，专属记忆卡尚未编写。先用正文的「背诵」遮字自测，熟了再回看这里。</div></div>`
+    ? `<div class="mem-pending"><div class="mp-t">记忆要点待补</div><div class="mp-d">本篇${expand?"为拓展收录":""}记忆卡系量产模板生成，尚未经人工编写。先用正文的「背诵」遮字自测，熟了再回看这里。</div></div>`
     : (mem.length?mem:[{t:"文本识记",d:"反复吟诵，感受原句节奏与韵律，先熟读成诵。"}]).map(m=>`<div class="tip"><div class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M7 8l5-5 5 5"/></svg></div><div><div class="tt">${m.t}</div><div class="td">${m.d}</div></div></div>`).join("");
   // 使用场景
-  $("#panel-use").innerHTML = (scn.length?scn:[{t:"诵读体会",d:"反复吟诵，体会诗中意境与情感。"}]).map(s=>`
+  // 同理：场景卡也受量产模板污染（「在合适的语境里引用《X》，让诗词活起来学习」全库 40 处）
+  const scnTpl = !scn.length || scnUseTemplate(p);
+  $("#panel-use").innerHTML = scnTpl
+    ? `<div class="mem-pending"><div class="mp-t">化用场景待补</div><div class="mp-d">本篇场景卡系量产模板生成，尚未经人工编写。可先在讨论相关主题时，试着自然引一句诗中最打动你的句子。</div></div>`
+    : scn.map(s=>`
     <div class="scene"><div class="sh"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z"/></svg></div><div class="st">${s.t}</div></div>
     <div class="sd">${s.d}</div>${s.quote?`<div class="quote">「${s.quote}」</div>`:""}</div>`).join("");
   // 故事背景

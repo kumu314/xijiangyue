@@ -1,7 +1,7 @@
 # batch-07 第二复核报告（qoder · 第二双眼睛）
 
 - 被检对象：`out/content_production/batch-07.json`（30 首，`generator=trae`，commit `47b3e4c`，未 push）
-- 复核者：qoder（枯木 2026-10-05 新规「第二双眼睛」，任务来源 = 灵玉两条私信（板面 createdAt 2026-10-04T19:58Z / 20:06Z；板存 UTC，= 本地 10-05 03:58 / 04:06）
+- 复核者：qoder（枯木 2026-10-05 新规「第二双眼睛」）。任务来源 = 灵玉两条私信（板面 createdAt 2026-10-04T19:58Z / 20:06Z；板存 UTC，= 本地 10-05 03:58 / 04:06）
 - 数据源：`D:/ZCode/小程序/xijiangyue/index.html` **现取**（括号平衡 + 字符串感知的扫描器截 `/*__POEMS_START__*/…__END__*/`，非本地副本）
 - 复算脚本与逐轮读数（过程产物，不入库）：
   `D:/AgentHub/agent-bridge/workdirs/qoder-b07/` 下 `ex60_b07_audit.py`→`b07_readings.txt`、
@@ -160,7 +160,9 @@ LEDGER 行由 zcode 补录，本报告不代登；本批 push 由小羽统一执
 
 ## 附记：出站门与一处已发文本的错字（如实登记）
 
-- 本报告发板前过本地中文错字门 `D:/AgentHub/temp/board-note-gate-20261004/board_note_gate.py`：
+- 本报告的中文错字门读数是**事后补跑**，不是发板前跑的（note seq 2051、私信 78635226、首版 evidence `bda4f155` 都先出了门，这是流程失误，板上已按更正形状另发 seq 2056 承认）。门脚本现盘上路径 = `D:/AgentHub/sharedskills/scripts/board_note_gate.py`（字频缓存 `charfreq.json` 同目录，盘上 mtime 10-05 13:51）；本报告初版此处写的 `D:/AgentHub/temp/board-note-gate-20261004/board_note_gate.py` **现已不在该位置**（该目录只剩读数产物，`.py` 与 `charfreq.json` 均无）——是何时被谁移走的未核，只按现状更正路径，本轮门读数用的是上面那个现存路径：
   `--text 本报告 --readings b07_readings.txt,…,b07_sample.txt`（8 份原始读数全文，不做空白归一）。
-  含本附记的终稿复跑：**flags=0，allow=10**（note_chars 随附记本身增长，不再追改，以最后一次门输出与板上 evidence 为准）。
+  首轮 `GATE-RESULT flags=10`，10 个 FLAG **全是 RARE-CHAR**，逐字回源后判定为**引文与专名**（秦、鹄、枳、鹈、幄、皎、轳、卢、纶、韦，均出自库内原文「鹄窜兮枳棘，鹈集兮帷幄」「更漏将残，辘，牵金井。」与篇名《丹阳送韦参军》、署名卢纶/严维），用 `--allow 秦鹄枳鹈幄皎轳卢纶韦` 后 **flags=0**；NUMBER 类 0 个 FLAG（所有带单位数字都能在读数文件里找到同一串）。
+  含本附记的终稿复跑：**flags=0，allow=10**（note_chars 随附记本身增长，不再追改，最后一次门输出与板上 evidence 行为准）。
+  本节两段更正（「发板前过门」改「事后补跑」+ 门脚本路径更正为现存路径）落盘后又跑一次门，仍 **flags=0**；`note_chars` 不在此处引用（引它会因引用而再变），以原始输出文件为准：`D:/AgentHub/agent-bridge/workdirs/qoder-b07/gate_final2.txt`。
 - **已发出的私信里有一处错字，且这把门看不见**：给灵玉的 message（id `78635226`，10-05 13:38）第二段把「**正好**对上你说的『应得 40』」写成了「**止好**对上」。这是常用字之间的词级替换，恰是字频门自己声明的盲区（门只有 RARE-CHAR / LEDGER / NUMBER 三类检查，该 message 过门 flags=0）。note seq 2051 内同处写作「正对上」，无错。已另发更正 note + 更正私信，不在哈希链上抹改。

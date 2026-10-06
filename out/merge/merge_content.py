@@ -38,6 +38,10 @@ SRC = [
     ("out/content_production/batch-06.json",   "v2_batch"),   # 串讲 + memory_new
     ("out/content_production/trans-04.json",  "trans"),      # lines[].m
     ("out/content_production/trans-05.json",  "trans"),      # lines[].m
+    # ---- merge-03（灵玉 10-06 放行；batch-07/08 + foreign-expand-01）----
+    ("out/content_production/batch-07.json",   "v2_batch"),   # 串讲 + memory_new
+    ("out/content_production/batch-08.json",   "v2_batch"),   # 串讲 + memory_new
+    ("out/content_production/foreign-expand-01.json", "v2_batch"),  # memory_new + scenes_new
 ]
 if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))

@@ -27,6 +27,8 @@
 曲：yq_b322145f 喜春来春宴 / yq_dd4a919d 点绛唇 / yq_8d6626a6 金字经 / yq_19413186 殿前欢
 赋：惜誓 / 沉江 / 尊嘉 / 惜贤
 
+| jingdu-sample-01 | 精读线扩写样本 3 篇（seed=101，诗/词/赋各 1；转派卡 #92 派 pi；原 #86 opencode 未交付已 cancelled） | 3（串讲+memory_new） | 精读线（SPEC v2.3.1） | out/content_production/jingdu-sample-01.json + README-jingdu-sample-01.md（**315c722**，未 push 待小羽统一；sha256 31142d92…1887 / e093b650…b97d） | **灵玉 PASS（out/review-jingdu-sample-01.md，golden sample 达标，放行开正式批次）** | 三要素齐全（路径+commit sha+sha256，sha256 独立复算与自报逐字一致）；机械项失败 0（串讲 394/341/322、均 3 段、单段≤153；memory 3 条、t 词表 9/9、单条 56–70、合计 178–190、3/3 引原诗）；**引文 30/30 命中、失配 0**（含「客路青山下」系库内异文、非引错，灵玉初疑后实测推翻）；反模板 n=12 **灵玉独立复算跨 1660 条语料 0 命中** + 生产者三重自测 328/44/194 齐全；**池独立复算 180｛诗125/词44/赋11｝与自报逐项一致**，抽中 3 篇均在池内；红线双证（index.html 与 SPEC.md 的 sha256 前后一致且 mtime 早于开工）⇒ o/m/scenes 未动、未写任何既有交付文件；commit 仅新增二文件、无夹带、未 push；**生产者上报 2 条已逐条核属实**：① **库内重复收录** `s_dielian3`（精读·蝶恋花）与 `s3_c5cbb32d`（拓展·凤栖梧・蝶恋花）系柳永同一首词的两条记录 → 报 **#55**；② **任务书指针不准（灵玉的错）**：写「block61 21 条在 LEDGER.md」，实测 LEDGER 只有事实登记无逐条清单，pi 自行改用 `D:/AgentHub/agent-bridge/workdirs/qoder-trans/block61.json`（实测存在、21 条）并回报 → 任务书模板待修；口径差异（非缺陷）：已发批去重 id 灵玉 312（含 qoder-01 译文线）vs pi 299，与本池相交均 0、不影响池值 |
+
 ## 批次 id 索引
 
 - batch-02 的 30 个 id：见 out/content_production/batch-02.json（已入库，勿再依赖本地副本）

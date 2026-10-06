@@ -33,6 +33,11 @@ SRC = [
     ("out/content_production/batch-04.json",   "v2_batch"),
     ("out/content_pilot/qoder-01.json",        "trans"),
     ("out/content_production/trans-01.json",   "trans"),
+    # ---- merge-02（灵玉 10-05 派单，四批已 PASS）----
+    ("out/content_production/batch-05.json",   "v2_batch"),   # scenes_new + memory_new
+    ("out/content_production/batch-06.json",   "v2_batch"),   # 串讲 + memory_new
+    ("out/content_production/trans-04.json",  "trans"),      # lines[].m
+    ("out/content_production/trans-05.json",  "trans"),      # lines[].m
 ]
 if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))
@@ -162,11 +167,16 @@ for path, batch, kind, poems in sources:
                 if "memory_new" in p:
                     pk["memory"] = p["memory_new"]
                     op_count["memory"] += 1
+            # merge-02：scenes_new -> scenes（整体替换；条数与 t 标签须与库内逐一对应）
+            if "scenes_new" in p:
+                pk["scenes"] = p["scenes_new"]
+                op_count["scenes"] = op_count.get("scenes", 0) + 1
         else:  # trans
             pk["lines"] = p["lines"]
 
 L("")
-L("planned ops: 串讲=%d  memory=%d  trans-poems=%d" % (op_count["串讲"], op_count["memory"],
+L("planned ops: 串讲=%d  memory=%d  scenes=%d  trans-poems=%d" % (op_count["串讲"], op_count["memory"],
+       op_count.get("scenes", 0),
        op_count.get("m", 0) or sum(1 for v in patches.values() if "lines" in v)))
 L("distinct target poems: %d" % len(patches))
 L("skipped (not-in-POEMS): %d" % len(skipped))
@@ -289,7 +299,8 @@ def append_kv(ot, key, val, val_json=None):
         vtxt = fmt_val(val, ind, "multi")
     return body + nl + ind + '"%s": %s' % (key, vtxt) + nl + ot[last], True
 
-stats = {"changed": 0, "m_written": 0, "m_skip": 0, "o_mismatch": 0}
+stats = {"changed": 0, "m_written": 0, "m_skip": 0, "o_mismatch": 0,
+         "scenes_written": 0, "scenes_skip": 0}
 m_mismatch = []
 drift_align = []          # 漂移自动对齐记录：(id, 剥离字, 库内 o)
 new_list = list(objs)
@@ -311,6 +322,33 @@ for pid, pk in patches.items():
         if not done:
             nv, done = append_kv(ot, "memory", pk["memory"])
         ot = nv
+    # (b2) scenes_new -> scenes（merge-02）：整体替换，条数与键结构以库内为准
+    if "scenes" in pk:
+        try:
+            lib_scenes = (json.loads(orig).get("scenes") or [])
+            ok_parse = True
+        except Exception as e:
+            ok_parse = False
+            stats["scenes_skip"] += 1
+            skipped.append((pid, "scenes-obj-parse-fail", str(e)))
+        if ok_parse:
+            sn = pk["scenes"]
+            if len(lib_scenes) != len(sn):
+                stats["scenes_skip"] += 1
+                skipped.append((pid, "scenes-len-mismatch",
+                                "cur=%d src=%d" % (len(lib_scenes), len(sn))))
+            else:
+                new_scenes = []
+                for lsc, snc in zip(lib_scenes, sn):
+                    merged = {}
+                    for kk in lsc.keys():
+                        merged[kk] = snc.get(kk, lsc.get(kk))  # 缺键补齐（以库内为准）
+                    new_scenes.append(merged)
+                nv, done = set_kv(ot, "scenes", new_scenes)
+                if not done:
+                    nv, done = append_kv(ot, "scenes", new_scenes)
+                ot = nv
+                stats["scenes_written"] += 1
     # (c) lines[].m —— 需要 o 快照漂移闸
     if "lines" in pk:
         try:
@@ -416,6 +454,7 @@ L("")
 L("=== RESULT ===")
 L("changed objects: %d" % stats["changed"])
 L("m written: %d ; m skipped: %d" % (stats["m_written"], stats["m_skip"]))
+L("scenes written: %d ; scenes skipped: %d" % (stats["scenes_written"], stats["scenes_skip"]))
 L("size: %d -> %d (delta %+d)" % (len(ORIG_RAW), len(new_raw), len(new_raw) - len(ORIG_RAW)))
 
 # 校验：新 POEMS 能被 JSON 解析 & id 序不变

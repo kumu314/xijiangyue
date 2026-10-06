@@ -41,3 +41,11 @@ out/merge/_merge_*.json
 #       该次侥幸只 git add 了具体文件；但任何 `git add -A` / `git add tests/`
 #       都会把依赖树提交进去。且未跟踪目录会被「同步前清未跟踪文件」类操作 mv 走（见上）。
 node_modules/
+
+# ── .agent/（长任务记忆协议 L1，2026-10-06 起）────────────────────────
+# 依据：团队记忆协议 v1.0（卡 #91）。STATE.md / JOURNAL.md / DECISIONS.md 是
+#       **agent 与自己的会话间工作记忆**，按项目走、同步会互相覆盖，且每次收工
+#       覆盖式重写 → 入库只会制造无意义 diff。与本文件既有的「过程产物不入库」一致。
+# 落地方式：模板 D:/AgentHub/team/memory-protocol/templates/，自检
+#       node D:/AgentHub/team/memory-protocol/scripts/memory-doctor.mjs <项目根>
+.agent/

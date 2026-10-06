@@ -42,6 +42,7 @@ SRC = [
     ("out/content_production/batch-07.json",   "v2_batch"),   # 串讲 + memory_new
     ("out/content_production/batch-08.json",   "v2_batch"),   # 串讲 + memory_new
     ("out/content_production/foreign-expand-01.json", "v2_batch"),  # memory_new + scenes_new
+    ("out/content_production/jingdu-batch-01.json", "v2_batch"),   # 串讲 + memory_new（精读线正式批 #94 已 PASS）
 ]
 if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))

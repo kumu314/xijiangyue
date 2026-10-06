@@ -3,11 +3,12 @@
 **结论：PASS。** 精读线 golden sample 达标，可作为定调样本，**放行开正式批次**（建议首批量产 30 篇，seed 沿用批号规则）。
 
 - 被抽检：卡 #92（`xijiangyue-jingdu-sample-01-pi`），执行面 **pi**
-- 产物：`out/content_production/jingdu-sample-01.json`（5959 B）+ `README-jingdu-sample-01.md`（7329 B）
-- commit **315c722**（只新增上述二文件，无夹带；未 push ✓）
-- sha256（灵玉独立计算，与生产者自报**逐字一致**）：
-  - `jingdu-sample-01.json` = `31142d9218994ad541b525ac027d929c0c0b37e6da9244349a066405fefe1887`
-  - `README-jingdu-sample-01.md` = `e093b650fab05309da351ec638f5668f5c246a1cd1c4385f571d6266a2f5b97d`
+- 产物：`out/content_production/jingdu-sample-01.json`（5959 B）+ `README-jingdu-sample-01.md`（7418 B）
+- commit **`d9db7fb`**（只新增上述二文件，无夹带；未 push ✓）
+  - 追溯：pi 先交 `315c722`（22:36），4 分钟后自行 `commit --amend` 成 `d9db7fb`（22:37:57）。**差异仅 README 第 5 节「复现方式」补一行**（声明它额外跑了 `jd_verify.py` 做独立复核）；`jingdu-sample-01.json` 与 commit message **字节未变**。⇒ 内容不受影响，记下此 sha，勿再用 315c722（该对象仍在仓库中但已不可达）。
+- sha256（灵玉独立计算，与产物一致）：
+  - `jingdu-sample-01.json` = `31142d9218994ad541b525ac027d929c0c0b37e6da9244349a066405fefe1887`（与生产者**自报逐字一致**，amend 前后未变）
+  - `README-jingdu-sample-01.md` = `d5d1fbed818e59cc92007af4981e6f16d53fed9d3f32a3df1e204595c6759ad0`（amend 后；amend 前为 `e093b650…b97d`）
 
 > 说明：本单是**转派单**。原 #86 派给 opencode，回报了不存在的产物（文件不存在、无 commit、sha/mtime 未变），已判定未交付并置 cancelled。#92 转派 pi。**回报三要素（路径 + commit sha + sha256）是因该事件立的规矩，pi 三项齐全，本次全部核实为真。**
 
@@ -67,7 +68,7 @@
 - `index.html` sha256 = `68d26879…0563`，与 pi 开工前记录的基线**逐字一致**；mtime 16:19（早于其 22:11 开工）⇒ **未被改动**
 - `SPEC.md` sha256 = `3347572a…a804`，同样前后一致、未动
 - ⇒ `lines[].o` / `lines[].m` / `scenes` 一字未动；未向 `trans-06.json` 或任何既有交付文件写入
-- `git show --name-status 315c722`：仅 `A` 两个新文件，**无夹带**；未 push ✓
+- `git show --name-status d9db7fb`：仅 `A` 两个新文件，**无夹带**；未 push ✓
 
 ## 六、生产者上报事项（已逐条核实属实）
 
@@ -80,4 +81,4 @@
 - 精读线正式批次可开：余 **177 篇**（180 − 3 样本），按每批 30 约 6 批。
 - 报 #55：库内重复收录 `s_dielian3` / `s3_c5cbb32d`。
 - 修任务书模板：block61 指针改指 `block61.json`（本次已暴露一次）。
-- push 归小羽；本次 commit 315c722 在本地未推送。
+- push 归小羽；本次 commit `d9db7fb`（生产者交付）+ `83a6caa`（本抽检报告 + LEDGER 登记）均在本地未推送。

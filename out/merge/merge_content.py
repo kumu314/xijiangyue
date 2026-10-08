@@ -9,6 +9,11 @@
     --trans02/--trans03 为并入门槛开关（灵玉放行后才加）。幂等：已并入的篇会被
     识别为「同值」而零变化，因此二遍合并 trans-03 时只有第 7 文件那 20 首会变。
 
+合入门闸（对策②，2026-10-08 枯木授权）：
+    SRC 里每一批都必须有对应的抽检报告（out/review-<批名>.md，含 PASS/放行/通过），
+    缺报告或报告无放行结论 → 拒绝执行（连 dry 也拒）。无命令行绕过开关；
+    要豁免/改报告名只能改本文件的 GATE_EXEMPT / GATE_ALIASES（留下代码 diff 供 review）。
+
 设计要点：
 - 红线：970 首 id 与顺序逐位不变；未触及篇内容字节级零变化；只动 POEMS 数据。
 - 策略：不改整块 JSON 重序列化，而是逐篇定位对象文本边界，只对需改的篇做
@@ -16,7 +21,7 @@
 - 格式：新值排布风格与库内逐字符一致（多行展开 / 紧凑自适应，EOL 跟随输入）。
 - 幂等：重复跑读数一致。
 """
-import json, os, re, sys
+import io, json, os, re, sys
 
 REPO = r"D:/ZCode/小程序/xijiangyue"
 os.chdir(REPO)
@@ -43,6 +48,8 @@ SRC = [
     ("out/content_production/batch-08.json",   "v2_batch"),   # 串讲 + memory_new
     ("out/content_production/foreign-expand-01.json", "v2_batch"),  # memory_new + scenes_new
     ("out/content_production/jingdu-batch-01.json", "v2_batch"),   # 串讲 + memory_new（精读线正式批 #94 已 PASS）
+    # ---- merge-04（batch-09；zcode 托管复核四部分全过、建议开闸，2026-10-07；待枯木批准 push）----
+    ("out/content_production/batch-09.json",   "v2_batch"),   # 串讲 + memory_new
 ]
 if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))
@@ -53,6 +60,60 @@ log = []
 def L(s):
     log.append(s)
     print(s)
+
+# ================= 合入门闸（对策②，2026-10-08 枯木授权） =================
+# 背景：SPEC 第 28 行要求「抽检 PASS 在前、合入在后」，此前只靠人工守，已被绕过两次
+#   —— foreign-expand-01（2026-10-06）、batch-09（2026-10-07），两次都是「先合入、后抽检」。
+# 做法：把「该批抽检报告存在且含放行结论」变成**机械硬前置**——SRC 里任一批缺报告即拒绝执行。
+# 逃生口只有一个：改本文件的 GATE_ALIASES / GATE_EXEMPT，即必须留下一处**可被 review 的代码 diff**；
+#   刻意**不提供**命令行开关（如 --force / --no-gate），否则门闸会退化成「习惯性绕过」。
+GATE_ALIASES = {                      # 报告文件名不合 out/review-<批名>.md 约定的历史批
+    "batch-02": "out/review-prod-batch-02.md",
+    "qoder-01": "out/review-r5-51-qoder01.md",
+    "jingdu-batch-01": "out/review-jingdu-batch-01-pi.md",
+}
+GATE_EXEMPT = {                       # 门闸生效前已合入、且无独立报告文件的历史批（只减不增）
+    "pilot-01": "门闸建立前已合入；LEDGER 记「灵玉 PASS（#46）」，无独立报告文件",
+}
+GATE_VERDICT_TOKENS = ("PASS", "放行", "通过")
+
+def gate_check():
+    """返回 (ok, lines)。任一批缺报告或无放行结论 → ok=False。"""
+    out, missing, blocked = [], [], []
+    for path, _kind in SRC:
+        stem = os.path.basename(path)[:-len(".json")]
+        if stem in GATE_EXEMPT:
+            out.append("[gate] %-16s 豁免：%s" % (stem, GATE_EXEMPT[stem]))
+            continue
+        rep = GATE_ALIASES.get(stem, "out/review-%s.md" % stem)
+        if not os.path.exists(rep):
+            missing.append((stem, rep)); continue
+        body = io.open(rep, encoding="utf-8").read()
+        if any(t in body for t in GATE_VERDICT_TOKENS):
+            out.append("[gate] %-16s ✓ %s" % (stem, rep))
+        else:
+            blocked.append((stem, rep))
+    for m in missing:
+        out.append("[gate] %-16s ✗ 缺报告：%s" % (m[0], m[1]))
+    for b in blocked:
+        out.append("[gate] %-16s ✗ 报告无放行结论（需含 %s）：%s" % (b[0], "/".join(GATE_VERDICT_TOKENS), b[1]))
+    ok = not missing and not blocked
+    if not ok:
+        out.append("")
+        out.append("!! 合入门闸未通过：%d 批缺报告、%d 批报告无放行结论。" % (len(missing), len(blocked)))
+        out.append("!! 拒绝执行（含 dry）。补上抽检报告后重跑；")
+        out.append("!! 若报告文件名不合约定，在 GATE_ALIASES 里登记一行（会留下代码 diff，便于 review）。")
+    return ok, out
+
+_gate_ok, _gate_lines = gate_check()
+for _l in _gate_lines:
+    L(_l)
+if not _gate_ok:
+    try:
+        io.open("out/merge/_merge_log.txt", "w", encoding="utf-8").write("\n".join(log) + "\n")
+    except Exception:
+        pass
+    sys.exit(2)
 
 # ---------- 1. 读 index.html ----------
 raw = open("index.html", "rb").read()

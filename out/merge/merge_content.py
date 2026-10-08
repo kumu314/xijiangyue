@@ -48,8 +48,11 @@ SRC = [
     ("out/content_production/batch-08.json",   "v2_batch"),   # 串讲 + memory_new
     ("out/content_production/foreign-expand-01.json", "v2_batch"),  # memory_new + scenes_new
     ("out/content_production/jingdu-batch-01.json", "v2_batch"),   # 串讲 + memory_new（精读线正式批 #94 已 PASS）
-    # ---- merge-04（batch-09；zcode 托管复核四部分全过、建议开闸，2026-10-07；待枯木批准 push）----
+    # ---- merge-04（batch-09；zcode 托管复核四部分全过、建议开闸，2026-10-07；已随灵玉代提交推送）----
     ("out/content_production/batch-09.json",   "v2_batch"),   # 串讲 + memory_new
+    # ---- merge-05（trans-06 + trans-07，2026-10-08；抽检放行在前）----
+    ("out/content_production/trans-06.json",   "trans"),      # lines[].m（灵玉 + pi #93 双 PASS）
+    ("out/content_production/trans-07.json",   "trans"),      # lines[].m（灵玉 PASS，放行合入）
 ]
 if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))

@@ -32,7 +32,7 @@ N = 8
 
 # 已发批次（时间序）；反模板对照集只用**同线**已发批（串讲线 vs 串讲线）
 ORDER = ['pilot-01', 'batch-02', 'batch-03', 'batch-04', 'batch-05', 'batch-06', 'batch-07', 'batch-08',
-         'jingdu-sample-01', 'jingdu-batch-01', 'foreign-expand-01', 'batch-09']
+         'jingdu-sample-01', 'jingdu-batch-01', 'foreign-expand-01', 'batch-09', 'batch-10']
 FILES = {'pilot-01': os.path.join(PILOT, 'pilot-01.json')}
 for nm in ORDER[1:]:
     FILES[nm] = os.path.join(CP, nm + '.json')

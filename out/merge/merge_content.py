@@ -53,6 +53,8 @@ SRC = [
     # ---- merge-05（trans-06 + trans-07，2026-10-08；抽检放行在前）----
     ("out/content_production/trans-06.json",   "trans"),      # lines[].m（灵玉 + pi #93 双 PASS）
     ("out/content_production/trans-07.json",   "trans"),      # lines[].m（灵玉 PASS，放行合入）
+    # ---- merge-06（batch-10；灵玉抽检 PASS 放行，2026-10-09）----
+    ("out/content_production/batch-10.json",   "v2_batch"),   # 串讲 + memory_new
 ]
 if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))

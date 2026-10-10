@@ -84,10 +84,24 @@ python -m http.server 8080
 ```
 xijiangyue/
 ├── index.html      # 站点本体（单文件，零依赖）
+├── LESSONS.md      # ★ 内容线「开工必读」经验库（所有内容线 agent 必读）
 ├── tests/          # 前端回归测试（playwright-core + 系统 Chrome 无头）
 ├── README.md       # 本文件
 └── LICENSE         # 许可
 ```
+
+---
+
+## 🤝 内容线协作（**agent 开工必读**）
+
+任何参与本仓库内容生产 / 校勘 / 合入的 agent，**开工先读这两份**：
+
+| 文件 | 管什么 |
+|---|---|
+| [`LESSONS.md`](./LESSONS.md) | **经验与坑**：红线不变量、按任务类型的必读清单、实测踩过的坑、上游根因、未修缺陷、写死的口径、机制与门闸 |
+| [`out/content_production/SPEC.md`](./out/content_production/SPEC.md) | **规格与判据**：字段规格（串讲 / memory_new / 译文）、抽检口径、批次规则 |
+
+冲突时**以 SPEC 为准**，并回来改 LESSONS。踩到新坑 → 当轮追加到 `LESSONS.md` 的「附录 · 追加区」。
 
 ---
 

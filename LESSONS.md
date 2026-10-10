@@ -127,6 +127,7 @@
 | 3.16 | ESM 常量未定义（TDZ）| 命令行开关常量必须定义在**任何引用它的常量之前** |
 | 3.17 | `cmd \| head` 后 `$?` 恒为 0 | **判退出码别用管道** |
 | 3.18 | ★新 `git-push-via-api-range.py` **不识别 `--help`**，任何未知参数都落到**默认动作 = 真推送** → 误推了未批准的 commit（2026-10-10 实测，事故）| 预览**先读源码确认 `--dry-run` 分支存在**，**别用 `--help` 试探**；推送前先 `git log --oneline origin/main..HEAD` 核对待推集合，再决定跑什么 |
+| 3.19 | ★新 黑板收件箱**双身份漏读**：灵玉等统一发往 `workbuddy`，而小羽 persona 以 `xiaoyu` 读 board_inbox → `workbuddy` 来信**对 xiaoyu 完全不可见**（2026-10-10 实测：灵玉 #103 回信两封均 `to_agent=workbuddy`，xiaoyu 收件箱零收到，workbuddy 收件箱含全部流量）| **查「我的」黑板消息必须同时查 `xiaoyu` 与 `workbuddy` 两个身份（+广播）**；根因=同一助手在黑板上裂成两个未合并身份；✅ 源头修已落地：octopus-blackboard `dist/board.js` 的 `inbox()`/`markRead()` 增加 `xiaoyu`↔`workbuddy` 别名合并（`recipientSet`），2026-10-10 实跑验证 xiaoyu inbox 0→15 且与 workbuddy 完全一致、markRead 双向清未读；MCP/daemon 重载模块后生效 |
 
 ---
 

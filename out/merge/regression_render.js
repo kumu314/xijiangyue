@@ -54,7 +54,7 @@ async function probe(page, pid) {
 
   // ---------- 结构红线 ----------
   const meta = await page.evaluate(() => ({ n: POEMS.length, first: POEMS[0].id }));
-  ok("POEMS 总数 = 970", meta.n === 970, meta.n);
+  ok("POEMS 总数 = 935", meta.n === 935, meta.n);
   ok("首篇 id 不变", meta.first === "jingyesi", meta.first);
 
   // ---------- 被挡数：修正前后 ----------

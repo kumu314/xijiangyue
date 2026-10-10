@@ -15,7 +15,8 @@
     要豁免/改报告名只能改本文件的 GATE_EXEMPT / GATE_ALIASES（留下代码 diff 供 review）。
 
 设计要点：
-- 红线：970 首 id 与顺序逐位不变；未触及篇内容字节级零变化；只动 POEMS 数据。
+- 红线：935 首 id 与顺序逐位不变；未触及篇内容字节级零变化；只动 POEMS 数据。
+  （2026-10-10 A 方案并条后由 970 → 935：35 组重复收录各保留 1 条，见 out/review-merge-a-20261010.md）
 - 策略：不改整块 JSON 重序列化，而是逐篇定位对象文本边界，只对需改的篇做
   定点插入/替换 → 未触及的篇逐字节不动 → 天然满足「内容零变化」。
 - 格式：新值排布风格与库内逐字符一致（多行展开 / 紧凑自适应，EOL 跟随输入）。
@@ -190,16 +191,16 @@ def split_top_objects(s):
     return objs
 
 objs = split_top_objects(arr_text)
-assert len(objs) == 970, "expected 970 objects, got %d" % len(objs)
+assert len(objs) == 935, "expected 935 objects, got %d" % len(objs)
 
 def extract_id(ot):
     mm = re.search(r'"id"\s*:\s*"((?:[^"\\]|\\.)*)"', ot)
     return json.loads('"' + mm.group(1) + '"') if mm else None
 
 id_list = [extract_id(ot) for ot, _ in objs]
-assert len(set(id_list)) == 970, "duplicate ids!"
+assert len(set(id_list)) == 935, "duplicate ids!"
 id_pos = {pid: k for k, pid in enumerate(id_list)}
-L("poems: 970, unique ids: 970")
+L("poems: 935, unique ids: 935")
 
 # ---------- 2. 载入源文件 ----------
 sources = []

@@ -9,6 +9,11 @@
 *.yml  text eol=lf
 *.yaml text eol=lf
 
+# out/anim_map.json 历史为 CRLF（早于上方 eol=lf 规则入库，HEAD blob 即 CRLF）。
+# 用 -text 关闭其行尾转换，让 git 原样比对，避免被归一成 LF 而对 CRLF 的 HEAD
+# 产生整文件行尾 diff（真实键改动被淹没）。
+out/anim_map.json -text
+
 *.png binary
 *.jpg binary
 *.jpeg binary

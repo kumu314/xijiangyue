@@ -1,0 +1,84 @@
+{
+ "card": "#184 xijiangyue-feihua-dup6-121",
+ "baseline": "6866f04",
+ "baselineBlob": "1b5f7a557788e5fb3c4d5adf1f9c9b5c10e6bff8",
+ "baselineSha256": "da65694551d0a65b5b50d0dd6faaf728f2c40ce482f6bfb1443aed2e20c4a9f9",
+ "afterSha256": "92c2066ac3da9d5106ddf30a00503a89d75547f3531bdca33c41f37c91d0ba84",
+ "poolBefore": 71716,
+ "poolAfter": 71710,
+ "keys": 49,
+ "groups": [
+  {
+   "key": "秋",
+   "strip": "秋高天碧深",
+   "occurrences": 2,
+   "firstIdx": 234,
+   "dupIdx": 1169,
+   "firstRaw": "秋高天碧深",
+   "dupRaw": "秋高天碧深",
+   "rawIdentical": true,
+   "action": "keep first / drop second",
+   "removedText": "\"秋高天碧深\","
+  },
+  {
+   "key": "柳",
+   "strip": "柳挂九衢丝",
+   "occurrences": 2,
+   "firstIdx": 662,
+   "dupIdx": 1050,
+   "firstRaw": "柳挂九衢丝",
+   "dupRaw": "柳挂九衢丝",
+   "rawIdentical": true,
+   "action": "keep first / drop second",
+   "removedText": "\"柳挂九衢丝\","
+  },
+  {
+   "key": "清",
+   "strip": "黄河信有澄清日",
+   "occurrences": 2,
+   "firstIdx": 241,
+   "dupIdx": 1231,
+   "firstRaw": "黄河信有澄清日",
+   "dupRaw": "黄河信有澄清日",
+   "rawIdentical": true,
+   "action": "keep first / drop second",
+   "removedText": "\"黄河信有澄清日\","
+  },
+  {
+   "key": "烟",
+   "strip": "烟生遥岸隐",
+   "occurrences": 2,
+   "firstIdx": 214,
+   "dupIdx": 1124,
+   "firstRaw": "烟生遥岸隐",
+   "dupRaw": "烟生遥岸隐",
+   "rawIdentical": true,
+   "action": "keep first / drop second",
+   "removedText": "\"烟生遥岸隐\","
+  },
+  {
+   "key": "燕",
+   "strip": "伯劳飞迟燕飞疾",
+   "occurrences": 2,
+   "firstIdx": 620,
+   "dupIdx": 940,
+   "firstRaw": "伯劳飞迟燕飞疾",
+   "dupRaw": "伯劳飞迟燕飞疾",
+   "rawIdentical": true,
+   "action": "keep first / drop second",
+   "removedText": "\"伯劳飞迟燕飞疾\","
+  },
+  {
+   "key": "声",
+   "strip": "声名独见跻",
+   "occurrences": 2,
+   "firstIdx": 155,
+   "dupIdx": 1130,
+   "firstRaw": "声名独见跻",
+   "dupRaw": "声名独见跻",
+   "rawIdentical": true,
+   "action": "keep first / drop second",
+   "removedText": "\"声名独见跻\","
+  }
+ ]
+}

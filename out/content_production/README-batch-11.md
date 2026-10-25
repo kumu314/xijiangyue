@@ -5,8 +5,9 @@
 - 生产者：**zcode**（值守自干；先生成内容与自检脚本于 `D:/AgentHub/temp/zcode-batch-11/`，过程产物不入库）
 - 交付文件：`out/content_production/batch-11.json` + `out/content_production/README-batch-11.md`（本文件）
 - 顶层字段：`{"batch":"batch-11","generator":"zcode","date":"2026-10-24","schema":"v2.4.1","poems":[...]}`；每首 `{id,title,author,category,level,串讲,memory_new}`（**不含 scenes_new**，结构照 batch-10.json）
-- **交付状态：本批仅新增上述二文件；`git add` 只加此二文件，本地 commit 不 push（由小羽统一入远程）。**
-- `batch-11.json` sha256 = `2542a515cba57ca07d311e2f102f9cfd1de555c30c18aec52ef315e35b6b42f5`（54665 bytes）
+- **交付状态：本批仅新增上述二文件；`git add` 只加此二文件。** 本地 commit `d950f96` 后，按枯木 2026-10-25 裁定「可以合入」完成推送与合入（merge-07；执行记录见 `out/review-batch-11.md` 第十节与 LEDGER batch-11 行）。
+- `batch-11.json` sha256 = `16079fc701bb0bb89337cc6ab425a9c714da645afc2af48bedcba151dde51480`（54662 bytes）
+- **合入前订正（枯木裁定 A 案，2026-10-25）**：`河伯_先秦_屈原` 串讲末句「南浦自此成送别之地的万专名词」订正为「……的代名词」（万→代、删衍字「专」，净 −1 字；同篇 memory 卡原即作「送别代称」，两处表述自此一致）。订正后重跑机械 15 项 / 引文 74 处双口径 / 反模板 n=12 + 三重自测 / n=8 实体口径 / 等长滑窗异文扫描，结果与原抽检读数逐项一致（0 FAIL）；完整订正与重跑记录见 `out/review-batch-11.md` 第十节。
 
 ## 一、抽样口径
 

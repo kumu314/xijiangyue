@@ -56,6 +56,8 @@ SRC = [
     ("out/content_production/trans-07.json",   "trans"),      # lines[].m（灵玉 PASS，放行合入）
     # ---- merge-06（batch-10；灵玉抽检 PASS 放行，2026-10-09）----
     ("out/content_production/batch-10.json",   "v2_batch"),   # 串讲 + memory_new
+    # ---- merge-07（batch-11；灵玉抽检 PASS 放行，2026-10-25；枯木裁「可以合入」；河伯一字讹合入前已订正）----
+    ("out/content_production/batch-11.json",   "v2_batch"),   # 串讲 + memory_new
 ]
 if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))
@@ -331,6 +333,12 @@ def set_kv(ot, key, val, val_json=None):
                     vend = i; break
             i += 1
         if vend < 0: vend = len(ot)
+        # 保留「值尾 ↔ 定界符」之间的既有空白：库内原生风格为值后跟换行再收尾
+        # （如 '"…"\n }'）。若不保留，重序列化会把定界符前的空白一并吃掉，
+        # 给未触及篇制造字节级 diff（语义零变）——2026-10-25 merge-07 实测
+        # 3 篇历史编辑残留尾空白的篇中招，故在此根治。
+        while vend > vstart and ot[vend - 1] in " \t\r\n":
+            vend -= 1
 
         if val_json is not None:
             newv = val_json

@@ -49,3 +49,9 @@ node_modules/
 # 落地方式：模板 D:/AgentHub/team/memory-protocol/templates/，自检
 #       node D:/AgentHub/team/memory-protocol/scripts/memory-doctor.mjs <项目根>
 .agent/
+
+# ── 施工前备份目录（不入库，但必须活着）────────────────────────────
+# 用途：改 index.html / 后端前的逐字节副本，是报告里「回滚路径」的第一要素。
+# 为什么要 ignore：下方注释已记录 2026-10-01 那次「同步前清未跟踪文件」把 out/ 产物
+# 整体 mv 走的事故；备份目录若同为「未跟踪」，同样可能被扫走 → 回滚路径当场失效。
+_bak_*/

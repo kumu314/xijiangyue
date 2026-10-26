@@ -106,6 +106,7 @@ CREATE TABLE IF NOT EXISTS codes(
 );
 CREATE TABLE IF NOT EXISTS progress(
   user_id INTEGER PRIMARY KEY, learned INTEGER DEFAULT 0, streak INTEGER DEFAULT 0,
+  settings TEXT DEFAULT '',
   updated_at TEXT DEFAULT (datetime('now'))
 );
 CREATE TABLE IF NOT EXISTS checkin(
@@ -115,6 +116,8 @@ CREATE TABLE IF NOT EXISTS checkin(
 async function initDb() {
   if (USE_TURSO) await tursoMultiple(SCHEMA); // 幂等建表：IF NOT EXISTS，重复启动不报错
   else db.exec("PRAGMA journal_mode=WAL;\n" + SCHEMA);
+  // #199 P2-4：纸纹云同步字段。老库无 settings 列 → 幂等补列（已存在则抛错忽略）
+  try { await sql("ALTER TABLE progress ADD COLUMN settings TEXT DEFAULT ''"); } catch (e) {}
 }
 
 /* ---------- 工具 ---------- */
@@ -256,7 +259,11 @@ async function route(req, res, url) {
   if (P === "/api/me" && req.method === "GET") {
     const user = await sqlOne("SELECT phone, provider, name FROM users WHERE id=?", uid);
     if (!user) return json(res, 401, { ok: false, error: "用户不存在" });
-    const prog = await sqlOne("SELECT learned, streak, updated_at FROM progress WHERE user_id=?", uid) || { learned: 0, streak: 0, updated_at: "" };
+    // #199 P2-4：settings 列可能尚未迁移（未重启的老实例）→ 降级回老列，别把 /api/me 打死
+    let prog;
+    try { prog = await sqlOne("SELECT learned, streak, settings, updated_at FROM progress WHERE user_id=?", uid); }
+    catch (e) { prog = await sqlOne("SELECT learned, streak, updated_at FROM progress WHERE user_id=?", uid); }
+    prog = prog || { learned: 0, streak: 0, updated_at: "" };
     const chk = await sqlOne("SELECT date, done, counted, updated_at FROM checkin WHERE user_id=?", uid) || null;
     return json(res, 200, { ok: true, user, progress: prog, checkin: chk });
   }
@@ -265,9 +272,20 @@ async function route(req, res, url) {
     const b = JSON.parse((await readBody(req)) || "{}");
     const learned = Math.max(0, Math.min(9999, Number(b.learned) || 0));
     const streak = Math.max(0, Math.min(9999, Number(b.streak) || 0));
-    await sql(`INSERT INTO progress(user_id, learned, streak, updated_at) VALUES(?,?,?,?)
-                ON CONFLICT(user_id) DO UPDATE SET learned=excluded.learned, streak=excluded.streak, updated_at=excluded.updated_at`,
-      uid, learned, streak, nowISO());
+    // #199 P2-4：settings 为可选字段（老客户端不带 → 空串 → CASE 保留库中原值，不被清空）
+    const settings = (typeof b.settings === "string" ? b.settings : (b.settings ? JSON.stringify(b.settings) : "")).slice(0, 1000);
+    try {
+      await sql(`INSERT INTO progress(user_id, learned, streak, settings, updated_at) VALUES(?,?,?,?,?)
+                  ON CONFLICT(user_id) DO UPDATE SET learned=excluded.learned, streak=excluded.streak,
+                    settings=CASE WHEN excluded.settings='' THEN progress.settings ELSE excluded.settings END,
+                    updated_at=excluded.updated_at`,
+        uid, learned, streak, settings, nowISO());
+    } catch (e) {
+      // 列尚未迁移：退回老 upsert，保证老实例不 500（settings 本次丢弃，重启后自动生效）
+      await sql(`INSERT INTO progress(user_id, learned, streak, updated_at) VALUES(?,?,?,?)
+                  ON CONFLICT(user_id) DO UPDATE SET learned=excluded.learned, streak=excluded.streak, updated_at=excluded.updated_at`,
+        uid, learned, streak, nowISO());
+    }
     return json(res, 200, { ok: true });
   }
 

@@ -25,13 +25,25 @@
     /* 阅读设置变量（round4-③，默认=现状，不改观感） */
     --reader-fs:18px; --reader-ff:var(--kai); --reader-lh:2;
     --hei:"PingFang SC","Microsoft YaHei","Heiti SC","SimHei",sans-serif;
+    /* #199 P2-4 纸纹噪声资产（两张：rect alpha .05/.08）+ 阅读面渐变（供背景层复用） */
+    --paper-noise-05:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.05'/></svg>");
+    --paper-noise-08:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.08'/></svg>");
+    --orig-grad:radial-gradient(100% 70% at 10% 0%,rgba(178,58,46,.07),transparent 55%);
+    --hero-grad:radial-gradient(120% 90% at 88% 8%,rgba(178,58,46,.10),transparent 60%),linear-gradient(160deg,#FCF8EE 0%,#F6EEDC 100%);
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  /* #199 round7 P0-1：篆刻印 SVG（容器尺寸/旋转/动效不变，只换内部字形） */
+  .sealsvg{width:100%;height:100%;display:block;}
   html,body{height:100%;}
   body{font-family:var(--sans);color:var(--ink);background:#E7DFCB;display:flex;justify-content:center;-webkit-font-smoothing:antialiased;}
   .phone{position:relative;width:390px;min-height:100vh;max-height:100vh;background:var(--paper);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 80px rgba(60,45,25,.28);}
-  .phone::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.5;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.05'/></svg>");}
+  /* #199 P2-4 纸纹三档：body 类 paper-off/light/heavy 驱动（默认 light=淡，HTML 里直接写在 body 上，无 JS 也生效）。
+     噪声资产是两张 data-URI（rect alpha .05/.08），与原有渐变一起作 background 层——
+     背景层永远在内容之下，不动 z-index、不遮文字。有效强度：关 0 / 淡 .05 / 浓 .08。 */
+  .phone::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;opacity:1;
+    background-image:var(--paper-noise-05);}
+  body.paper-heavy .phone::before{background-image:var(--paper-noise-08);}
+  body.paper-off .phone::before{opacity:0;}
   .phone>*{position:relative;z-index:1;}
   .statusbar{height:44px;flex:0 0 44px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:14px;font-weight:600;}
   .statusbar .icons{display:flex;gap:6px;align-items:center;}
@@ -49,9 +61,14 @@
   .searchbar svg{flex:0 0 auto;}
   .card{background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:0 6px 18px rgba(110,90,55,.08);}
 
-  /* 今日一诗 Hero */
+  /* 今日一诗 Hero
+     ⚠️ #199 round7：此处**故意不挂纸纹噪声层**（`.original` 与整页底都挂了，唯独这里不挂）。
+     原因：hero 是「意象底」——round5 §2.2 实测最紧组 heroB `#F6EEDC` + 黑色意象@.15 得 `#D1CABB`，
+     `--ink-2` 对比度 4.68，距 AA 4.5 仅余 0.18。噪声最暗粒子（≈纯黑×α）会把底再压一档：
+     淡档 .05 → 约 4.22、浓档 .08 → 约 3.95，**双双跌破 4.5**。
+     硬验收门写明「意象底余量 0.18 不压缩」，按「宁砍不移」——故 hero 一律保持纯渐变。 */
   .hero{position:relative;overflow:hidden;padding:26px 22px 22px;margin-bottom:var(--gap);
-    background:radial-gradient(120% 90% at 88% 8%,rgba(178,58,46,.10),transparent 60%),linear-gradient(160deg,#FCF8EE 0%,#F6EEDC 100%);
+    background-image:var(--hero-grad);
     border:1px solid var(--line);border-radius:4px;box-shadow:0 10px 28px rgba(110,90,55,.12);}
   .hero::before{content:"";position:absolute;inset:6px;border:1px solid rgba(178,58,46,.30);border-radius:2px;pointer-events:none;}
   .hero .hero-bg{position:absolute;inset:0;opacity:.15;pointer-events:none;filter:saturate(.75);}
@@ -118,11 +135,15 @@
   .detail-head>div:nth-child(2){flex:1 1 auto;min-width:0;}
   .detail-head .head-actions{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;min-width:0;}
   .detail-head .read-btn{margin-left:0;flex:0 0 auto;}
-  .original{background:radial-gradient(100% 70% at 10% 0%,rgba(178,58,46,.07),transparent 55%),var(--paper-card-2);border:1px solid var(--line);border-radius:4px;padding:18px 16px 16px;margin-bottom:var(--gap);}
+  /* #199 P2-4：原文卡（阅读主面板）加纸纹背景层——噪声在最上、渐变其次，均在文字之下 */
+  .original{background-image:var(--paper-noise-05), var(--orig-grad);background-color:var(--paper-card-2);border:1px solid var(--line);border-radius:4px;padding:18px 16px 16px;margin-bottom:var(--gap);}
+  body.paper-heavy .original{background-image:var(--paper-noise-08), var(--orig-grad);}
+  body.paper-off .original{background-image:var(--orig-grad);}
   .original::before{content:"";display:block;height:1px;background:rgba(178,58,46,.25);margin:0 4px 12px;box-shadow:0 3px 0 rgba(178,58,46,.12);}
   .vpoem{display:flex;flex-direction:row-reverse;gap:12px;align-items:stretch;}
   .vtitle{writing-mode:vertical-rl;flex:0 0 auto;background:var(--cinnabar);color:#FBF6EA;border-radius:4px;
-    padding:12px 5px;display:flex;gap:5px;align-items:flex-start;justify-content:flex-start;box-shadow:0 3px 10px rgba(178,58,46,.30);}
+    padding:12px 5px;display:flex;gap:5px;align-items:flex-start;justify-content:flex-start;box-shadow:0 3px 10px rgba(178,58,46,.30);
+    filter:url(#sealEdge);} /* #199 P0-1：题签印同授残边（字口+块缘一起被"啃"，投影同场变形不显假） */
   .vtitle .vt-name{font-family:var(--reader-ff);font-weight:700;font-size:16px;letter-spacing:4px;}
   .vtitle.long .vt-name{font-size:13px;letter-spacing:2px;}
   .vtitle.xlong .vt-name{font-size:11px;letter-spacing:1px;}
@@ -132,6 +153,9 @@
   .vbody{writing-mode:vertical-rl;height:300px;display:inline-block;padding:6px 2px;}
   .vline{font-family:var(--reader-ff);font-size:var(--reader-fs);letter-spacing:2.5px;color:var(--ink);line-height:var(--reader-lh);
     border-block-start:1px solid rgba(178,58,46,.18);padding:0 9px;}
+  /* #199 P1-2：折行续列片段——朱丝栏仍只在句首列；续列无界线 + 顶部缩进 + 极弱朱砂底（.05 档）。
+     形状冗余：缩进与弱底双标记，不只靠一样；色弱可辨（位置差 + 明度差）。 */
+  .vline.vcont{border-block-start:none;padding-top:.9em;background:rgba(178,58,46,.05);border-radius:2px;}
   .original .note{margin-top:12px;font-size:12px;color:var(--ink-3);border-top:1px dashed var(--line);padding-top:12px;}
 
   /* 读诗排版：横排现代式（body.layout-horizontal 时生效；竖排手卷为默认） */
@@ -491,9 +515,25 @@
   .fh-end-stats b{color:var(--cinnabar);font-family:var(--serif);font-size:24px;margin-right:4px;}
   .fh-end .btn-primary{margin-bottom:10px;}
   .fh-round-tag{position:absolute;top:14px;right:18px;font-size:12px;color:var(--ink-3);background:var(--paper-card);padding:4px 10px;border-radius:var(--r-pill);border:1px solid var(--line);}
+
+  /* ===== #199 round7 硬验收门：prefers-reduced-motion 全覆盖 =====
+     旧法只把「打卡印入场」一处 animation:none，页面其余 0.15–0.3s 的入场与悬停过渡照跑
+     （reduce 下实测仍有 300+ 个元素带非零时长）。此处统一压到 .001ms 而非 0：
+     保留极短时长可让 transitionend/animationend 照常触发（本项目暂未依赖，但留余量），
+     同时保证「无可见动效」。animation-iteration-count 锁 1，避免无限循环动画在 reduce 下空转。 */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation-duration:.001ms !important;
+      animation-delay:0s !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.001ms !important;
+      transition-delay:0s !important;
+      scroll-behavior:auto !important;
+    }
+  }
 </style>
 </head>
-<body>
+<body class="paper-light">
 <div class="phone" id="phone">
   <div class="statusbar">
     <span id="clock">21:08</span>
@@ -509,7 +549,7 @@
     <section class="view active" id="view-home">
       <div class="page-head">
         <div><div class="title">西江阅·诗笺</div><div class="sub">每日一诗 · 读懂千年</div></div>
-        <div class="seal">阅</div>
+        <div class="seal"><svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true"><use href="#seal-yue"/></svg></div>
       </div>
       <div class="searchbar" onclick="goSearch()">
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="5"/><path d="M10 10l4 4"/></svg>
@@ -527,28 +567,53 @@
 <symbol id="gi-dragon-c" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M33 9.5 C20 5.5 9.5 13 9.5 24 C9.5 34.5 19 41.5 29.5 39.5 C34 38.6 37.5 36 39 32.5"/><path d="M33 9.5 C36 10.5 37.5 12.5 37.5 15 L31.5 16.5"/><path d="M31 8.5 C30.5 5.5 32 3.5 35 3"/><path d="M36 8.8 C36.5 6.2 38.5 5 41 5.2"/><path d="M37.5 15 C39.5 15.5 40.8 16.8 41.5 18.5 L36.5 20"/></g><circle cx="34.8" cy="13.4" r="1" fill="currentColor"/></symbol>
 <symbol id="gi-bamboo" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 9.5 V38.5"/><path d="M19 11 V37"/><path d="M25.5 9.5 V38.5"/><path d="M32 11 V37"/><path d="M38.5 9.5 V38.5"/><path d="M11 16.5 H40"/><path d="M11 30.5 H40"/></g></symbol>
 <symbol id="gi-paperbrush" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="21" width="30" height="16" rx="1.6"/><path d="M14 26.5 C18 25.2 23 25.2 26.5 26.2"/><path d="M20 29.5 L38 8.5"/></g><path d="M20 29.5 c-1.9 1.4 -3.2 3.3 -3.9 5.6 c2.3 -.3 4.2 -1.4 5.6 -3 Z" fill="currentColor"/></symbol>
+<!-- ============ #199 round7 P0-1 篆刻印 SVG 化 ============
+     朱文印 vessel：印底残边（feTurbulence+feDisplacementMap 啃出不齐边）
+     + 印底微噪（speckle 被印形 operator=in 裁住，不溢出）+ 字口残边。
+     6 枚手绘字形（读/观/知/记/温/阅）走 <use>；次级字形（习/回/春/夏/秋/冬/令/接/背/考）
+     走 sealMarkup() 的楷形+残边回退（任务内置回退协议，见 out/review-r7-*.md）。
+     约束：容器 .seal/.stamp/.jl-seal/.gc-seal/.lg-logo 的尺寸/旋转/动效 CSS 一律不动，
+     只把内部文字换成 SVG；不引整字库（体积红线）。 -->
+<filter id="sealInk" x="-15%" y="-15%" width="130%" height="130%">
+  <feTurbulence type="fractalNoise" baseFrequency="0.11" numOctaves="2" seed="7" result="n"/>
+  <feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" result="disp"/>
+  <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="11" result="g"/>
+  <feColorMatrix in="g" type="matrix" values="0 0 0 0 0.42  0 0 0 0 0.10  0 0 0 0 0.05  0.08 0.08 0.08 0 -0.06" result="speck"/>
+  <feComposite in="speck" in2="disp" operator="in" result="speckIn"/>
+  <feMerge><feMergeNode in="disp"/><feMergeNode in="speckIn"/></feMerge>
+</filter>
+<filter id="sealEdge" x="-15%" y="-15%" width="130%" height="130%">
+  <feTurbulence type="fractalNoise" baseFrequency="0.13" numOctaves="2" seed="7" result="n"/>
+  <feDisplacementMap in="SourceGraphic" in2="n" scale="3"/>
+</filter>
+<symbol id="seal-du" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M28 25 L37 25 M20 42 L42 42 M36 38 V62 L43 66"/><path d="M58 22 V38 M50 29 H66 M46 46 H74 V54 M48 64 H72 M53 56 V64 M67 56 V64"/></g></symbol>
+<symbol id="seal-guan" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M19 29 H37 L30 44 M42 25 L27 56"/><path d="M52 26 V64 M52 26 H64 M52 45 H64 M64 26 V64"/><path d="M69 30 C73 44 73 54 71 66 M81 30 C77 44 77 54 79 66"/></g></symbol>
+<symbol id="seal-zhi" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M28 24 L44 56 M36 23 L50 48 M22 52 H58"/><path d="M62 30 H84 V62 H62 Z"/></g></symbol>
+<symbol id="seal-ji" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M27 25 L36 25 M20 42 L42 42 M36 38 V62 L43 66"/><path d="M50 30 H78 V54 H62 V70 H82"/></g></symbol>
+<symbol id="seal-wen" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M19 26 L31 26 M18 44 L30 44 M19 62 L31 62"/><path d="M38 24 H56 V46 H38 Z M38 35 H56"/><path d="M60 48 H86 V78 H60 Z M68 48 V78 M78 48 V78"/></g></symbol>
+<symbol id="seal-yue" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M35 23 L44 23 M27 32 V78 M40 31 H72 V78"/><path d="M48 39 L54 47 M64 39 L58 47 M47 53 H65 V66 H47 Z"/></g></symbol>
 </defs></svg>
       <div class="game-entry">
         <div class="game-card" onclick="openFeihua()">
-          <div class="gc-icon feihua"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#gi-flower"/></svg><span class="gc-ring"></span><span class="gc-seal">令</span></div>
+          <div class="gc-icon feihua"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#gi-flower"/></svg><span class="gc-ring"></span><span class="gc-seal"><svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="50" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="50" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">令</text></svg></span></div>
           <div class="gc-title">飞花令</div>
           <div class="gc-sub">含某字一句诗，看谁接得快</div>
           <div class="gc-deco" aria-hidden="true"><svg viewBox="0 0 48 48"><use href="#gi-flower"/></svg></div>
         </div>
         <div class="game-card" onclick="toast('即将上线，敬请期待')">
-          <div class="gc-icon" style="background:linear-gradient(135deg,#3E5C6E,#2A4456);"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#gi-dragon-c"/></svg><span class="gc-ring"></span><span class="gc-seal">接</span></div>
+          <div class="gc-icon" style="background:linear-gradient(135deg,#3E5C6E,#2A4456);"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#gi-dragon-c"/></svg><span class="gc-ring"></span><span class="gc-seal"><svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="50" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="50" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">接</text></svg></span></div>
           <div class="gc-title">诗词接龙</div>
           <div class="gc-sub">上句末字接下句首字</div>
           <div class="gc-deco" aria-hidden="true"><svg viewBox="0 0 48 48"><use href="#gi-dragon-c"/></svg></div>
         </div>
         <div class="game-card" onclick="toast('即将上线，敬请期待')">
-          <div class="gc-icon" style="background:linear-gradient(135deg,#8A6220,#8B6722);"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#gi-bamboo"/></svg><span class="gc-ring"></span><span class="gc-seal">背</span></div>
+          <div class="gc-icon" style="background:linear-gradient(135deg,#8A6220,#8B6722);"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#gi-bamboo"/></svg><span class="gc-ring"></span><span class="gc-seal"><svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="50" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="50" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">背</text></svg></span></div>
           <div class="gc-title">背一背</div>
           <div class="gc-sub">给上句填下句，巩固记忆</div>
           <div class="gc-deco" aria-hidden="true"><svg viewBox="0 0 48 48"><use href="#gi-bamboo"/></svg></div>
         </div>
         <div class="game-card" onclick="toast('即将上线，敬请期待')">
-          <div class="gc-icon" style="background:linear-gradient(135deg,#4E6B4A,#4F6748);"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#gi-paperbrush"/></svg><span class="gc-ring"></span><span class="gc-seal">考</span></div>
+          <div class="gc-icon" style="background:linear-gradient(135deg,#4E6B4A,#4F6748);"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#gi-paperbrush"/></svg><span class="gc-ring"></span><span class="gc-seal"><svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="50" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="50" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">考</text></svg></span></div>
           <div class="gc-title">考一考</div>
           <div class="gc-sub">作者/诗名选择题，趣味闯关</div>
           <div class="gc-deco" aria-hidden="true"><svg viewBox="0 0 48 48"><use href="#gi-paperbrush"/></svg></div>
@@ -639,7 +704,7 @@
 
     <!-- ============ 学习 ============ -->
     <section class="view" id="view-learn">
-      <div class="page-head"><div><div class="title">学习</div><div class="sub">路径清晰 · 循序渐进</div></div><div class="seal">习</div></div>
+      <div class="page-head"><div><div class="title">学习</div><div class="sub">路径清晰 · 循序渐进</div></div><div class="seal"><svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="50" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="50" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">习</text></svg></div></div>
       <div class="section-title">今日打卡</div>
       <div class="checkin card" id="checkinBox"></div>
       <div class="section-title">推荐学习路径</div>
@@ -650,7 +715,7 @@
 
     <!-- ============ 我的记忆（#63④ 记忆曲线） ============ -->
     <section class="view" id="view-memory">
-      <div class="page-head"><div><div class="title">我的记忆</div><div class="sub">遗忘与复习的节律</div></div><div class="seal" onclick="showView('view-learn')">回</div></div>
+      <div class="page-head"><div><div class="title">我的记忆</div><div class="sub">遗忘与复习的节律</div></div><div class="seal" onclick="showView('view-learn')"><svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="50" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="50" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">回</text></svg></div></div>
       <div class="mem-summary" id="memSummary"></div>
       <div class="mem-block"><div class="mem-h">复习桶分布</div><div class="mem-donut-wrap"><div id="memDonut"></div><div class="mem-legend" id="memLegend"></div></div></div>
       <div class="mem-block"><div class="mem-h">未来 30 天到期队列</div><div id="memCurve"></div><div class="mem-curve-cap">每日新到期的诗数（若一直不温，积压会越积越多——看见进步，就是坚持的理由）</div></div>
@@ -658,7 +723,7 @@
 
     <!-- ============ 往日笺（#63① 月历回看） ============ -->
     <section class="view" id="view-almanac">
-      <div class="page-head"><div><div class="title">往日笺</div><div class="sub">每日一诗的足迹 · 点日期回看</div></div><div class="seal" onclick="showView('view-learn')">回</div></div>
+      <div class="page-head"><div><div class="title">往日笺</div><div class="sub">每日一诗的足迹 · 点日期回看</div></div><div class="seal" onclick="showView('view-learn')"><svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="50" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="50" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">回</text></svg></div></div>
       <div class="alm card">
         <div class="alm-head">
           <div class="alm-nav" onclick="almShift(-1)">‹</div>
@@ -684,7 +749,7 @@
     <!-- ============ 登录 ============ -->
     <section class="view" id="view-login">
       <div class="login-hero">
-        <div class="lg-logo">阅</div>
+        <div class="lg-logo"><svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true"><use href="#seal-yue"/></svg></div>
         <div class="lg-t">登录西江阅</div>
         <div class="lg-s">登录后同步学习进度与打卡记录</div>
       </div>
@@ -68212,7 +68277,7 @@ function renderHome(){
         <button class="btn btn-ghost" onclick="readPoem('${today.id}')">听朗读</button>
       </div>
       <div class="signoff">每日一诗</div>
-      <div class="seal">阅</div>
+      <div class="seal"><svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true"><use href="#seal-yue"/></svg></div>
     </div>`;
   $("#homeCats").innerHTML = CATS.map(c=>`
     <div class="cat" onclick="goCategory('${c.name}')">
@@ -68255,7 +68320,7 @@ function goJieling(){
     const ps = jielingPoems(jl);
     const fs = jl.festivals.map(f=>`<span>${f.n}</span>`).join("");
     return `<div class="jl-card" onclick="openJieling(${i})">
-      <div class="jl-seal">${jl.seal}</div>
+      <div class="jl-seal">${sealMarkup(jl.seal)}</div>
       <div class="jl-n">${jl.name}</div>
       <div class="jl-sub">${jl.desc.split("……")[0]}</div>
       <div class="jl-fest">${fs}</div>
@@ -68389,7 +68454,7 @@ function openDetail(id){
   $("#dOriginal").innerHTML = `<div class="vpoem${showOrig?" orig-lang":""}${maskOn?" mask-on":""}">
       <div class="vtitle ${tcls}"><span class="vt-name">${esc(p.title)}</span><span class="vt-author">${esc(p.author)}</span></div>
       ${segNav}
-      <div class="vscroll" id="vscroll"><div class="vbody">${renderMaskLines(bodyLines.slice(segA,segB),p.id,segA)}</div></div>
+      <div class="vscroll" id="vscroll"><div class="vbody" id="vbody"></div></div>
     </div>`
     + `<div class="note">全篇 ${lines.length} 句 · ${p.category} · ${(p.tags||[]).join("·")}${expand?" · 拓展篇":""}。${expand?"本篇为拓展收录，已附串讲与助记；逐句译文陆续补充。":"诗句自右向左竖读；点击下方标签，从五个维度吃透它。"}${showOrig?"（背诵语言：原文）":""}${maskOn?`（背诵：${MASK_LABEL[maskLv]}${curSeg>=0?" · 第 "+(curSeg+1)+"/"+segTotal+" 段":""}）`:""}<span id="maskTip"></span></div>`;
   if($("#maskBtn")){ $("#maskBtnTxt").textContent=MASK_LABEL[maskLv];
@@ -68437,6 +68502,10 @@ function openDetail(id){
   $("#panel-tr").classList.add("active"); ["lecture","viz","mem","use","story"].forEach(x=>$("#panel-"+x).classList.remove("active"));
   showView("view-detail");
   $("#tabbar").classList.add("hidden");
+  /* #199 P1-2 竖排折行分组：必须放在 showView 之后测 Layout——视图未激活时
+     .vbody 在 display:none 子树里，offsetWidth 全 0 会漏检折行（首帧 bug，实测踩过）。
+     pass1（不切分）→ 量折行列反推真实列容量 → pass2 切分，同任务同步执行无中间绘制。 */
+  renderVbody($("#vbody"), bodyLines.slice(segA,segB), p.id, segA, !showOrig && getLayout()!=="horizontal");
   const vs=$("#vscroll"); if(vs) vs.scrollLeft=vs.scrollWidth; // 竖排卷轴初始停在篇首（最右）
 }
 /* ============ #63② 诗笺分享卡（Canvas 手绘，零依赖） ============ */
@@ -68885,6 +68954,16 @@ function loopLine(idx){
 }
 
 /* ============ 学习页：打卡 ============ */
+/* #199 round7 P0-1：篆刻印标记生成。6 枚手绘字形走 <use> 符号；
+   次级字形走楷形+sealEdge 残边回退（任务内置回退协议：认不出就回退，此处为统一入口）。 */
+const SEAL_HAND={"读":"#seal-du","观":"#seal-guan","知":"#seal-zhi","记":"#seal-ji","温":"#seal-wen","阅":"#seal-yue"};
+function sealMarkup(ch){
+  const sym=SEAL_HAND[ch];
+  const glyph = sym
+    ? `<use href="${sym}"/>`
+    : `<rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="50" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="50" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">${esc(ch)}</text>`;
+  return `<svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true">${glyph}</svg>`;
+}
 const CHECKIN_ITEMS=[
   {key:"read", t:"每日读一首", d:"读 / 看一首诗", se:"读"},
   {key:"watch", t:"每日看动画", d:"看意象动画", se:"观"},
@@ -68917,7 +68996,7 @@ function renderCheckin(){
     const d = checkin.done[it.key];
     return `<div class="ci-item ${d?'done':''}${it.wide?' wide':''}" onclick="toggleCheckin('${it.key}')">
       <div class="ck">${d?'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg>':''}</div>
-      <div><div class="ct">${it.t}</div><div class="cd">${it.d}</div></div>${d?`<div class="stamp ${justStampKey===it.key?'stamp-in':''}">${it.se}</div>`:''}</div>`;
+      <div><div class="ct">${it.t}</div><div class="cd">${it.d}</div></div>${d?`<div class="stamp ${justStampKey===it.key?'stamp-in':''}">${sealMarkup(it.se)}</div>`:''}</div>`;
   }).join("")+`</div>`;
   html += renderReviewCard(); // 今日温故卡（到期队列，每日上限 10）
   html += `<div class="rv-card mem-entry" onclick="showView('view-memory')">
@@ -68927,7 +69006,7 @@ function renderCheckin(){
   if(stampAlbum.length){
     const shown = stampAlbum.slice(-8);
     html += `<div class="ci-album"><div class="al-t">印谱</div><div class="al-seals">`+
-      shown.map(a=>`<div class="seal" title="${a.date}">阅</div>`).join("")+
+      shown.map(a=>`<div class="seal" title="${a.date}">${sealMarkup("阅")}</div>`).join("")+
       `</div><div class="al-n">${stampAlbum.length} 印</div></div>`;
   }
   $("#checkinBox").innerHTML = html;
@@ -69001,7 +69080,7 @@ function renderMe(){
     <div class="mi" onclick="goLogin()"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 8l7-5 7 5"/></svg></span><span class="mi-t">我的收藏</span><span class="mi-ar">›</span></div>
     <div class="mi" onclick="switchTab('learn')"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span><span class="mi-t">学习记录</span><span class="mi-ar">›</span></div>
     <div class="mi" onclick="toast('朗读设置：可调节语速与音色')"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></span><span class="mi-t">朗读设置</span><span class="mi-ar">›</span></div>
-    <div class="mi" onclick="openReadingSettings()"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h11M4 12h16M4 17h9"/><path d="M17 5l2 2-2 2M20 14l-2 2 2 2"/></svg></span><span class="mi-t">阅读设置（排版 / 字体）</span><span class="mi-ar">›</span></div>
+    <div class="mi" onclick="openReadingSettings()"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h11M4 12h16M4 17h9"/><path d="M17 5l2 2-2 2M20 14l-2 2 2 2"/></svg></span><span class="mi-t">阅读设置（排版 / 字体 / 纸纹）</span><span class="mi-ar">›</span></div>
     <div class="mi" onclick="toast('西江阅·诗笺 · 边学边教，读懂千年')"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 013.5 2.3c-.8.4-1 .9-1 1.7M12 16.5v.5"/></svg></span><span class="mi-t">关于西江阅</span><span class="mi-ar">›</span></div>`;
 }
 
@@ -69035,7 +69114,7 @@ let syncTimer=null;
 async function syncPush(now){
   if(!API_BASE || !currentUser || !currentUser.token) return;
   const put = async ()=>{
-    await api("/api/progress","PUT",{learned:progress.learned, streak:progress.streak});
+    await api("/api/progress","PUT",{learned:progress.learned, streak:progress.streak, settings:JSON.stringify({paper:getPaper()})});
     const t=new Date().toISOString().slice(0,10);
     await api("/api/checkin","PUT",{date:t, done:(checkin&&checkin.done)||{}, counted:(checkin&&checkin.counted)||{}});
     progress._lastSync = new Date().toISOString();
@@ -69063,6 +69142,17 @@ async function syncPull(){
     }
   }
   localStorage.setItem(LS_PROGRESS, JSON.stringify(progress));
+  /* #199 P2-4：纸纹档位随进度云同步。口径=最后写入者胜：每次 push 都带当前档位，
+     云端值至少与本地最后一次同步同新，故拉到时直接采纳（非法值忽略）。 */
+  if(srv.settings){
+    try{
+      const st = (typeof srv.settings==="string") ? JSON.parse(srv.settings||"{}") : srv.settings;
+      if(st && PAPER_TEX[st.paper]!==undefined && st.paper!==getPaper()){
+        localStorage.setItem("xjy_paper", st.paper); applyPaper();
+        if(document.querySelector("#rsetOverlay.active")) renderReadingSettings();
+      }
+    }catch(e){}
+  }
   if($("#view-learn").classList.contains("active")) renderLearn();
   renderMe();
 }
@@ -69125,8 +69215,10 @@ function goHome(){
 $("#dOriginal").addEventListener("click", (e)=>{
   const vl = e.target.closest(".vline"); if(!vl) return;
   if(speechState.mode==="idle") return;
-  const body = vl.parentElement;
-  loopLine([...body.children].indexOf(vl));
+  /* #199 P1-2：折行片段之后 DOM 子序号 ≠ 诗句序号，必须取 data-li（全局行号）。
+     顺带修掉分段背诵的老 bug：旧代码用 DOM 子序号，第 2 段起会循环错行。 */
+  const li = vl.dataset && vl.dataset.li !== undefined ? Number(vl.dataset.li) : [...vl.parentElement.children].indexOf(vl);
+  loopLine(li);
 });
 document.querySelectorAll("#tabbar .tb").forEach(tb=>{
   tb.addEventListener("click", ()=>switchTab(tb.dataset.view));
@@ -69306,9 +69398,29 @@ function closeFeihua(){ clearInterval(fhState.timer); $("#feihuaOverlay").classL
 
 renderHome(); renderMe();
 
+/* ============ 阅读设置：纸纹三档（#199 round7 P2-4） ============
+   档位→body 类：off/light/heavy → paper-off/paper-light/paper-heavy。
+   强度：关 0 / 淡 .05 / 浓 .08（浓不超 .08 免显脏）。默认「淡」，且 HTML body 上已写死
+   paper-light，无 JS 时也是淡档。CSS 侧见 :root 的 --paper-noise-05/08。
+   失败模式（任务卡）：低分屏上浓档可能出摩尔纹——真机抽查不过就降一档。 */
+const PAPER_TEX={off:0, light:0.05, heavy:0.08};
+const PAPER_LABEL={off:"关", light:"淡", heavy:"浓"};
+function getPaper(){ const v=localStorage.getItem("xjy_paper"); return PAPER_TEX[v]!==undefined ? v : "light"; }
+function applyPaper(){
+  const b=document.body.classList, v=getPaper();
+  ["paper-off","paper-light","paper-heavy"].forEach(c=>b.remove(c));
+  b.add("paper-"+v);
+}
+function setPaper(v){
+  if(PAPER_TEX[v]===undefined) return;
+  localStorage.setItem("xjy_paper", v);
+  applyPaper();
+  if(document.querySelector("#rsetOverlay.active")) renderReadingSettings();
+  if(API_BASE && currentUser && currentUser.token) syncPush(false); // 登录态随进度防抖上云
+}
+
 /* ============ 阅读设置：排版切换（round4-②） ============ */
-function getLayout(){ return localStorage.getItem("xjy_layout") || "vertical"; }
-function applyLayout(){
+function getLayout(){ return localStorage.getItem("xjy_layout") || "vertical"; }function applyLayout(){
   const b=document.body.classList;
   if(getLayout()==="horizontal") b.add("layout-horizontal"); else b.remove("layout-horizontal");
   if($("#layoutBtnTxt")) $("#layoutBtnTxt").textContent = getLayout()==="vertical" ? "竖排" : "横排";
@@ -69347,6 +69459,13 @@ function renderReadingSettings(){
     <div class="rset-sec">
       <div class="rset-sec-t">行距<span class="cur">${sp}</span></div>
       <div class="rset-opts">${opt(["紧","适中","松"],sp,"spacing")}</div>
+    </div>
+    <div class="rset-sec">
+      <div class="rset-sec-t">纸纹<span class="cur">${PAPER_LABEL[getPaper()]}</span></div>
+      <div class="rset-opts">
+        ${["off","light","heavy"].map(v=>`<div class="rset-opt ${getPaper()===v?"on":""}" onclick="setPaper('${v}')">${PAPER_LABEL[v]}</div>`).join("")}
+      </div>
+      <div class="rset-note">宣纸底噪，三档强度。老屏在「浓」档可能出现摩尔纹，看着发花就调回「淡」。</div>
     </div>
     <div class="rset-sec">
       <div class="rset-sec-t">朗读语速<span class="cur">${rateName}</span></div>
@@ -69412,22 +69531,85 @@ const IMAGERY_RE=/[月花风雨雪山江水云星秋春夜雁柳舟帆灯霜露�
 function hash32(s){ let x=2166136261; for(let i=0;i<s.length;i++){ x^=s.charCodeAt(i); x=Math.imul(x,16777619); } return x>>>0; }
 function tokenize(t){ return /[A-Za-zÀ-ɏͰ-ϿЀ-ӿ぀-ヿ]/.test(t) ? t.split(/(\s+)/) : t.split(""); }
 /* 遮蔽集随档位单调扩大（hash%100 阈值递增），同一首诗每次渲染结果稳定 */
-function renderMaskLines(texts,id,off){
-  const lv=getMask(); off=off||0;
-  if(lv<=0) return texts.map(t=>`<div class="vline">${annLine(t, curRhymeMa)}</div>`).join("");
+/* #199 P1-2 竖排折行分组标记：长句超 .vbody 列高（300px）折到左列时，原来只能靠文意猜归属。
+   改法=任务卡选项 a：按句内标点把长句切成片段，句首片段仍是 .vline（朱丝栏在），
+   续列片段加 .vcont（无界线 + 顶部缩进 + 极弱朱砂底 .05）。
+   口径与边界：
+   - 只在竖排手卷生效（横排/横排原文高度自适应不折行，vertical=false 不切）；
+   - 切分点只在句内标点，与朗读/TTS 句切同源，不引入音画错位；
+   - 遮字索引跨片段连续（idx 不按片段重置），同诗同档位遮蔽结果与切分前一致；
+   - 容量实测不猜：第一遍不切分渲染，量出每根折行列的"列数×字数"反推真实列容量
+     （竖排字距随字体变，公式估算在 大/特大 档实测失手过，故走测量），再第二遍切分；
+   - 短句（≤容量）零变化——绝大多数诗句不走这条路。 */
+const VBODY_PAD_V=12; // .vbody padding 6px×2（列高 300 由 CSS 定）
+function vColUnit(){ // 单列宽（块方向）= line-height×字号 + .vline 左右 padding 18
+  const f=getFont();
+  const fs=parseFloat(FONT_SIZE_MAP[f.size]||"18px");
+  const lh=parseFloat(FONT_LH_MAP[f.spacing]||"2");
+  return lh*fs+18;
+}
+function vColCapacity(){ // 公式兜底（直调 renderMaskLines 时的默认值）；主路径走 renderVbody 实测
+  const f=getFont();
+  const fs=parseFloat(FONT_SIZE_MAP[f.size]||"18px");
+  return Math.max(4, Math.floor((300-VBODY_PAD_V)/(1.5*fs))-1);
+}
+const FRAG_PUNCT=/[，。！？；、,.;:!?…—·]/;
+function fragLine(text, cap){
+  if(!text || !isFinite(cap) || text.length<=cap) return [text];
+  const clauses=[]; let cur="";
+  for(const ch of text){ cur+=ch; if(FRAG_PUNCT.test(ch)){ clauses.push(cur); cur=""; } }
+  if(cur) clauses.push(cur);
+  const frags=[]; let buf="";
+  for(const c of clauses){
+    if((buf+c).length<=cap){ buf+=c; continue; }
+    if(buf){ frags.push(buf); buf=""; }
+    if(c.length<=cap){ buf=c; continue; }
+    for(let i=0;i<c.length;i+=cap) frags.push(c.slice(i,i+cap)); // 单句超容量才硬切（不挑标点）
+  }
+  if(buf) frags.push(buf);
+  return frags.length?frags:[text];
+}
+function renderMaskLines(texts,id,off,vertical,cap){
+  const lv=getMask(); off=off||0; vertical=vertical!==false;
+  if(vertical && cap===undefined) cap=vColCapacity();
+  const fragsOf = t => vertical ? fragLine(t, cap) : [t];
+  if(lv<=0) return texts.map((t,k)=>fragsOf(t).map((f,i)=>`<div class="vline${i?" vcont":""}" data-li="${k+off}">${annLine(f, curRhymeMa)}</div>`).join("")).join("");
   const r=maskRatio(lv);
   return texts.map((t,k)=>{
     const li=k+off;
     let idx=0;
-    const inner=tokenize(t).map(tok=>{
-      if(!tok.trim() && lv<4) return esc(tok);
-      const pos=idx++;
-      if(lv>=4) return pos===0 ? `<span class="ch first">${esc(tok)}</span>` : `<span class="ch masked">${esc(tok)}</span>`;
-      const keep = (hash32(id+"|"+li+"|"+pos)%100) >= r*100;
-      return keep ? `<span class="ch">${esc(tok)}</span>` : `<span class="ch masked">${esc(tok)}</span>`;
+    return fragsOf(t).map((f,fi)=>{
+      const inner=tokenize(f).map(tok=>{
+        if(!tok.trim() && lv<4) return esc(tok);
+        const pos=idx++;
+        if(lv>=4) return pos===0 ? `<span class="ch first">${esc(tok)}</span>` : `<span class="ch masked">${esc(tok)}</span>`;
+        const keep = (hash32(id+"|"+li+"|"+pos)%100) >= r*100;
+        return keep ? `<span class="ch">${esc(tok)}</span>` : `<span class="ch masked">${esc(tok)}</span>`;
+      }).join("");
+      return `<div class="vline${fi?" vcont":""}" data-li="${li}">${inner}</div>`;
     }).join("");
-    return `<div class="vline">${inner}</div>`;
   }).join("");
+}
+/* 竖排卷轴体渲染入口：两遍法。pass1 不切分（等同改造前行为）→ 量折行列反推真实容量
+   → pass2 按实测容量切分。横排/横排原文直接单遍不切。 */
+function renderVbody(bodyEl, texts, id, off, vertical){
+  if(!vertical){ bodyEl.innerHTML=renderMaskLines(texts,id,off,false); return; }
+  bodyEl.innerHTML=renderMaskLines(texts,id,off,false);           // pass1
+  const unit=vColUnit();
+  const kids=[...bodyEl.children];
+  let cap=Infinity;
+  if(kids.some(el=>el.offsetWidth===0)) cap=vColCapacity();       // 视图未激活量不到 → 公式兜底（保守）
+  else kids.forEach((el,i)=>{
+    const cols=Math.round(el.offsetWidth/unit);
+    if(cols>=2){
+      const n=[...texts[i]].length;                               // 码点数，不用 textContent（ruby 注音会掺长度）
+      if(n>0) cap=Math.min(cap, Math.ceil(n/cols)-1);             // -1 安全余量：同时盖住续列 .9em 缩进的占高
+    }
+  });
+  if(isFinite(cap)){
+    cap=Math.max(4,cap);
+    bodyEl.innerHTML=renderMaskLines(texts,id,off,true,cap);      // pass2
+  }
 }
 let curRhymeMa=false;
 /* review v1：{bucket, due, last}，本地日（toISOString 是 UTC，早 8 点前会错位） */
@@ -69681,7 +69863,7 @@ function toggleRecite(){
   if($("#view-detail") && $("#view-detail").classList.contains("active")) openDetail(currentPoemId);
 }
 
-applyLayout(); applyFont();
+applyLayout(); applyFont(); applyPaper();
 if(API_BASE && currentUser && currentUser.token) syncPull();
 </script>
 

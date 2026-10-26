@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>#199 P2-3 完成态小样：现状 vs 提案（枯木拍板用）</title>
+<style>
+  :root{
+    --paper:#F1E9D7; --paper-card:#FBF6EA; --paper-card-2:#FFFCF4;
+    --ink:#2B2620; --ink-2:#5C5246; --ink-3:#6E6248;
+    --cinnabar:#B23A2E; --cinnabar-deep:#8E2C22;
+    --line:#E5D9C2; --line-soft:#EFE6D4;
+    --jade:#4E6B4A; --gold:#8A6220;
+    --r-card:18px; --r-sm:12px; --gap:14px; --pad:20px;
+    --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",serif;
+    --kai:"LXGW WenKai","LXGW WenKai GB","Kaiti SC","STKaiti","KaiTi","DFKai-SB",var(--serif);
+    --sans:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--sans);color:var(--ink);background:#E7DFCB;display:flex;gap:28px;justify-content:center;padding:28px 16px;flex-wrap:wrap;}
+  .col{width:390px;flex:0 0 auto;}
+  .col h2{font-family:var(--kai);font-size:20px;letter-spacing:2px;margin-bottom:6px;}
+  .col .sub{font-size:12px;color:var(--ink-3);margin-bottom:14px;line-height:1.7;}
+  .phone{position:relative;background:var(--paper);border-radius:24px;box-shadow:0 24px 80px rgba(60,45,25,.28);padding:18px var(--pad) 22px;}
+  .checkin .ci-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .checkin .ci-title{font-family:var(--serif);font-weight:700;font-size:16px;}
+  .checkin .ci-sub{font-size:11px;color:var(--ink-3);}
+  .ci-alm{font-size:12px;color:var(--cinnabar);border:1px solid rgba(178,58,46,.35);border-radius:999px;padding:5px 11px;}
+  .ci-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+  .ci-item.wide{grid-column:1 / -1;}
+  .ci-item{position:relative;background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);padding:13px;display:flex;align-items:center;gap:10px;}
+  .ci-item .ck{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#fff;}
+  .ci-item .ct{font-size:13px;font-weight:600;}
+  .ci-item .cd{font-size:10px;color:var(--ink-3);margin-top:2px;}
+  .ci-item .stamp{position:absolute;top:-7px;right:-5px;width:26px;height:26px;background:var(--cinnabar);color:#fff;font-family:var(--kai);font-weight:700;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;border-radius:4px;transform:rotate(-2deg);box-shadow:0 2px 6px rgba(178,58,46,.35);z-index:2;}
+  .ci-album{margin-top:10px;padding:11px 13px;background:var(--paper-card-2);border:1px solid var(--line);border-radius:var(--r-sm);display:flex;align-items:center;gap:8px;}
+  .ci-album .al-t{font-family:var(--kai);font-weight:700;font-size:12px;color:var(--ink-2);letter-spacing:1px;flex:0 0 auto;}
+  .ci-album .al-seals{display:flex;gap:6px;flex:1;justify-content:flex-end;}
+  .ci-album .seal{width:22px;height:22px;background:var(--cinnabar);color:#fff;font-family:var(--kai);font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;border-radius:3px;transform:rotate(-2deg);opacity:.92;}
+  .ci-album .al-n{font-size:10px;color:var(--ink-3);flex:0 0 auto;}
+  .ci-encourage{margin-top:12px;padding:13px 15px;background:linear-gradient(135deg,rgba(178,58,46,.08),rgba(185,138,62,.08));border:1px dashed rgba(178,58,46,.3);border-radius:var(--r-sm);font-family:var(--serif);font-size:13.5px;line-height:1.7;text-align:center;}
+
+  /* ===== A 现状：玉绿完成态 ===== */
+  .a .ci-item.done{background:rgba(110,139,106,.12);border-color:rgba(110,139,106,.4);}
+  .a .ci-item.done .ck{background:var(--jade);border-color:var(--jade);}
+
+  /* ===== B 提案：淡墨勾边 + 墨完成圆 + 朱印收尾 ===== */
+  .b .ci-item.done{background:rgba(43,38,32,.05);border-color:rgba(43,38,32,.38);}
+  .b .ci-item.done .ck{background:var(--ink);border-color:var(--ink);}
+  .b .ci-item.done .stamp{box-shadow:0 2px 8px rgba(178,58,46,.45);}
+
+  .note{font-size:12px;color:var(--ink-3);line-height:1.8;margin-top:14px;}
+  .note b{color:var(--ink-2);}
+</style>
+</head>
+<body>
+
+<div class="col a">
+  <h2>A · 现状（玉绿完成态）</h2>
+  <div class="sub">rgba(110,139,106,.12) 底 + .4 边框 + 玉绿勾选圆。与同屏朱砂（打卡印/鼓励条）冷暖并置，评审意见：冷暖割裂。</div>
+  <div class="phone">
+    <div class="checkin">
+      <div class="ci-head"><div><div class="ci-title">每日打卡</div><div class="ci-sub">已完成 3/5</div></div><div class="ci-alm">往日笺 ›</div></div>
+      <div class="ci-grid">
+        <div class="ci-item done"><div class="ck"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg></div><div><div class="ct">每日读一首</div><div class="cd">读 / 看一首诗</div></div><div class="stamp">读</div></div>
+        <div class="ci-item done"><div class="ck"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg></div><div><div class="ct">每日看动画</div><div class="cd">看意象动画</div></div><div class="stamp">观</div></div>
+        <div class="ci-item done"><div class="ck"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg></div><div><div class="ct">每日了解</div><div class="cd">读懂背景故事</div></div><div class="stamp">知</div></div>
+        <div class="ci-item"><div class="ck"></div><div><div class="ct">每日记忆</div><div class="cd">背下一首诗</div></div></div>
+        <div class="ci-item wide"><div class="ck"></div><div><div class="ct">每日温故</div><div class="cd">温习到期旧诗</div></div></div>
+      </div>
+      <div class="ci-encourage">还差 2 项，今天也能满勤</div>
+      <div class="ci-album"><div class="al-t">印谱</div><div class="al-seals"><div class="seal">阅</div><div class="seal">阅</div><div class="seal">阅</div></div><div class="al-n">3 印</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="col b">
+  <h2>B · 提案（淡墨勾边 + 朱印收尾）</h2>
+  <div class="sub">完成态改为「淡墨洗底 rgba(43,38,32,.05) + 墨色勾边 .38 + 墨色勾选圆」，朱印保持不变作收尾 accent。形状冗余保留：填充圆 + ✓ 形仍在，不靠色相单独区分；墨/纸为消色对比，色弱可辨。</div>
+  <div class="phone">
+    <div class="checkin">
+      <div class="ci-head"><div><div class="ci-title">每日打卡</div><div class="ci-sub">已完成 3/5</div></div><div class="ci-alm">往日笺 ›</div></div>
+      <div class="ci-grid">
+        <div class="ci-item done"><div class="ck"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg></div><div><div class="ct">每日读一首</div><div class="cd">读 / 看一首诗</div></div><div class="stamp">读</div></div>
+        <div class="ci-item done"><div class="ck"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg></div><div><div class="ct">每日看动画</div><div class="cd">看意象动画</div></div><div class="stamp">观</div></div>
+        <div class="ci-item done"><div class="ck"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg></div><div><div class="ct">每日了解</div><div class="cd">读懂背景故事</div></div><div class="stamp">知</div></div>
+        <div class="ci-item"><div class="ck"></div><div><div class="ct">每日记忆</div><div class="cd">背下一首诗</div></div></div>
+        <div class="ci-item wide"><div class="ck"></div><div><div class="ct">每日温故</div><div class="cd">温习到期旧诗</div></div></div>
+      </div>
+      <div class="ci-encourage">还差 2 项，今天也能满勤</div>
+      <div class="ci-album"><div class="al-t">印谱</div><div class="al-seals"><div class="seal">阅</div><div class="seal">阅</div><div class="seal">阅</div></div><div class="al-n">3 印</div></div>
+    </div>
+  </div>
+  <div class="note"><b>待枯木拍板：</b>选 A 维持现状 / 选 B 按提案落 / 选 B 变体（如墨底再加深至 .08、或勾选圆改墨线空心）。B 若采纳，将同步改 .ci-item.done 与 .ck 两处 CSS，不动布局与印章。</div>
+</div>
+
+</body>
+</html>

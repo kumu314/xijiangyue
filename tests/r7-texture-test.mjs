@@ -388,15 +388,73 @@ console.log('\n§C2 意象底余量 0.18 不压缩');
   });
   ok('首页 hero 存在且含意象层', !!prep && prep.hasImagery === true, prep);
 
-  const shots = {};
+  /* 【判据一 · 确定性】结构指纹：纸纹若压在意象底上，必然表现为 .hero 子树里
+     某个元素的 background-image / background-color / box-shadow / filter / opacity /
+     mask 随档位变化。逐个元素抓指纹，三档要求完全一致 —— 这条不依赖渲染，不会飘。
+     【判据二 · 像素级】截图差值作为第二条独立证据。阈值经反向对照标定：
+       · 干净三档：maxDelta=0、差值像素 0
+       · 故意叠极淡噪声（α=.05, amp=60，模拟纸纹漏入）：maxDelta=2 → 必须判 FAIL
+       · 叠更浓（α=.16, amp=90）：maxDelta=5、26.5% 像素超 2
+     故阈值取 maxDelta ≤ 1 且 差值>1 像素为 0，才既不漏检也不误报。
+     若同档连拍对照本身就不稳（机器负载导致的合成抖动），跨档比较无法下结论，
+     此时如实 SKIP，而不是硬判 PASS/FAIL —— 判据一的结论不受影响。 */
+  const fpBy = {};
   for (const v of ['off', 'light', 'heavy']) {
     await page.evaluate((v) => setPaper(v), v);
-    await page.waitForTimeout(180);
-    shots[v] = (await page.screenshot({ clip: prep.box })).toString('base64');
+    await page.waitForTimeout(120);
+    fpBy[v] = await page.evaluate(() => {
+      const hero = document.querySelector('.hero');
+      const pick = el => {
+        const cs = getComputedStyle(el);
+        return [cs.backgroundImage, cs.backgroundColor, cs.boxShadow, cs.filter, cs.opacity, cs.maskImage, cs.mixBlendMode].join('|');
+      };
+      const all = [hero].concat([...hero.querySelectorAll('*')]).filter(el => !el.id.startsWith('__'));
+      return all.map((el, i) => i + ':' + (el.getAttribute('class') || el.tagName) + ':' + pick(el));
+    });
   }
-  ok('hero 三档渲染逐字节相同（纸纹确未压在意象底上）',
-     shots.off === shots.light && shots.light === shots.heavy,
-     { offVsLight: shots.off === shots.light, lightVsHeavy: shots.light === shots.heavy });
+  const fpDiff = (A, B) => A.map((x, i) => (x === B[i] ? null : { i, a: x, b: B[i] })).filter(Boolean).slice(0, 4);
+  const fOL = fpDiff(fpBy.off, fpBy.light), fLH = fpDiff(fpBy.light, fpBy.heavy);
+  ok('hero 子树样式指纹三档完全一致（纸纹未作用于意象底）',
+     fpBy.off.length > 0 && fOL.length === 0 && fLH.length === 0,
+     { 元素数: fpBy.off.length, offVsLight: fOL, lightVsHeavy: fLH });
+
+  /* 像素级复核（判据二） */
+  const shot = async (v) => {
+    await page.evaluate((v) => setPaper(v), v);
+    await page.waitForTimeout(180);
+    return (await page.screenshot({ clip: prep.box })).toString('base64');
+  };
+  const stats = (a, b) => page.evaluate(async ({ a, b }) => {
+    const load = (s) => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = 'data:image/png;base64,' + s; });
+    const [ia, ib] = await Promise.all([load(a), load(b)]);
+    if (ia.width !== ib.width || ia.height !== ib.height) return { sizeMismatch: true };
+    const w = ia.width, h = ia.height;
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const cx = cv.getContext('2d', { willReadFrequently: true });
+    cx.drawImage(ia, 0, 0); const da = cx.getImageData(0, 0, w, h).data;
+    cx.clearRect(0, 0, w, h); cx.drawImage(ib, 0, 0); const db = cx.getImageData(0, 0, w, h).data;
+    let over = 0, max = 0;
+    for (let i = 0; i < da.length; i += 4) {
+      const d = Math.max(Math.abs(da[i] - db[i]), Math.abs(da[i + 1] - db[i + 1]), Math.abs(da[i + 2] - db[i + 2]));
+      if (d > 0) { if (d > max) max = d; if (d > 1) over++; }
+    }
+    return { total: w * h, over1: over, maxDelta: max };
+  }, { a, b });
+
+  const ctrl = await stats(await shot('heavy'), await shot('heavy'));
+  const ctrlStable = !ctrl.sizeMismatch && ctrl.maxDelta <= 1;
+  const shots = {};
+  for (const v of ['off', 'light', 'heavy']) shots[v] = await shot(v);
+  const dOL = await stats(shots.off, shots.light);
+  const dLH = await stats(shots.light, shots.heavy);
+  const same = (d) => !d.sizeMismatch && d.maxDelta <= 1 && d.over1 === 0;
+  if (!ctrlStable) {
+    sk('hero 三档截图像素等价', '同档对照不稳，本次无法判定；' + JSON.stringify(ctrl));
+  } else {
+    ok('hero 三档截图像素等价（纸纹确未压在意象底上）',
+       same(dOL) && same(dLH),
+       { 同档对照: ctrl, offVsLight: dOL, lightVsHeavy: dLH, 判据: 'maxDelta<=1 且 差值>1 像素=0' });
+  }
 
   // 实测最坏像素 vs --ink-2 / --ink
   const c = await page.evaluate(async (b64) => {
@@ -615,6 +673,172 @@ console.log('\n§D 硬验收门');
     return { opened, closed };
   });
   ok('纸纹入口可从「我的→阅读设置」进入并关闭返回', nav.opened && nav.closed, nav);
+  await page.close();
+}
+
+/* ══════════════════════ §E 打卡完成反馈（B 落印 + C 满勤卷）══════════════════════ */
+/* 拍板：B+C 组合 + 加音效 + 小程序侧只用 wx.vibrateShort（后者属小程序仓库，不在本文件范围）。
+   口径见 out/review-r7-p23-research.md。 */
+console.log('\n§E 打卡完成反馈（B 落印 + C 满勤卷）');
+{
+  const page = await freshPage({ xjy_layout: 'vertical' });
+  await page.evaluate(() => { showView('view-learn'); renderLearn(); });
+  await page.waitForTimeout(200);
+
+  // E1 完成态不再是玉绿
+  const palette = await page.evaluate(() => {
+    const it = document.querySelector('.ci-item');
+    it.click();                                   // 勾上第一项
+    const done = document.querySelector('.ci-item.done');
+    const ck = done.querySelector('.ck');
+    return {
+      itemBg: getComputedStyle(done).backgroundImage + '|' + getComputedStyle(done).backgroundColor,
+      ckBg: getComputedStyle(ck).backgroundColor,
+      hasJade: /110,\s*139,\s*106/.test(getComputedStyle(done).backgroundImage + getComputedStyle(ck).backgroundColor + getComputedStyle(done).borderColor),
+    };
+  });
+  ok('完成态已脱离玉绿（淡墨底 + 墨勾选）',
+     !palette.hasJade && /43,\s*38,\s*32/.test(palette.ckBg), palette);
+
+  // 复位，逐项细查动效（注意键名是 shiyun_checkin，不是 xjy_*）
+  await page.evaluate(() => { localStorage.clear(); });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(450);
+  await page.evaluate(() => { showView('view-learn'); renderLearn(); });
+  await page.waitForTimeout(150);
+
+  // E2/E3/E4/E6/E7 一次点击，抓同一帧的所有痕迹
+  const fx = await page.evaluate(() => {
+    window.__toastN = 0;
+    const _t = window.toast;
+    window.toast = (...a) => { window.__toastN++; try { _t && _t(...a); } catch (e) {} };
+    const target = document.querySelectorAll('.ci-item')[2];
+    target.click();
+    const stamp = document.querySelector('.ci-item.fx .stamp');
+    const item = document.querySelector('.ci-item.fx');
+    const cs = stamp ? getComputedStyle(stamp) : null;
+    const af = item ? getComputedStyle(item, '::after') : null;
+    const cnt = document.querySelector('.ci-cnt');
+    return {
+      sparks: document.querySelectorAll('.ci-item .spark').length,
+      stampAnim: cs ? cs.animationName : null,
+      stampDur: cs ? cs.animationDuration : null,
+      bloomAnim: af ? af.animationName : null,
+      bloomDur: af ? af.animationDuration : null,
+      cntText: cnt ? cnt.textContent.trim() : null,
+      cntRoll: cnt ? cnt.className : null,
+      toastCalls: window.__toastN,
+    };
+  });
+  ok('落印动画挂在刚点的那一项（ciStampDrop）', fx.stampAnim === 'ciStampDrop', fx);
+  ok('落印时长 ≤ 300ms（不拖手感）', parseFloat(fx.stampDur) > 0 && parseFloat(fx.stampDur) <= 0.3, fx);
+  ok('墨晕动画存在（ciBloom）且 ≤ 460ms', fx.bloomAnim === 'ciBloom' && parseFloat(fx.bloomDur) <= 0.46, fx);
+  ok('朱砂溅点生成 6 粒', fx.sparks === 6, fx);
+  ok('计数滚轮更新为实际完成数并带动画类', fx.cntText === '1' && /roll/.test(fx.cntRoll), fx);
+  ok('完成瞬间不再弹 toast（注意力留在卡片上）', fx.toastCalls === 0, fx);
+
+  // E5 粒子会自动清理
+  await page.waitForTimeout(700);
+  const cleaned = await page.evaluate(() => document.querySelectorAll('.ci-item .spark').length);
+  ok('溅点在 600ms 后自动清理干净', cleaned === 0, cleaned);
+
+  // E13 色弱冗余：颜色之外还有形状
+  const redundancy = await page.evaluate(() => {
+    const d = document.querySelector('.ci-item.done');
+    return { check: !!d.querySelector('.ck svg'), stamp: !!d.querySelector('.stamp svg') };
+  });
+  ok('完成态有形状冗余（勾选 svg + 常驻朱印），不只靠颜色', redundancy.check && redundancy.stamp, redundancy);
+
+  // E8 取消：无奖励动效
+  // 注意：renderCheckin 是整卡重绘，点击后原 node 已被替换——
+  // 必须重新查询当前 DOM，读旧节点会拿到重绘前的 class（假 PASS/假 FAIL 都由此而来）。
+  const cancel = await page.evaluate(() => {
+    const before = document.querySelector('.ci-item[data-k="know"]');
+    const wasDone = before.classList.contains('done');
+    before.click();
+    const after = document.querySelector('.ci-item[data-k="know"]');
+    return {
+      wasDone,
+      stillDone: after.classList.contains('done'),
+      fx: document.querySelectorAll('.ci-item.fx').length,
+      sparks: document.querySelectorAll('.ci-item .spark').length,
+    };
+  });
+  ok('取消后不残留落印动效与溅点',
+     cancel.wasDone === true && cancel.stillDone === false && cancel.fx === 0 && cancel.sparks === 0, cancel);
+
+  // E9/E10 满勤卷
+  const full = await page.evaluate(() => new Promise(res => {
+    CHECKIN_ITEMS.forEach(it => { if (!checkin.done[it.key]) toggleCheckin(it.key); });
+    setTimeout(() => {
+      const sc = document.getElementById('ciScroll');
+      const bt = sc && sc.querySelector('.bt');
+      const by = sc && sc.querySelector('.by');
+      res({
+        done: document.querySelectorAll('.ci-item.done').length,
+        scroll: !!sc,
+        on: sc ? sc.classList.contains('on') : false,
+        h: sc ? Math.round(sc.getBoundingClientRect().height) : 0,
+        text: bt ? bt.textContent.trim() : null,
+        src: by ? by.textContent.trim() : null,
+        enc: document.querySelector('.ci-encourage').textContent.trim(),
+        encHot: document.querySelector('.ci-encourage').classList.contains('hot'),
+        cntSub: document.querySelector('.ci-sub').textContent.trim(),
+      });
+    }, 700);
+  }));
+  ok('满勤触发卷轴并展开', full.scroll && full.on && full.h > 40, full);
+  ok('卷轴载一句非空题跋 + 出处', !!full.text && full.text.length >= 8 && /朱批/.test(full.src || ''), full);
+  ok('满勤提示升级为朱色强调', full.encHot === true && /满勤/.test(full.enc), full);
+  /* 口径一致性：满勤按拍板②只算四项（温故不计），所以计数是 x/5、满勤是 x/4。
+     两套分母并存时，文案必须写明「四项」，且计数行不得出现「满勤」二字——
+     否则会出现「已完成 4/5 · 满勤」这种自相矛盾的显示。 */
+  ok('满勤文案写明「四项」（不与 /5 计数自相矛盾）', /四项/.test(full.enc), full);
+  ok('计数行不夹带「满勤」字样（分母不同不混写）', !/满勤/.test(full.cntSub), full);
+
+  // 同日重复渲染：题跋必须稳定（不能刷一次换一句）
+  const stable = await page.evaluate(() => {
+    const a = document.querySelector('#ciScroll .bt').textContent.trim();
+    renderCheckin();
+    const b = document.querySelector('#ciScroll .bt').textContent.trim();
+    return { a, b, same: a === b };
+  });
+  ok('同日内题跋稳定（重复渲染不换句）', stable.same === true, stable);
+
+  // E11 音效函数存在且调用不抛错
+  const snd = await page.evaluate(() => {
+    try { ciSndStamp(); ciSndTick(); ciSndChime(); return { ok: true, fns: [typeof ciSndStamp, typeof ciSndTick, typeof ciSndChime] }; }
+    catch (e) { return { ok: false, err: String(e) }; }
+  });
+  ok('三处音效函数可用且调用不抛错', snd.ok === true && snd.fns.every(x => x === 'function'), snd);
+
+  ok('§E 无 pageerror', page._errs.length === 0, page._errs.slice(0, 2));
+  await page.close();
+}
+
+/* E4b reduce 下降级：不生成粒子、印直接到位 */
+{
+  const page = await browser.newPage();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(URL_, { waitUntil: 'domcontentloaded', timeout: 90000 });
+  await page.waitForTimeout(500);
+  await page.evaluate(() => localStorage.clear());
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(450);
+  const red = await page.evaluate(() => {
+    showView('view-learn'); renderLearn();
+    document.querySelectorAll('.ci-item')[1].click();
+    const st = document.querySelector('.ci-item.done .stamp');
+    return {
+      sparks: document.querySelectorAll('.ci-item .spark').length,
+      done: document.querySelectorAll('.ci-item.done').length,
+      stampOpacity: st ? getComputedStyle(st).opacity : null,
+      cnt: document.querySelector('.ci-cnt').textContent.trim(),
+    };
+  });
+  ok('reduce 下不生成任何溅点粒子', red.sparks === 0, red);
+  ok('reduce 下印仍直接到位（状态可辨，只是不动）', red.stampOpacity === '1' && red.done === 1, red);
+  ok('reduce 下计数照常更新', red.cnt === '1', red);
   await page.close();
 }
 

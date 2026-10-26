@@ -342,24 +342,66 @@
   #view-memory .mem-curve-cap{font-size:11px;color:var(--ink-3);margin-top:8px;}
 
   .rv-more{margin-top:6px;font-size:11px;color:var(--ink-3);text-align:right;}
-  .ci-item{background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);padding:13px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s ease;}
-  .ci-item.done{background:rgba(110,139,106,.12);border-color:rgba(110,139,106,.4);}
-  .ci-item .ck{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#fff;}
-  .ci-item.done .ck{background:var(--jade);border-color:var(--jade);}
+  .ci-item{background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);padding:13px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .22s ease,border-color .22s ease,transform .09s ease;}
+  /* #199 P2-3：完成态由「玉绿」收敛为「淡墨」——墨色是这套系统里本就有的，不再与朱砂冷暖割裂。
+     形状冗余保留（勾选圈 + 常驻朱印），色弱用户不靠颜色区分。 */
+  .ci-item.done{background:radial-gradient(120% 110% at 96% 4%,rgba(178,58,46,.055),transparent 62%),rgba(43,38,32,.032);border-color:rgba(43,38,32,.28);}
+  .ci-item:active{transform:translateY(1px) scale(.985);}
+  .ci-item .ck{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#fff;transition:background .14s ease,border-color .14s ease;}
+  .ci-item .ck svg{opacity:0;transition:opacity .12s ease .06s;}
+  .ci-item.done .ck{background:rgba(43,38,32,.82);border-color:rgba(43,38,32,.82);}
+  .ci-item.done .ck svg{opacity:1;stroke:#FBF6EA;}
   .ci-item .ct{font-size:13px;font-weight:600;}
   .ci-item .cd{font-size:10px;color:var(--ink-3);margin-top:2px;}
-  .ci-encourage{margin-top:12px;padding:13px 15px;background:linear-gradient(135deg,rgba(178,58,46,.08),rgba(185,138,62,.08));border:1px dashed rgba(178,58,46,.3);border-radius:var(--r-sm);font-family:var(--serif);font-size:13.5px;line-height:1.7;color:var(--ink);text-align:center;}
+  .ci-encourage{margin-top:12px;padding:13px 15px;background:linear-gradient(135deg,rgba(178,58,46,.08),rgba(185,138,62,.08));border:1px dashed rgba(178,58,46,.3);border-radius:var(--r-sm);font-family:var(--serif);font-size:13.5px;line-height:1.7;color:var(--ink);text-align:center;transition:color .26s ease,border-color .26s ease,background .26s ease;}
+  /* Zeigarnik：只剩最后一项时把提示升级为朱色（未完成的张力显形） */
+  .ci-encourage.hot{color:#8E2C22;border-color:rgba(178,58,46,.42);background:rgba(178,58,46,.06);font-weight:600;}
 
-  /* round3-② 打卡钤印：完成项右上角朱印 + 落印动效 + 一次性墨晕 */
+  /* ══ round7 P2-3 打卡「完成」反馈（拍板：B 落印 + C 满勤卷）══
+     一次落印 = 四层同帧起手：①印砸下 ②朱砂溅散 ③墨晕扩散 ④计数上翻（+「笃」声）。
+     语汇全部取自金石：印、朱砂、墨晕，不引入彩色纸屑那种通用庆祝语言。 */
   .ci-item{position:relative;}
-  .ci-item .stamp{position:absolute;top:-7px;right:-5px;width:26px;height:26px;background:var(--cinnabar);color:#fff;font-family:var(--kai);font-weight:700;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;border-radius:4px;transform:rotate(-2deg);box-shadow:0 2px 6px rgba(178,58,46,.35);z-index:2;}
-  .ci-item .stamp.stamp-in{animation:stampIn .45s cubic-bezier(.2,.8,.3,1.25) both;}
-  .ci-item .stamp.stamp-in::after{content:"";position:absolute;inset:-9px;border-radius:50%;background:radial-gradient(circle,rgba(178,58,46,.38),transparent 68%);animation:inkSpread .6s ease-out both;pointer-events:none;}
-  @keyframes stampIn{0%{transform:scale(1.18) rotate(-4.5deg);opacity:0}55%{transform:scale(.97) rotate(-1.6deg);opacity:1}100%{transform:scale(1) rotate(-2deg);opacity:1}}
-  @keyframes inkSpread{0%{transform:scale(.35);opacity:.9}100%{transform:scale(1.9);opacity:0}}
+  .ci-item .stamp{position:absolute;top:-7px;right:-5px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;
+    transform:rotate(-2deg) scale(.7);opacity:0;z-index:3;filter:drop-shadow(0 2px 5px rgba(178,58,46,.32));
+    transition:opacity .16s ease,transform .16s ease;}
+  .ci-item.done .stamp{opacity:1;transform:rotate(-2deg) scale(1);}   /* 已完成项常驻朱印，不只是刚点的那一枚 */
+  .ci-item .stamp.fx{animation:ciStampDrop .26s cubic-bezier(.2,.85,.3,1.2) both;}
+  @keyframes ciStampDrop{
+    0%{transform:scale(2.35) rotate(-9deg);opacity:0;filter:blur(1.4px)}
+    52%{transform:scale(.93) rotate(-1.2deg);opacity:1;filter:blur(0)}
+    76%{transform:scale(1.06) rotate(-2.6deg)}
+    100%{transform:scale(1) rotate(-2deg);opacity:1}
+  }
+  /* 墨晕：从印位（右上角）向外渗开，scale 不越过容器，避免盖到邻卡 */
+  .ci-item.fx::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
+    background:radial-gradient(circle at 96% 4%,rgba(178,58,46,.30),rgba(178,58,46,.09) 45%,transparent 72%);
+    transform-origin:96% 4%;opacity:0;animation:ciBloom .42s cubic-bezier(.2,.85,.3,1) both;}
+  @keyframes ciBloom{0%{transform:scale(.25);opacity:.95}70%{opacity:.32}100%{transform:scale(1);opacity:0}}
+  /* 朱砂溅点（JS 生成，方向/大小/延迟随机） */
+  .ci-item .spark{position:absolute;top:9px;right:9px;border-radius:50%;background:var(--cinnabar);pointer-events:none;z-index:4;
+    animation:ciSpark .30s cubic-bezier(.15,.85,.4,1) both;}
+  @keyframes ciSpark{0%{transform:translate(0,0) scale(1);opacity:.95}100%{transform:translate(var(--dx),var(--dy)) scale(.25);opacity:0}}
+
+  /* 计数滚轮：数字从下方滑入，让「进度变了」这件事被看见 */
+  .ci-cnt{display:inline-block;height:14px;line-height:14px;overflow:hidden;vertical-align:-2px;width:.62em;text-align:center;margin:0 1px 0 2px;}
+  .ci-cnt i{display:block;font-style:normal;height:14px;line-height:14px;color:var(--cinnabar);font-weight:700;}
+  .ci-cnt.roll i{animation:ciRoll .18s cubic-bezier(.3,.9,.3,1) both;}
+  @keyframes ciRoll{0%{transform:translateY(9px);opacity:0}100%{transform:none;opacity:1}}
+
+  /* 满勤卷（C）：仅在 5/5 那一刻展开，日常点击不会触发，不给常规反馈加延迟 */
+  .ci-scroll{height:0;overflow:hidden;border-top:1px solid transparent;
+    transition:height .42s cubic-bezier(.25,.9,.3,1),border-color .3s ease;}
+  .ci-scroll.on{height:64px;border-top-color:rgba(178,58,46,.16);}
+  .ci-scroll .inner{padding:11px 10px 2px;text-align:center;}
+  .ci-scroll .bt{font-family:var(--kai);font-size:13px;color:var(--cinnabar);letter-spacing:1.4px;line-height:1.7;
+    opacity:0;transform:translateY(4px);transition:opacity .32s ease .16s,transform .32s ease .16s;}
+  .ci-scroll .by{font-size:10px;color:var(--ink-3);margin-top:3px;letter-spacing:1px;opacity:0;transition:opacity .32s ease .2s;}
+  .ci-scroll.on .bt{opacity:1;transform:none;}
+  .ci-scroll.on .by{opacity:1;}
   @media (prefers-reduced-motion: reduce){
-    .ci-item .stamp.stamp-in{animation:none;}
-    .ci-item .stamp.stamp-in::after{display:none;}
+    .ci-item .stamp.fx{animation:none;transform:rotate(-2deg) scale(1);opacity:1;}
+    .ci-item.fx::after{display:none;}
+    .ci-scroll{transition:none;}
   }
   /* 印谱：全勤日收一印，册页横排 */
   .ci-album{margin-top:10px;padding:11px 13px;background:var(--paper-card-2);border:1px solid var(--line);border-radius:var(--r-sm);display:flex;align-items:center;gap:8px;}
@@ -68974,7 +69016,107 @@ const CHECKIN_ITEMS=[
 /* 全勤/连击口径：显式排除「温」——温故照落印、照展示，但不得进全勤判定（枯木拍板②）。
    注意不能写 CHECKIN_ITEMS.every()，那会自动把第 5 项算进去（陷阱）。 */
 const STREAK_ITEMS = CHECKIN_ITEMS.filter(it=>!it.noStreak);
-let justStampKey=null; // 本次勾选要播落印动效的项
+/* ══ round7 P2-3：打卡完成反馈（枯木拍板 B 落印 + C 满勤卷 + 加音效）══
+   设计口径见 out/review-r7-p23-research.md：
+   - 日常点击全序列 460ms 内结束（反馈 >500ms 会拖慢手感）
+   - 满勤卷额外 420ms，只在 5/5 那一刻出现，不给日常加延迟
+   - 音效全部 WebAudio 实时合成，零音频素材（小程序侧改 wx.vibrateShort 轻震，见报告 §6）
+   - prefers-reduced-motion 下：不生成粒子、印直接到位、卷轴不展开动画；音效保留（声音不属 motion） */
+let justStampKey=null;   // 本次勾选要播落印动效的项
+let ciJustFull=false;    // 本次勾选是否刚把今日打成满勤
+let ciLastCount=-1;      // 上一次渲染的完成数（用于判断计数是否要滚动）
+let ciLastSnd=0;         // 音效节流：连点时不让声音叠成一团
+
+/* 满勤题跋池：变率只放在「内容」上（今天抽到哪一句），
+   刻意不做随机大奖/抽卡/概率加倍——那是赌博机制，与「读诗养性」的产品气质冲突，且对青少年有害。 */
+const CI_CODA=[
+  ["腹有诗书气自华，读书万卷始通神。","苏轼 · 和董传留别"],
+  ["旧书不厌百回读，熟读深思子自知。","苏轼 · 送安惇秀才失解西归"],
+  ["书卷多情似故人，晨昏忧乐每相亲。","于谦 · 观书"],
+  ["眼前直下三千字，胸次全无一点尘。","于谦 · 观书"],
+  ["读书之乐何处寻，数点梅花天地心。","翁森 · 四时读书乐"]
+];
+function ciReduced(){ return !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches); }
+let ciAC=null;
+function ciAudio(){
+  try{ if(!ciAC) ciAC=new (window.AudioContext||window.webkitAudioContext)(); if(ciAC.state==="suspended") ciAC.resume(); }catch(e){ ciAC=null; }
+  return ciAC;
+}
+/* 「笃」= 印章砸在纸上：低频正弦下滑 + 8ms 纸纤维高频噪声 */
+function ciSndStamp(){
+  const now=Date.now(); if(now-ciLastSnd<260) return; ciLastSnd=now;
+  const c=ciAudio(); if(!c) return; const t=c.currentTime;
+  try{
+    const o=c.createOscillator(), g=c.createGain();
+    o.type="sine"; o.frequency.setValueAtTime(210,t); o.frequency.exponentialRampToValueAtTime(96,t+.09);
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.30,t+.006); g.gain.exponentialRampToValueAtTime(.0008,t+.13);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t+.15);
+    const n=c.createBufferSource(), b=c.createBuffer(1,Math.floor(c.sampleRate*.03),c.sampleRate), d=b.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
+    n.buffer=b; const ng=c.createGain(); ng.gain.value=.09;
+    const hp=c.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=2600;
+    n.connect(hp).connect(ng).connect(c.destination); n.start(t+.004);
+  }catch(e){}
+}
+/* 「哒」= 取消时的一声轻响（取消不该有奖励感，所以只用极小音量） */
+function ciSndTick(){
+  const now=Date.now(); if(now-ciLastSnd<200) return; ciLastSnd=now;
+  const c=ciAudio(); if(!c) return; const t=c.currentTime;
+  try{
+    const o=c.createOscillator(), g=c.createGain();
+    o.type="triangle"; o.frequency.setValueAtTime(1240,t); o.frequency.exponentialRampToValueAtTime(680,t+.05);
+    g.gain.setValueAtTime(.055,t); g.gain.exponentialRampToValueAtTime(.0006,t+.07);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t+.08);
+  }catch(e){}
+}
+/* 「磬」= 满勤：基频 + 两个泛音，长衰减 */
+function ciSndChime(){
+  const c=ciAudio(); if(!c) return; const t=c.currentTime;
+  try{
+    [[880,1],[1320,.42],[1760,.2]].forEach(([f,a])=>{
+      const o=c.createOscillator(), g=c.createGain();
+      o.type="sine"; o.frequency.value=f;
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.18*a,t+.01);
+      g.gain.exponentialRampToValueAtTime(.0005,t+1.35);
+      o.connect(g).connect(c.destination); o.start(t); o.stop(t+1.4);
+    });
+  }catch(e){}
+}
+/* 朱砂溅点：6 粒，方向偏左上（印在右上角），半径 13–30px */
+function ciSparks(host){
+  if(ciReduced()) return;   // 降级：不生成任何粒子
+  for(let i=0;i<6;i++){
+    const s=document.createElement("span");
+    s.className="spark";
+    const a=-Math.PI*.85+Math.random()*Math.PI*1.1;
+    const r=13+Math.random()*17;
+    const sz=(1.6+Math.random()*1.8).toFixed(1)+"px";
+    s.style.setProperty("--dx",(Math.cos(a)*r).toFixed(1)+"px");
+    s.style.setProperty("--dy",(Math.sin(a)*r).toFixed(1)+"px");
+    s.style.width=sz; s.style.height=sz;
+    s.style.animationDelay=(40+i*13+(Math.random()*24|0))+"ms";
+    host.appendChild(s);
+    setTimeout(()=>{ if(s.parentNode) s.parentNode.removeChild(s); },540);
+  }
+}
+/* 渲染后统一播放：DOM 是整块重建的，动效必须在重建完成之后再挂 */
+function playCheckinFx(){
+  const key=justStampKey, full=ciJustFull;
+  justStampKey=null; ciJustFull=false;
+  if(!key) return;
+  const item=document.querySelector(`.ci-item[data-k="${key}"]`);
+  if(!item) return;
+  if(!ciReduced()) ciSparks(item);     // 粒子先撒（CSS 自带 animation-delay）
+  ciSndStamp();
+  if(full){
+    const sc=$("#ciScroll");
+    if(sc){
+      // 新建元素已带 .on 就不会有 transition，必须下一帧再挂
+      requestAnimationFrame(()=>requestAnimationFrame(()=>sc.classList.add("on")));
+    }
+    setTimeout(ciSndChime,240);
+  }
+}
 function renderCheckin(){
   const todayStr = localDay(); // 本地日（toISOString 是 UTC，早 8 点前会错位一天）
   if(!checkin || checkin.date!==todayStr){
@@ -68990,19 +69132,32 @@ function renderCheckin(){
   }
   const doneCount = Object.values(checkin.done).filter(Boolean).length;
   const allDone = STREAK_ITEMS.every(it=>checkin.done && checkin.done[it.key]); // 满勤判定不含温项（温照展示计数）
+  const leftN = STREAK_ITEMS.filter(it=>!(checkin.done && checkin.done[it.key])).length;
   const enc = ENCOURAGE[Math.min(ENCOURAGE.length-1, (progress.streak-1+ENCOURAGE.length)%ENCOURAGE.length)].replace("{n}",progress.streak);
-  let html = `<div class="ci-head"><div><div class="ci-title">每日打卡</div><div class="ci-sub">${allDone?"今日已全部完成 🎉":`已完成 ${doneCount}/${CHECKIN_ITEMS.length}`}</div></div><div class="ci-alm" onclick="showView('view-almanac')">往日笺 ›</div></div>`;
+  /* 文案必须写「四项」：满勤口径按拍板②只算读/观/知/记四项（温故不计入满勤与连击，
+     但照常落印、照常计数）。若只写「满勤」，会出现「已完成 4/5 · 满勤」这种自相矛盾的显示。 */
+  const encText = allDone ? "今日四项已满勤，习惯正在长成 🌱" : (leftN===1 ? "还差 1 项，今天就能满勤" : enc);
+  const encHot = allDone || leftN===1;
+  const rollCls = (ciLastCount>=0 && doneCount!==ciLastCount) ? " roll" : "";
+  let html = `<div class="ci-head"><div><div class="ci-title">每日打卡</div><div class="ci-sub">已完成<span class="ci-cnt${rollCls}"><i>${doneCount}</i></span>/${CHECKIN_ITEMS.length}</div></div><div class="ci-alm" onclick="showView('view-almanac')">往日笺 ›</div></div>`;
   html += `<div class="ci-grid">`+CHECKIN_ITEMS.map(it=>{
     const d = checkin.done[it.key];
-    return `<div class="ci-item ${d?'done':''}${it.wide?' wide':''}" onclick="toggleCheckin('${it.key}')">
+    const isFx = justStampKey===it.key;   // 只有本次刚勾上的那一项播落印（其余常驻静印）
+    return `<div class="ci-item ${d?'done':''}${it.wide?' wide':''}${isFx?' fx':''}" data-k="${it.key}" onclick="toggleCheckin('${it.key}')">
       <div class="ck">${d?'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg>':''}</div>
-      <div><div class="ct">${it.t}</div><div class="cd">${it.d}</div></div>${d?`<div class="stamp ${justStampKey===it.key?'stamp-in':''}">${sealMarkup(it.se)}</div>`:''}</div>`;
+      <div><div class="ct">${it.t}</div><div class="cd">${it.d}</div></div>${d?`<div class="stamp${isFx?' fx':''}">${sealMarkup(it.se)}</div>`:''}</div>`;
   }).join("")+`</div>`;
   html += renderReviewCard(); // 今日温故卡（到期队列，每日上限 10）
   html += `<div class="rv-card mem-entry" onclick="showView('view-memory')">
       <div class="rv-t">我的记忆<span class="rv-n">桶分布 · 到期曲线</span></div>
       <div class="rv-empty">看自己的遗忘与复习节律 →</div></div>`;
-  html += `<div class="ci-encourage">${allDone? "太棒了！今日诗词满勤，习惯正在长成 🌱" : enc}</div>`;
+  html += `<div class="ci-encourage${encHot?' hot':''}">${encText}</div>`;
+  if(allDone){
+    // 满勤卷：同日固定一句（刷新不换），跨日换一句且不与上次重复
+    const cd=codaFor(checkin.date);
+    html += `<div class="ci-scroll${ciJustFull?'':' on'}" id="ciScroll"><div class="inner">`+
+      `<div class="bt">${esc(cd[0])}</div><div class="by">今日朱批 · ${esc(cd[1])}</div></div></div>`;
+  }
   if(stampAlbum.length){
     const shown = stampAlbum.slice(-8);
     html += `<div class="ci-album"><div class="al-t">印谱</div><div class="al-seals">`+
@@ -69010,7 +69165,18 @@ function renderCheckin(){
       `</div><div class="al-n">${stampAlbum.length} 印</div></div>`;
   }
   $("#checkinBox").innerHTML = html;
-  justStampKey=null;
+  ciLastCount = doneCount;
+  playCheckinFx();   // DOM 重建完成后才挂动效与声音
+}
+/* 满勤题跋：同日稳定、跨日更换、不与上一次重复（变率放在内容，不放奖励强度） */
+function codaFor(dateStr){
+  let rec=null;
+  try{ rec=JSON.parse(localStorage.getItem("xjy_coda")||"null"); }catch(e){}
+  if(rec && rec.date===dateStr && CI_CODA[rec.idx]) return CI_CODA[rec.idx];
+  let idx=Math.floor(Math.random()*CI_CODA.length);
+  if(rec && CI_CODA.length>1){ let g=0; while(idx===rec.idx && g++<8) idx=Math.floor(Math.random()*CI_CODA.length); }
+  try{ localStorage.setItem("xjy_coda", JSON.stringify({date:dateStr,idx})); }catch(e){}
+  return CI_CODA[idx];
 }
 function getYesterday(){
   const d=new Date(); d.setDate(d.getDate()-1); return localDay(d); // 本地日，修 UTC 错位
@@ -69019,6 +69185,7 @@ function toggleCheckin(key){
   if(!checkin) checkin={date:localDay(),done:{}};
   if(!checkin.counted) checkin.counted={};
   const was=!!checkin.done[key];
+  const wasAllDone = STREAK_ITEMS.every(it=>(checkin.done && checkin.done[it.key])); // 勾选**前**的满勤状态
   checkin.done[key]=!was;
   // 每日每项只计一次进度，取消后当天再勾不重复累计
   if(checkin.done[key] && !was && !checkin.counted[key]){
@@ -69033,12 +69200,16 @@ function toggleCheckin(key){
   // 钤印：勾选播落印动效；当日四项全勤收一印入印谱，撤销致不满勤则移除当日印（与钤印对称）
   if(checkin.done[key]) justStampKey=key;
   const allDoneNow = STREAK_ITEMS.every(it=>checkin.done[it.key]); // 收印（印谱）同样不含温项
+  // round7 P2-3：只在「不满勤 → 满勤」的那一次跃迁上放满勤卷，取消再勾不会重复庆祝
+  ciJustFull = !wasAllDone && allDoneNow;
   const ai = stampAlbum.findIndex(a=>a.date===checkin.date);
   if(allDoneNow && ai<0){ stampAlbum.push({date:checkin.date}); saveAlbum(); }
   if(!allDoneNow && ai>=0){ stampAlbum.splice(ai,1); saveAlbum(); }
   syncPush();
   renderCheckin();
-  toast(checkin.done[key]?"已打卡 ✦":"已取消");
+  /* 这里**不再弹 toast**：完成时刻的注意力必须留在卡片上。
+     取消也不弹——取消没有奖励感，一次极轻的「哒」+ 状态回退就是足够明确的确认。 */
+  if(!checkin.done[key]) ciSndTick();
 }
 
 function renderLearn(){

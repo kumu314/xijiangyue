@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>#199 P0-1 篆刻印探针（自检用）</title>
+<style>
+  body{font-family:"Noto Sans SC","PingFang SC",sans-serif;background:#F1E9D7;color:#2B2620;margin:0;padding:24px;}
+  h3{font-size:14px;margin:18px 0 10px;color:#5C5246;}
+  .row{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px;}
+  .cell{text-align:center;}
+  .cell .cap{font-size:10px;color:#6E6248;margin-top:4px;}
+  .seal{background:var(--cinnabar);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(178,58,46,.35);}
+  :root{--cinnabar:#B23A2E;}
+  .sealsvg{width:100%;height:100%;display:block;}
+</style>
+</head>
+<body>
+<h3>P0-1 探针：朱文印 vessel（残边 displacement + 印底微噪）· 六枚手绘 @ 46px（页头印尺寸）</h3>
+<div class="row" id="r46"></div>
+<h3>同六枚 @ 26px（打卡印尺寸）</h3>
+<div class="row" id="r26"></div>
+<h3>同六枚 @ 22px（印谱尺寸）</h3>
+<div class="row" id="r22"></div>
+<h3>次级字形回退（楷形 + 残边）：习 回 春 夏 秋 冬 令 接 背 考 @ 34px</h3>
+<div class="row" id="rfb"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <!-- 印泥渗透：边缘残缺（displacement）+ 印底微噪（turbulence speckle，被印形裁住） -->
+  <filter id="sealInk" x="-15%" y="-15%" width="130%" height="130%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.11" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" result="disp"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="11" result="g"/>
+    <feColorMatrix in="g" type="matrix" values="0 0 0 0 0.42  0 0 0 0 0.10  0 0 0 0 0.05  0.08 0.08 0.08 0 -0.06" result="speck"/>
+    <feComposite in="speck" in2="disp" operator="in" result="speckIn"/>
+    <feMerge><feMergeNode in="disp"/><feMergeNode in="speckIn"/></feMerge>
+  </filter>
+  <!-- 字口残边：只 displacement，让白字笔画的边沿被"啃"出不齐 -->
+  <filter id="sealEdge" x="-15%" y="-15%" width="130%" height="130%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.13" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="3"/>
+  </filter>
+
+  <symbol id="seal-du" viewBox="0 0 100 100">
+    <rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/>
+    <g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)">
+      <path d="M28 25 L37 25 M20 42 L42 42 M36 38 V62 L43 66"/>
+      <path d="M58 22 V38 M50 29 H66 M46 46 H74 V54 M48 64 H72 M53 56 V64 M67 56 V64"/>
+    </g>
+  </symbol>
+  <symbol id="seal-guan" viewBox="0 0 100 100">
+    <rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/>
+    <g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)">
+      <path d="M19 29 H37 L30 44 M42 25 L27 56"/>
+      <path d="M52 26 V64 M52 26 H64 M52 45 H64 M64 26 V64"/>
+      <path d="M69 30 C73 44 73 54 71 66 M81 30 C77 44 77 54 79 66"/>
+    </g>
+  </symbol>
+  <symbol id="seal-zhi" viewBox="0 0 100 100">
+    <rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/>
+    <g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)">
+      <path d="M28 24 L44 56 M36 23 L50 48 M22 52 H58"/>
+      <path d="M62 30 H84 V62 H62 Z"/>
+    </g>
+  </symbol>
+  <symbol id="seal-ji" viewBox="0 0 100 100">
+    <rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/>
+    <g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)">
+      <path d="M27 25 L36 25 M20 42 L42 42 M36 38 V62 L43 66"/>
+      <path d="M50 30 H78 V54 H62 V70 H82"/>
+    </g>
+  </symbol>
+  <symbol id="seal-wen" viewBox="0 0 100 100">
+    <rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/>
+    <g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)">
+      <path d="M19 26 L31 26 M18 44 L30 44 M19 62 L31 62"/>
+      <path d="M38 24 H56 V46 H38 Z M38 35 H56"/>
+      <path d="M60 48 H86 V78 H60 Z M68 48 V78 M78 48 V78"/>
+    </g>
+  </symbol>
+  <symbol id="seal-yue" viewBox="0 0 100 100">
+    <rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/>
+    <g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)">
+      <path d="M35 23 L44 23 M27 32 V78 M40 31 H72 V78"/>
+      <path d="M48 39 L54 47 M64 39 L58 47 M47 53 H65 V66 H47 Z"/>
+    </g>
+  </symbol>
+</defs></svg>
+
+<script>
+const HAND = {"读":"#seal-du","观":"#seal-guan","知":"#seal-zhi","记":"#seal-ji","温":"#seal-wen","阅":"#seal-yue"};
+function sealMarkup(ch){
+  const sym = HAND[ch];
+  const glyph = sym ? `<use href="${sym}"/>`
+    : `<rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="50" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="50" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">${ch}</text>`;
+  return `<svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true">${glyph}</svg>`;
+}
+function cell(ch,size,rot){
+  return `<div class="cell"><div class="seal" style="width:${size}px;height:${size}px;border-radius:${Math.round(size*0.19)}px;transform:rotate(${rot}deg)">${sealMarkup(ch)}</div><div class="cap">${ch}</div></div>`;
+}
+document.getElementById('r46').innerHTML = ["读","观","知","记","温","阅"].map((c,i)=>cell(c,46,i%2?-3:2)).join('');
+document.getElementById('r26').innerHTML = ["读","观","知","记","温","阅"].map((c,i)=>cell(c,26,i%2?1:-2)).join('');
+document.getElementById('r22').innerHTML = ["读","观","知","记","温","阅"].map((c,i)=>cell(c,22,i%2?-1:1)).join('');
+document.getElementById('rfb').innerHTML = ["习","回","春","夏","秋","冬","令","接","背","考"].map((c,i)=>cell(c,34,i%2?2:-3)).join('');
+</script>
+</body>
+</html>

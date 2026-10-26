@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>打卡「完成」反馈 · 三方案小样（#199 P2-3）</title>
+<style>
+/* ─────────────────────────────────────────────────────────────
+   #199 P2-3 完成态反馈小样 —— 仅供枯木拍板，不是产品代码。
+   三套「反馈序列」而非三套配色：按下 → 落印/朱批 → 墨晕 → 计数 → 声音。
+   音效全部由 WebAudio 实时合成，零音频素材体积。
+   ───────────────────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cinnabar:#B23A2E; --jade:#6E8B6A;
+  --ink:#2B2620; --ink-2:#5C5246; --ink-3:#6E6248;
+  --paper:#F7F1E3; --card:#FFFCF4; --line:rgba(43,38,32,.12);
+  --kai:"Kaiti SC","STKaiti",KaiTi,"Songti SC",serif;
+  --serif:"Songti SC","STSong",SimSun,serif;
+  --r-sm:6px;
+  --t-fast:120ms; --t-mid:240ms; --t-slow:420ms;
+}
+body{
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:#EDE6D6; color:var(--ink); padding:20px 16px 60px;
+  -webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(120% 80% at 50% 0%,#F4EEE0,#E6DDC8 70%);
+  min-height:100vh;
+}
+.wrap{max-width:1080px;margin:0 auto}
+
+/* ─── 顶部控制条 ─── */
+.top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px}
+.top h1{font-family:var(--serif);font-size:17px;font-weight:700;letter-spacing:.5px;margin-right:8px}
+.top h1 small{display:block;font-family:inherit;font-size:11px;font-weight:400;color:var(--ink-3);letter-spacing:0;margin-top:3px}
+.tabs{display:flex;gap:6px;background:rgba(255,252,244,.7);padding:4px;border-radius:999px;border:1px solid var(--line)}
+.tab{border:0;background:transparent;font:inherit;font-size:13px;padding:7px 15px;border-radius:999px;cursor:pointer;color:var(--ink-2);transition:background var(--t-fast),color var(--t-fast)}
+.tab.on{background:var(--cinnabar);color:#FBF6EA;font-weight:600}
+.sw{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2);cursor:pointer;user-select:none;margin-left:auto}
+.sw input{accent-color:var(--cinnabar)}
+
+/* ─── 布局 ─── */
+.stage{display:grid;grid-template-columns:390px 1fr;gap:26px;align-items:start}
+@media(max-width:820px){.stage{grid-template-columns:1fr}}
+
+/* ─── 手机框 + 打卡卡（复刻 index.html 视觉）─── */
+.phone{
+  width:390px;max-width:100%;background:var(--paper);border-radius:18px;padding:18px 16px 22px;
+  border:1px solid rgba(43,38,32,.14);
+  box-shadow:0 14px 34px rgba(110,90,55,.16), 0 2px 0 rgba(255,255,255,.5) inset;
+}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 14px 13px;position:relative}
+.ci-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.ci-title{font-family:var(--serif);font-weight:900;font-size:16px;letter-spacing:1px}
+.ci-sub{font-size:11px;color:var(--ink-3);margin-top:3px;display:flex;align-items:center;gap:2px}
+.ci-alm{font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer}
+
+/* 计数滚动：每位数字一个纵向滚轮 */
+.cnt{display:inline-block;height:14px;overflow:hidden;vertical-align:-2px;width:8px;margin:0 1px}
+.cnt i{display:block;font-style:normal;line-height:14px;height:14px;transition:transform 180ms cubic-bezier(.3,.9,.3,1)}
+.cnt i b{display:block;height:14px;font-weight:700;color:var(--cinnabar)}
+
+.ci-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ci-item{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;
+  cursor:pointer;display:flex;align-items:center;gap:9px;position:relative;
+  transition:background 220ms ease,border-color 220ms ease,transform 90ms ease;
+  will-change:transform;overflow:visible;
+}
+.ci-item.wide{grid-column:1/-1}
+.ci-item:active{transform:translateY(1px) scale(.985)}
+.ci-item .ck{
+  width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;position:relative;
+  transition:background 140ms ease,border-color 140ms ease;
+}
+.ci-item .ck svg{opacity:0;transition:opacity 120ms ease 60ms}
+.ci-item .ct{font-size:13px;font-weight:600;letter-spacing:.3px}
+.ci-item .cd{font-size:10px;color:var(--ink-3);margin-top:2px}
+.ci-item .stamp{
+  position:absolute;top:-7px;right:-5px;width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;
+  transform:rotate(-2deg) scale(.7);opacity:0;z-index:3;
+  filter:drop-shadow(0 2px 5px rgba(178,58,46,.32));
+  transition:opacity 160ms ease,transform 160ms ease;
+}
+/* 已完成项常驻朱印（不只是刚点的那一枚） */
+body[data-scheme="B"] .ci-item.done .stamp,
+body[data-scheme="C"] .ci-item.done .stamp{opacity:1;transform:rotate(-2deg) scale(1)}
+.ci-item .stamp svg{width:100%;height:100%;display:block}
+
+.ci-encourage{
+  margin-top:11px;padding:10px;text-align:center;font-size:11.5px;color:var(--ink-3);
+  border:1px dashed rgba(43,38,32,.16);border-radius:var(--r-sm);background:rgba(255,252,244,.5);
+  transition:color 260ms ease,border-color 260ms ease,background 260ms ease;
+}
+.ci-encourage.hot{color:#8E2C22;border-color:rgba(178,58,46,.34);background:rgba(178,58,46,.045);font-weight:600}
+
+.ci-album{margin-top:11px;padding:10px 12px;background:#FFFCF6;border:1px solid var(--line);border-radius:var(--r-sm);display:flex;align-items:center;gap:8px}
+.al-t{font-family:var(--kai);font-weight:700;font-size:12px;color:var(--ink-2);letter-spacing:1px;flex:0 0 auto}
+.al-seals{display:flex;gap:5px;flex:1;justify-content:flex-end}
+.al-seals i{width:20px;height:20px;display:block;transform:rotate(-2deg);opacity:.9}
+.al-seals i svg{width:100%;height:100%;display:block}
+.al-n{font-size:10px;color:var(--ink-3)}
+
+/* ══════════ 方案 A · 朱批（克制）══════════
+   语汇：朱笔在纸上点一下 → 朱色晕开一圈 → 纸面留一点淡朱。
+   动效总时长 360ms，无位移元素，无粒子。 */
+body[data-scheme="A"] .ci-item.done{
+  background:radial-gradient(130% 120% at 6% 50%,rgba(178,58,46,.075),rgba(178,58,46,.022) 58%,transparent 78%),var(--card);
+  border-color:rgba(178,58,46,.26);
+}
+body[data-scheme="A"] .ci-item.done .ck{background:var(--cinnabar);border-color:var(--cinnabar)}
+body[data-scheme="A"] .ci-item.done .ck svg{opacity:1;stroke:#FBF6EA}
+body[data-scheme="A"] .ci-item.done .stamp{display:none}
+/* 朱点从圆心扩散的晕圈 */
+@keyframes aHalo{0%{transform:scale(.3);opacity:.55}70%{opacity:.18}100%{transform:scale(2.6);opacity:0}}
+body[data-scheme="A"] .ck.play::after{
+  content:"";position:absolute;inset:-4px;border-radius:50%;
+  background:radial-gradient(circle,rgba(178,58,46,.5),rgba(178,58,46,.12) 55%,transparent 72%);
+  animation:aHalo 380ms cubic-bezier(.25,.9,.35,1) both;pointer-events:none;
+}
+
+/* ══════════ 方案 B · 落印（推荐）══════════
+   语汇：印从高处砸在纸上（overshoot）→ 朱砂沿边溅出几粒 → 墨晕在卡片上散开。
+   动效总时长 460ms。 */
+body[data-scheme="B"] .ci-item.done,
+body[data-scheme="C"] .ci-item.done{
+  background:radial-gradient(120% 110% at 96% 4%,rgba(178,58,46,.06),transparent 62%),rgba(43,38,32,.032);
+  border-color:rgba(43,38,32,.28);
+}
+body[data-scheme="B"] .ci-item.done .ck,
+body[data-scheme="C"] .ci-item.done .ck{background:rgba(43,38,32,.82);border-color:rgba(43,38,32,.82)}
+body[data-scheme="B"] .ci-item.done .ck svg,
+body[data-scheme="C"] .ci-item.done .ck svg{opacity:1;stroke:#FBF6EA}
+
+@keyframes bDrop{
+  0%{transform:scale(2.35) rotate(-9deg);opacity:0;filter:blur(1.4px)}
+  52%{transform:scale(.93) rotate(-1.2deg);opacity:1;filter:blur(0)}
+  76%{transform:scale(1.06) rotate(-2.6deg)}
+  100%{transform:scale(1) rotate(-2deg);opacity:1}
+}
+.ci-item .stamp.play{animation:bDrop 260ms cubic-bezier(.2,.85,.3,1.2) both}
+
+/* 墨晕：从印位（右上）向卡片扩散 */
+@keyframes bBloom{0%{transform:scale(.18);opacity:.85}100%{transform:scale(2.2);opacity:0}}
+.ci-item.done::after{
+  content:"";position:absolute;top:0;right:0;width:78px;height:78px;border-radius:50%;
+  background:radial-gradient(circle,rgba(178,58,46,.34),rgba(178,58,46,.10) 46%,transparent 70%);
+  opacity:0;pointer-events:none;z-index:1;
+}
+.ci-item.done.bloom::after{animation:bBloom 400ms cubic-bezier(.2,.85,.3,1) both}
+
+/* 朱砂溅点 */
+.spark{
+  position:absolute;top:9px;right:9px;width:3px;height:3px;border-radius:50%;
+  background:var(--cinnabar);pointer-events:none;z-index:4;
+  animation:sparkFly 300ms cubic-bezier(.15,.85,.4,1) both;
+}
+@keyframes sparkFly{
+  0%{transform:translate(0,0) scale(1);opacity:.95}
+  100%{transform:translate(var(--dx),var(--dy)) scale(.25);opacity:0}
+}
+
+/* ══════════ 方案 C · 满勤卷（仅 5/5 触发，叠在 B 上）══════════
+   语汇：一条题跋卷从中间展开，一句随机朱批浮现。 */
+.ci-scroll{
+  margin-top:11px;height:0;overflow:hidden;
+  border-top:1px solid transparent;
+  transition:height 420ms cubic-bezier(.25,.9,.3,1),border-color 300ms ease;
+}
+.ci-scroll.on{height:64px;border-top-color:rgba(178,58,46,.16)}
+.ci-scroll .inner{padding:12px 10px 4px;text-align:center}
+.ci-scroll .bt{font-family:var(--kai);font-size:13.5px;color:var(--cinnabar);letter-spacing:1.5px;line-height:1.7}
+.ci-scroll .by{font-size:10px;color:var(--ink-3);margin-top:4px;letter-spacing:1px}
+.ci-scroll .bt,.ci-scroll .by{opacity:0;transform:translateY(4px);transition:opacity 320ms ease 160ms,transform 320ms ease 160ms}
+.ci-scroll.on .bt,.ci-scroll.on .by{opacity:1;transform:none}
+
+/* ══════════ 右侧说明 ══════════ */
+.notes{background:rgba(255,252,244,.86);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.notes h2{font-family:var(--serif);font-size:14px;letter-spacing:.6px;margin-bottom:4px}
+.notes h2 span{color:var(--cinnabar)}
+.notes .sub{font-size:11px;color:var(--ink-3);margin-bottom:14px}
+.tl{display:grid;grid-template-columns:56px 1fr;gap:0 12px;font-size:12px;line-height:1.55}
+.tl dt{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:var(--cinnabar);text-align:right;padding-top:2px}
+.tl dd{color:var(--ink-2);padding-bottom:9px;border-left:2px solid rgba(178,58,46,.18);padding-left:11px;position:relative}
+.tl dd::before{content:"";position:absolute;left:-4px;top:7px;width:6px;height:6px;border-radius:50%;background:var(--cinnabar);opacity:.5}
+.kv{margin-top:14px;padding-top:12px;border-top:1px dashed rgba(43,38,32,.16);font-size:11.5px;color:var(--ink-2);line-height:1.75}
+.kv b{color:var(--ink)}
+.tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:999px;background:rgba(178,58,46,.09);color:#8E2C22;margin-right:5px}
+.tag.g{background:rgba(43,38,32,.07);color:var(--ink-2)}
+.tip{margin-top:16px;font-size:11px;color:var(--ink-3);line-height:1.7;padding:10px 12px;background:rgba(178,58,46,.05);border-radius:6px;border-left:3px solid rgba(178,58,46,.3)}
+.reset{display:flex;gap:8px;margin-top:14px}
+.reset button{font:inherit;font-size:11.5px;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:#FFFCF6;cursor:pointer;color:var(--ink-2)}
+.reset button:hover{border-color:rgba(178,58,46,.4);color:var(--cinnabar)}
+</style>
+</head>
+<body data-scheme="B">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="sealInk" x="-15%" y="-15%" width="130%" height="130%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.11" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="3.5" result="disp"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="11" result="g"/>
+    <feColorMatrix in="g" type="matrix" values="0 0 0 0 0.42  0 0 0 0 0.10  0 0 0 0 0.05  0.08 0.08 0.08 0 -0.06" result="speck"/>
+    <feComposite in="speck" in2="disp" operator="in" result="speckIn"/>
+    <feMerge><feMergeNode in="disp"/><feMergeNode in="speckIn"/></feMerge>
+  </filter>
+  <filter id="sealEdge" x="-15%" y="-15%" width="130%" height="130%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.14" numOctaves="2" seed="3" result="e"/>
+    <feDisplacementMap in="SourceGraphic" in2="e" scale="2.8"/>
+  </filter>
+  <!-- 与 index.html 同一套手绘篆形（读） -->
+  <symbol id="s-du" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M28 25 L37 25 M20 42 L42 42 M36 38 V62 L43 66"/><path d="M58 22 V38 M50 29 H66 M46 46 H74 V54 M48 64 H72 M53 56 V64 M67 56 V64"/></g></symbol>
+  <symbol id="s-yue" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M18 26 H46 V72 H18 Z"/><path d="M30 22 V30 M36 22 V30 M24 40 H40 M24 50 H40"/><path d="M58 30 H78 V68 M62 40 H74"/></g></symbol>
+</defs></svg>
+
+<div class="wrap">
+  <div class="top">
+    <h1>打卡「完成」反馈 · 三方案小样
+      <small>#199 P2-3｜点卡片上的任意一项感受真实反馈；音效全为实时合成</small></h1>
+    <div class="tabs" id="tabs">
+      <button class="tab" data-s="A">A 朱批</button>
+      <button class="tab on" data-s="B">B 落印</button>
+      <button class="tab" data-s="C">C 落印＋满勤卷</button>
+    </div>
+    <label class="sw"><input type="checkbox" id="snd" checked>音效</label>
+    <label class="sw" style="margin-left:0"><input type="checkbox" id="rm">模拟 reduced-motion</label>
+  </div>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="card">
+        <div class="ci-head">
+          <div>
+            <div class="ci-title">每日打卡</div>
+            <div class="ci-sub">已完成
+              <span class="cnt" id="cnt"></span>/5</div>
+          </div>
+          <div class="ci-alm">往日笺 ›</div>
+        </div>
+        <div class="ci-grid" id="grid"></div>
+        <div class="ci-encourage" id="enc">还差 2 项，今天也能满勤</div>
+        <div class="ci-scroll" id="scroll">
+          <div class="inner">
+            <div class="bt" id="scrollText"></div>
+            <div class="by">今日朱批 · 卷一</div>
+          </div>
+        </div>
+        <div class="ci-album">
+          <span class="al-t">印谱</span>
+          <span class="al-seals">
+            <i><svg viewBox="0 0 100 100"><use href="#s-yue"/></svg></i>
+            <i><svg viewBox="0 0 100 100"><use href="#s-yue"/></svg></i>
+            <i><svg viewBox="0 0 100 100"><use href="#s-yue"/></svg></i>
+          </span>
+          <span class="al-n">3 印</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes" id="notes"></div>
+  </div>
+</div>
+
+<script>
+/* ═════════════════════ 音效：WebAudio 实时合成，零素材 ═════════════════════ */
+let AC=null;
+function ac(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC&&AC.state==='suspended') AC.resume(); return AC; }
+const sndOn=()=>document.getElementById('snd').checked;
+
+/* 「笃」：印章砸在纸上 —— 低频正弦快速衰减 + 一发极短噪声（纸纤维摩擦）*/
+function sndStamp(gain=.34){
+  if(!sndOn()) return; const c=ac(); if(!c) return; const t=c.currentTime;
+  const o=c.createOscillator(), g=c.createGain();
+  o.type='sine'; o.frequency.setValueAtTime(210,t); o.frequency.exponentialRampToValueAtTime(96,t+.09);
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(gain,t+.006); g.gain.exponentialRampToValueAtTime(.0008,t+.13);
+  o.connect(g).connect(c.destination); o.start(t); o.stop(t+.15);
+  // 纸面摩擦：8ms 白噪声
+  const n=c.createBufferSource(), b=c.createBuffer(1,c.sampleRate*.03,c.sampleRate), d=b.getChannelData(0);
+  for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
+  n.buffer=b; const ng=c.createGain(); ng.gain.value=gain*.30;
+  const hp=c.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=2600;
+  n.connect(hp).connect(ng).connect(c.destination); n.start(t+.004);
+}
+/* 「朱点」：极轻的高频一点 */
+function sndDot(gain=.10){
+  if(!sndOn()) return; const c=ac(); if(!c) return; const t=c.currentTime;
+  const o=c.createOscillator(), g=c.createGain();
+  o.type='triangle'; o.frequency.setValueAtTime(1450,t); o.frequency.exponentialRampToValueAtTime(760,t+.05);
+  g.gain.setValueAtTime(gain,t); g.gain.exponentialRampToValueAtTime(.0006,t+.07);
+  o.connect(g).connect(c.destination); o.start(t); o.stop(t+.08);
+}
+/* 「磬」：满勤用 —— 基频 + 两个泛音，长衰减 */
+function sndChime(gain=.20){
+  if(!sndOn()) return; const c=ac(); if(!c) return; const t=c.currentTime;
+  [[880,1],[1320,.42],[1760,.20]].forEach(([f,a])=>{
+    const o=c.createOscillator(), g=c.createGain();
+    o.type='sine'; o.frequency.value=f;
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(gain*a,t+.01);
+    g.gain.exponentialRampToValueAtTime(.0005,t+1.35);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t+1.4);
+  });
+}
+/* ═════════════════════ 卡片内容 ═════════════════════ */
+const ITEMS=[
+  {key:'read',  t:'每日读一首', d:'读 / 看一首诗', se:'读', on:true },
+  {key:'watch', t:'每日看动画', d:'看意象动画',   se:'观', on:true },
+  {key:'know',  t:'每日了解',   d:'读懂背景故事', se:'知', on:true },
+  {key:'memory',t:'每日记忆',   d:'背下一首诗',   se:'记', on:false},
+  {key:'review',t:'每日温故',   d:'温习到期旧诗', se:'温', on:false, wide:true},
+];
+/* 满勤题跋池：变率来自**内容**，不来自奖励强度（见「边界」说明） */
+const CODA=[
+  ['腹有诗书气自华，读书万卷始通神。','苏轼 · 和董传留别'],
+  ['旧书不厌百回读，熟读深思子自知。','苏轼 · 送安惇秀才失解西归'],
+  ['书卷多情似故人，晨昏忧乐每相亲。','于谦 · 观书'],
+  ['眼前直下三千字，胸次全无一点尘。','于谦 · 观书'],
+  ['读书之乐何处寻，数点梅花天地心。','翁森 · 四时读书乐'],
+];
+
+const grid=document.getElementById('grid');
+grid.innerHTML=ITEMS.map(it=>`
+  <div class="ci-item${it.wide?' wide':''}${it.on?' done':''}" data-key="${it.key}">
+    <div class="ck">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg>
+    </div>
+    <div><div class="ct">${it.t}</div><div class="cd">${it.d}</div></div>
+    <div class="stamp"><svg viewBox="0 0 100 100"><use href="#s-du"/></svg></div>
+  </div>`).join('');
+
+/* ═════════════════════ 计数滚轮 ═════════════════════ */
+/* 单滚轮：新数字先停在下方 14px，再上滚入位（180ms cubic-bezier 见 CSS） */
+const cntEl=document.getElementById('cnt');
+let cntNow=3;
+function renderCount(n){
+  const changed=(n!==cntNow);
+  cntNow=n;
+  cntEl.innerHTML='<i'+((''+n===cntEl.dataset.v||!changed)?'':' style="transform:translateY(-14px)"')+'><b>'+n+'</b></i>';
+  cntEl.dataset.v=n;
+  if(changed) requestAnimationFrame(()=>{ cntEl.firstChild.style.transform='translateY(0)'; });
+}
+
+/* ═════════════════════ 反馈序列 ═════════════════════ */
+const reduce=()=>document.getElementById('rm').checked;
+const scheme=()=>document.body.dataset.scheme;
+let busy=false;
+
+function sparks(host,n){
+  if(reduce()) return;
+  for(let i=0;i<n;i++){
+    const s=document.createElement('span');
+    s.className='spark';
+    const a=-Math.PI*0.85+Math.random()*Math.PI*1.1;   // 偏左上散开（印在右上）
+    const r=13+Math.random()*17;
+    s.style.setProperty('--dx',(Math.cos(a)*r).toFixed(1)+'px');
+    s.style.setProperty('--dy',(Math.sin(a)*r).toFixed(1)+'px');
+    s.style.animationDelay=(40+i*13+Math.random()*24|0)+'ms';
+    s.style.width=s.style.height=(1.6+Math.random()*1.8).toFixed(1)+'px';
+    host.appendChild(s);
+    setTimeout(()=>s.remove(),520);
+  }
+}
+
+function reset(item){
+  item.classList.remove('done','bloom');
+  item.querySelector('.stamp').classList.remove('play');
+  const ck=item.querySelector('.ck'); ck.classList.remove('play');
+  item.querySelectorAll('.spark').forEach(s=>s.remove());
+}
+
+function fire(item){
+  const k=item.dataset.key;
+  const wasDone=item.classList.contains('done');
+  // 取消：安静地退，不做反向动效（取消不该有奖励感）
+  if(wasDone){ reset(item); afterChange(); sndDot(.05); return; }
+
+  const S=scheme();
+  if(S==='A'){
+    item.classList.add('done');
+    item.querySelector('.ck').classList.add('play');
+    sndDot(.12);
+  }else{
+    item.classList.add('done');
+    const st=item.querySelector('.stamp');
+    st.classList.remove('play'); void st.offsetWidth; st.classList.add('play');
+    requestAnimationFrame(()=>{ item.classList.remove('bloom'); void item.offsetWidth; item.classList.add('bloom'); });
+    sndStamp(.34);
+    sparks(item, S==='C'?7:6);
+  }
+  afterChange();
+}
+
+let cur=3;
+function afterChange(){
+  const now=[...document.querySelectorAll('.ci-item')].filter(e=>e.classList.contains('done')).length;
+  renderCount(now);
+  const enc=document.getElementById('enc');
+  const left=5-now;
+  if(left>0){
+    enc.classList.toggle('hot', left<=1);
+    enc.textContent = left===1 ? '还差 1 项，今天就能满勤' : `还差 ${left} 项，今天也能满勤`;
+  }else{
+    enc.classList.add('hot'); enc.textContent='今日诗词满勤 🌱';
+    if(scheme()==='C' && now>cur){ fullHouse(); }
+  }
+  cur=now;
+}
+
+let lastCoda=-1;
+function fullHouse(){
+  const sc=document.getElementById('scroll');
+  let i; do{ i=Math.floor(Math.random()*CODA.length); }while(i===lastCoda&&CODA.length>1);
+  lastCoda=i;
+  document.getElementById('scrollText').textContent=CODA[i][0];
+  document.querySelector('.ci-scroll .by').textContent='今日朱批 · 卷一';
+  sc.classList.add('on');
+  setTimeout(()=>sndChime(.18), 240);
+}
+
+/* ═════════════════════ 说明面板 ═════════════════════ */
+const NOTES={
+  A:{title:'A · 朱批',sub:'最克制的一套：只动「点」与「晕」，不引入任何位移元素',
+    tl:[['0ms','按下：卡片下陷 1px、缩到 98.5%（触感先行）'],
+        ['0–120ms','圆心由空心圈转为朱实心，同时一圈朱色向外晕开到 2.6 倍后消散（380ms）'],
+        ['60–360ms','卡片底色由朱色 radial 从圆点位置渗开，替代原玉绿底'],
+        ['180–360ms','顶部计数滚轮上翻一位'],
+        ['音','一声极轻高频「哒」（1400Hz，70ms）']],
+    kv:'<b>气质</b>：文人批点，安静、耐看，一天点五次也不吵。<br><b>风险</b>：爽感偏弱——如果你要的是「点下去有点上头」，A 不够。',
+    tags:['<span class="tag g">最省</span><span class="tag g">最雅</span>']},
+  B:{title:'B · 落印',sub:'推荐这套：一次落印 = 四个同时发生的层，爽感来自「叠加」而非「夸张」',
+    tl:[['0ms','按下：卡片下陷 1px、缩到 98.5%'],
+        ['0–260ms','印从 2.35 倍高砸下，带轻微模糊→清晰（模拟入纸），过冲到 93% 再弹回（overshoot）'],
+        ['40–320ms','6 粒朱砂沿印边向外飞散（每粒随机角度/大小/延迟 13ms），300ms 淡出'],
+        ['80–460ms','墨晕从印位向卡片扩散到 2.2 倍，透明度归零；卡片底色同时转为淡墨 + 墨色描边'],
+        ['200–380ms','计数滚轮上翻'],
+        ['音','「笃」（210→96Hz 下滑 + 8ms 纸面高频噪声）']],
+    kv:'<b>为什么爽</b>：视觉上「重物落下 + 碎屑飞散」天然带触觉记忆；听觉是低频冲击；两者在同一帧起手 → 大脑判为「一件事真的发生了」。<br><b>成本</b>：纯 CSS + 少量 JS 生成粒子，无图片、无音频素材。<br><b>无障碍</b>：颜色之外还有「印的存在」+ 勾选形状，色弱可辨。',
+    tags:['<span class="tag">推荐</span><span class="tag g">纯 CSS 可做</span><span class="tag g">小体积</span>']},
+  C:{title:'C · 落印 ＋ 满勤卷',sub:'日常点击同 B；只有 5/5 那一刻，多一层仪式',
+    tl:[['0–460ms','完全同 B（日常反馈不能因为「可能满勤」而变慢）'],
+        ['满勤瞬间','卡片下方卷轴从 0 展开到 64px（420ms），一句随机题跋淡入上移'],
+        ['+240ms','「磬」声：880 / 1320 / 1760Hz 三个正弦叠加，1.35s 长衰减'],
+        ['变率','题跋从 5 句池里随机且不与上一次重复 —— 变率在「内容」不在「奖励强度」']],
+    kv:'<b>为什么值得做</b>：日常反馈保爽感，满勤给一个「今天不一样」的记忆点；这是留存真正吃的那一口。<br><b>边界（重要）</b>：刻意不做「随机掉落大奖 / 抽卡 / 概率加倍」——那是赌博机制，对青少年向的诗词产品是长期伤害。变率只放在文案内容上。',
+    tags:['<span class="tag">进阶</span><span class="tag g">变率=内容</span>']},
+};
+function renderNotes(){
+  const d=NOTES[scheme()];
+  document.getElementById('notes').innerHTML=`
+    <h2>${d.title.replace(/^(.)/,'<span>$1</span>')}</h2>
+    <div class="sub">${d.sub}</div>
+    <dl class="tl">${d.tl.map(([t,x])=>`<dt>${t}</dt><dd>${x}</dd>`).join('')}</dl>
+    <div class="kv">${d.kv}</div>
+    <div class="tip"><b>直接点左边卡片试手感。</b>音效开关在右上；勾「模拟 reduced-motion」可看无障碍降级后的样子——降级后只保留「状态变化 + 计数」，不加任何位移。</div>
+    <div class="reset">
+      <button onclick="resetAll()">重置为 3/5</button>
+      <button onclick="fillAll()">一键满勤（看方案 C）</button>
+    </div>`;
+}
+
+/* ═════════════════════ 事件 ═════════════════════ */
+document.getElementById('tabs').addEventListener('click',e=>{
+  const b=e.target.closest('.tab'); if(!b) return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));
+  document.body.dataset.scheme=b.dataset.s;
+  document.getElementById('scroll').classList.remove('on');
+  renderNotes();
+});
+grid.addEventListener('click',e=>{
+  const it=e.target.closest('.ci-item'); if(!it) return;
+  fire(it);
+});
+function resetAll(){
+  [...document.querySelectorAll('.ci-item')].forEach((it,i)=>{
+    reset(it);
+    if(ITEMS[i].on){ it.classList.add('done'); it.querySelector('.stamp').classList.remove('play'); }
+  });
+  document.getElementById('scroll').classList.remove('on');
+  document.getElementById('enc').classList.remove('hot');
+  cur=3; renderCount(3);
+  document.getElementById('enc').textContent='还差 2 项，今天也能满勤';
+}
+function fillAll(){
+  [...document.querySelectorAll('.ci-item')].forEach((it,i)=>{
+    if(it.classList.contains('done')) return;
+    setTimeout(()=>fire(it), i*70);
+  });
+}
+renderCount(3); renderNotes();
+</script>
+</body>
+</html>

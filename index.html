@@ -349,7 +349,11 @@
   .ci-item:active{transform:translateY(1px) scale(.985);}
   .ci-item .ck{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#fff;transition:background .14s ease,border-color .14s ease;}
   .ci-item .ck svg{opacity:0;transition:opacity .12s ease .06s;}
-  .ci-item.done .ck{background:rgba(43,38,32,.82);border-color:rgba(43,38,32,.82);}
+  /* 完成态勾选圆：深朱 #8E2C22（本文件里 ci-encourage.hot 也在用）。
+     为什么不用印章同色 #B23A2E：一张卡上出现两块同强度红，会摊薄「印砸下来」的辨识度；
+     为什么不用原来的墨色 rgba(43,38,32,.82)：偏灰闷，跟朱印并置显脏（枯木 2026-10-26 反馈）。
+     对比度：白勾 #FBF6EA 对该底 7.69（AA 文本门 4.5、图形门 3 均过）。 */
+  .ci-item.done .ck{background:#8E2C22;border-color:#8E2C22;}
   .ci-item.done .ck svg{opacity:1;stroke:#FBF6EA;}
   .ci-item .ct{font-size:13px;font-weight:600;}
   .ci-item .cd{font-size:10px;color:var(--ink-3);margin-top:2px;}
@@ -612,8 +616,13 @@
 <!-- ============ #199 round7 P0-1 篆刻印 SVG 化 ============
      朱文印 vessel：印底残边（feTurbulence+feDisplacementMap 啃出不齐边）
      + 印底微噪（speckle 被印形 operator=in 裁住，不溢出）+ 字口残边。
-     6 枚手绘字形（读/观/知/记/温/阅）走 <use>；次级字形（习/回/春/夏/秋/冬/令/接/背/考）
-     走 sealMarkup() 的楷形+残边回退（任务内置回退协议，见 out/review-r7-*.md）。
+     6 枚印（读/观/知/记/温/阅）走 <use>；次级字形（习/回/春/夏/秋/冬/令/接/背/考）
+     走 sealMarkup() 的楷形+残边回退。**2026-10-26 起 6 枚也改用真汉字**（原为手绘折线，
+     渲染出来「像汉字又不是汉字」，见下方 seal-* 定义前的说明）。
+     「篆意」不再由伪造字形提供，改由材质提供：印底残边 + 印泥微噪 + 字口残边。
+     说明：曾评估用开源篆书字体「霞鹜篆书」（SIL OFL 1.1）替换，实测不可行 ——
+     该字体最新版仅收 165 字（节气/吉语），不含这 6 字；且现网印位仅 22~34px，
+     篆书笔画细密，26px 下糊成一团（对比图见 out/r7-seals/seal-size-compare.png）。
      约束：容器 .seal/.stamp/.jl-seal/.gc-seal/.lg-logo 的尺寸/旋转/动效 CSS 一律不动，
      只把内部文字换成 SVG；不引整字库（体积红线）。 -->
 <filter id="sealInk" x="-15%" y="-15%" width="130%" height="130%">
@@ -628,12 +637,18 @@
   <feTurbulence type="fractalNoise" baseFrequency="0.13" numOctaves="2" seed="7" result="n"/>
   <feDisplacementMap in="SourceGraphic" in2="n" scale="3"/>
 </filter>
-<symbol id="seal-du" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M28 25 L37 25 M20 42 L42 42 M36 38 V62 L43 66"/><path d="M58 22 V38 M50 29 H66 M46 46 H74 V54 M48 64 H72 M53 56 V64 M67 56 V64"/></g></symbol>
-<symbol id="seal-guan" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M19 29 H37 L30 44 M42 25 L27 56"/><path d="M52 26 V64 M52 26 H64 M52 45 H64 M64 26 V64"/><path d="M69 30 C73 44 73 54 71 66 M81 30 C77 44 77 54 79 66"/></g></symbol>
-<symbol id="seal-zhi" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M28 24 L44 56 M36 23 L50 48 M22 52 H58"/><path d="M62 30 H84 V62 H62 Z"/></g></symbol>
-<symbol id="seal-ji" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M27 25 L36 25 M20 42 L42 42 M36 38 V62 L43 66"/><path d="M50 30 H78 V54 H62 V70 H82"/></g></symbol>
-<symbol id="seal-wen" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M19 26 L31 26 M18 44 L30 44 M19 62 L31 62"/><path d="M38 24 H56 V46 H38 Z M38 35 H56"/><path d="M60 48 H86 V78 H60 Z M68 48 V78 M78 48 V78"/></g></symbol>
-<symbol id="seal-yue" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><g fill="none" stroke="#FBF6EA" stroke-width="9" stroke-linecap="butt" filter="url(#sealEdge)"><path d="M35 23 L44 23 M27 32 V78 M40 31 H72 V78"/><path d="M48 39 L54 47 M64 39 L58 47 M47 53 H65 V66 H47 Z"/></g></symbol>
+<!-- ⚠ 2026-10-26 起：这 6 枚印不再用手绘折线路径画字。
+     上一版是拿几何折线去「近似」篆书结构，实际渲染出来「像汉字又不是汉字」
+     （枯木 2026-10-26 截图反馈，判断正确）—— 等于用假字形冒充字，不可接受。
+     现改为真汉字（楷书字族）+ sealEdge 残边 + sealInk 印泥，印味靠「材质」撑，
+     不再靠伪造字形。将来若拿到可商用的完整篆书字体，只需把这里的 font-family
+     换成该字体（或换成对应字形路径），<use> / 容器 CSS / 动效全部不用动 —— 接驳点就在这。 -->
+<symbol id="seal-du" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="53" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="56" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">读</text></symbol>
+<symbol id="seal-guan" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="53" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="56" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">观</text></symbol>
+<symbol id="seal-zhi" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="53" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="56" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">知</text></symbol>
+<symbol id="seal-ji" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="53" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="56" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">记</text></symbol>
+<symbol id="seal-wen" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="53" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="56" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">温</text></symbol>
+<symbol id="seal-yue" viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="9" fill="#B23A2E" filter="url(#sealInk)"/><text x="50" y="53" text-anchor="middle" dominant-baseline="central" fill="#FBF6EA" font-size="56" font-weight="700" font-family="'LXGW WenKai','Kaiti SC','STKaiti','KaiTi','DFKai-SB',serif" filter="url(#sealEdge)">阅</text></symbol>
 </defs></svg>
       <div class="game-entry">
         <div class="game-card" onclick="openFeihua()">

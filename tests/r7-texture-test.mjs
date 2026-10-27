@@ -69,6 +69,35 @@ console.log('\n§A P0-1 篆刻印 SVG 化');
   }));
   ok('印泥渗透 / 字口残边两个滤镜就位', filters.ink && filters.edge, filters);
 
+  /* 印文必须是「真汉字」。
+     背景：2026-10-26 之前这 6 枚印是用手绘折线 <path> 去近似篆书结构的，
+     渲染出来「像汉字又不是汉字」（枯木截图反馈）。那种做法无法靠肉眼外的
+     自动化手段发现 —— 所以这里把它钉成断言：
+       · 每枚 symbol 内必须有且只有一个 <text>，且字与预期完全一致；
+       · symbol 内不得再出现 <path> / <g stroke>（手绘冒充字形会以这两者出现）。
+     这条断言的意思不是「不许用路径画字」，而是「不许用假字形冒充字」。 */
+  const EXPECT = { 'seal-du': '读', 'seal-guan': '观', 'seal-zhi': '知', 'seal-ji': '记', 'seal-wen': '温', 'seal-yue': '阅' };
+  const sealTexts = await page.evaluate(() =>
+    [...document.querySelectorAll('symbol[id^="seal-"]')].map(s => ({
+      id: s.id,
+      text: (s.querySelector('text') || {}).textContent || '',
+      nText: s.querySelectorAll('text').length,
+      nPath: s.querySelectorAll('path').length,
+      nStrokeG: s.querySelectorAll('g[stroke]').length,
+    })));
+  ok('6 枚印文都是真汉字（<text> 且字对，无手绘 path 冒充字形）',
+     sealTexts.length === 6 && sealTexts.every(s =>
+       s.text === EXPECT[s.id] && s.nText === 1 && s.nPath === 0 && s.nStrokeG === 0),
+     sealTexts);
+
+  const sealFont = await page.evaluate(() => {
+    const t = document.querySelector('#seal-du text');
+    return t ? { font: getComputedStyle(t).fontFamily, size: getComputedStyle(t).fontSize, kaiti: document.fonts.check('16px KaiTi') } : null;
+  });
+  ok('印文字体族可解析（楷书族，不退化成豆腐块）',
+     !!sealFont && /KaiTi|STKaiti|Kaiti SC|LXGW WenKai/.test(sealFont.font) && sealFont.kaiti === true,
+     sealFont);
+
   // 全页 <use href="#..."> 是否都能解析到目标（含新印章符号）
   const useAudit = await page.evaluate(() => {
     const all = [...document.querySelectorAll('use')];
@@ -418,10 +447,16 @@ console.log('\n§C2 意象底余量 0.18 不压缩');
      fpBy.off.length > 0 && fOL.length === 0 && fLH.length === 0,
      { 元素数: fpBy.off.length, offVsLight: fOL, lightVsHeavy: fLH });
 
-  /* 像素级复核（判据二） */
+  /* 每档各拍两枪：第二枪作为实测帧，且要求同档两枪一致。
+     为什么要这样：
+       ① 首帧可能还没稳定（图像解码/合成），单靠「跨档比较」会把首帧抖动记到纸纹头上
+          —— 实测整跑曾出现 off 与 light/heavy 各差 228 像素、maxDelta=2，
+          而单独复现时三档差异恒为 0，且那种差异两两相等，是「第一枪异常」的典型形状；
+       ② 旧写法只在最前面拍一组同档对照，那组恰好落在预热前，反而测不到这个现象。
+     判据仍是 maxDelta ≤ 1 且差值>1 像素 = 0（阈值经反向注入标定，见 negctl_hero_paper.cjs）。 */
   const shot = async (v) => {
     await page.evaluate((v) => setPaper(v), v);
-    await page.waitForTimeout(180);
+    await page.waitForTimeout(220);
     return (await page.screenshot({ clip: prep.box })).toString('base64');
   };
   const stats = (a, b) => page.evaluate(async ({ a, b }) => {
@@ -441,19 +476,35 @@ console.log('\n§C2 意象底余量 0.18 不压缩');
     return { total: w * h, over1: over, maxDelta: max };
   }, { a, b });
 
-  const ctrl = await stats(await shot('heavy'), await shot('heavy'));
-  const ctrlStable = !ctrl.sizeMismatch && ctrl.maxDelta <= 1;
-  const shots = {};
-  for (const v of ['off', 'light', 'heavy']) shots[v] = await shot(v);
-  const dOL = await stats(shots.off, shots.light);
-  const dLH = await stats(shots.light, shots.heavy);
+  /* 取「稳定帧」：连续两枪一致才算数，否则重试（最多 8 次）。
+     为什么需要：实测同一档位连拍四枪，只有**第 1 枪**与后三枪差 228 像素（maxDelta=2），
+     差异集中在 hero 右上 x161~329 / y0~136，即意象层（.hero-bg）首帧光栅化的瞬态；
+     后三枪彼此恒等（0 像素差）。换档会重现同类瞬态。固定次数的「预热」抓不住它，
+     故改为「拍到连续两枪一致为止」，仍不收敛就如实 SKIP（判不了就不硬判）。 */
+  const settledShot = async (v, tries = 8) => {
+    let prev = await shot(v);
+    for (let i = 0; i < tries; i++) {
+      const cur = await shot(v);
+      const d = await stats(prev, cur);
+      if (!d.sizeMismatch && d.maxDelta <= 1) return { b64: cur, stable: true, shots: i + 2, lastDiff: d };
+      prev = cur;
+    }
+    return { b64: prev, stable: false, shots: tries + 1 };
+  };
+
+  const per = {};
+  for (const v of ['off', 'light', 'heavy']) per[v] = await settledShot(v);
+  const unstable = Object.entries(per).filter(([, o]) => !o.stable).map(([v, o]) => ({ level: v, shots: o.shots }));
+  const dOL = await stats(per.off.b64, per.light.b64);
+  const dLH = await stats(per.light.b64, per.heavy.b64);
   const same = (d) => !d.sizeMismatch && d.maxDelta <= 1 && d.over1 === 0;
-  if (!ctrlStable) {
-    sk('hero 三档截图像素等价', '同档对照不稳，本次无法判定；' + JSON.stringify(ctrl));
+  if (unstable.length) {
+    sk('hero 三档截图像素等价', '连续两枪仍不一致，本次无法判定；' + JSON.stringify(unstable));
   } else {
     ok('hero 三档截图像素等价（纸纹确未压在意象底上）',
        same(dOL) && same(dLH),
-       { 同档对照: ctrl, offVsLight: dOL, lightVsHeavy: dLH, 判据: 'maxDelta<=1 且 差值>1 像素=0' });
+       { 稳定帧耗时枪数: { off: per.off.shots, light: per.light.shots, heavy: per.heavy.shots },
+         offVsLight: dOL, lightVsHeavy: dLH, 判据: 'maxDelta<=1 且 差值>1 像素=0' });
   }
 
   // 实测最坏像素 vs --ink-2 / --ink
@@ -479,13 +530,13 @@ console.log('\n§C2 意象底余量 0.18 不压缩');
       cInkMin: cWorst(hex('--ink')), cInk2Min: cWorst(hex('--ink-2')),
       cInkP1: cP1(hex('--ink')), cInk2P1: cP1(hex('--ink-2')),
     };
-  }, shots.heavy);
+  }, per.heavy.b64);
 
   ok('意象底最暗像素 vs --ink 仍 ≥ AA 4.5', c.cInkMin >= 4.5, c);
   /* 口径说明（不粉饰）：本处是**像素实测**，round5 §2.2 记的是**模型值** 4.68。
      实测 4.60（余量 0.10）比模型低 0.08 —— 因为模型按「最暗渐变停止色 + 统一黑@.15」算，
      而真实像素还叠了径向朱砂微染与抗锯齿抖动。两者都不是错的，但**不可相减**。
-     硬门的实质要求是「本轮不压缩余量」，这一点由上面那条『三档逐字节相同』严格保证（增量恰好 0）；
+     硬门的实质要求是「本轮不压缩余量」，这一点由上面那条『三档像素等价』严格保证（增量恰好 0）；
      绝对底线另守 AA 4.5。实测差值与模型差已如实写入执行报告，交灵玉复核。 */
   ok('意象底最暗像素 vs --ink-2 仍守住 AA 4.5（实测余量见 extra）', c.cInk2Min >= 4.5,
      { cInk2Min: c.cInk2Min, cInk2P1: c.cInk2P1, 模型值: 4.68, 实测余量: Math.round((c.cInk2Min - 4.5) * 100) / 100 });
@@ -697,8 +748,17 @@ console.log('\n§E 打卡完成反馈（B 落印 + C 满勤卷）');
       hasJade: /110,\s*139,\s*106/.test(getComputedStyle(done).backgroundImage + getComputedStyle(ck).backgroundColor + getComputedStyle(done).borderColor),
     };
   });
-  ok('完成态已脱离玉绿（淡墨底 + 墨勾选）',
-     !palette.hasJade && /43,\s*38,\s*32/.test(palette.ckBg), palette);
+  /* 判据演进说明：
+     ① 原本是「完成态不许是玉绿 #6E8B6A」——玉绿在宣纸底上发灰、显脏，已废弃；
+     ② 改成墨色勾选圆后，枯木 2026-10-26 反馈「墨色不好看，还不如红的」；
+     ③ 现为深朱 #8E2C22 = rgb(142,44,34)。用深朱而非印章同色 #B23A2E，
+        是为了让「印砸下来」仍是卡上最亮的那块红（同色会摊薄辨识度）。
+     故断言改为：无玉绿 + 勾选圆确为深朱 + 不与印章同色。 */
+  ok('完成态已脱离玉绿（淡墨底 + 深朱勾选圆）',
+     !palette.hasJade &&
+     /142,\s*44,\s*34/.test(palette.ckBg) &&
+     !/178,\s*58,\s*46/.test(palette.ckBg),
+     palette);
 
   // 复位，逐项细查动效（注意键名是 shiyun_checkin，不是 xjy_*）
   await page.evaluate(() => { localStorage.clear(); });

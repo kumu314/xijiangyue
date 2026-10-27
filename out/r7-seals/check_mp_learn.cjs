@@ -76,5 +76,27 @@ ok('取消不触发震动（奖励感只给完成）', /if\s*\(c\.done\[key\]\)\
 ok('完成态不再用玉绿（淡墨收敛）', !/rgba\(110,139,106/.test(wxss), null);
 ok('满勤卷存在且有 keyframes 驱动', /ci-scroll\.on/.test(wxss) && /coda/.test(js), null);
 
+// 7 完成态勾选圆：深朱 #8E2C22（与桌面同色，2026-10-26 枯木拍板）
+//   为什么不用印章同色 #B23A2E：一张卡上两块同强度红会摊薄「印砸下来」的辨识度。
+ok('完成态勾选圆为深朱 #8E2C22（与桌面同色）',
+   /\.ci-item\.done\s+\.ck\s*\{[^}]*background:\s*#8E2C22/i.test(wxss), null);
+ok('勾选圆未沿用印章同色 #B23A2E（不摊薄印的存在感）',
+   !/\.ci-item\.done\s+\.ck\s*\{[^}]*#B23A2E/i.test(wxss), null);
+
+// 8 印文必须是真汉字：WXML 里印位内容是 {{item.se}}（单字），不是手绘 svg/path 冒充字形。
+//   桌面端曾用手绘折线近似篆书，渲染出来「像汉字又不是汉字」；小程序一直走真字，钉住别退化。
+const stampM = wxml.match(/class="stamp[^"]*"[^>]*>([^<]*)</);
+ok('印位内容是单个真汉字 {{item.se}}（非手绘 svg/path 冒充）',
+   !!stampM && /\{\{\s*item\.se\s*\}\}/.test(stampM[1]) && !/<(svg|path|img)/i.test(stampM[1]),
+   stampM && stampM[1]);
+const seVal = [...js.matchAll(/se:\s*'([^']*)'/g)].map(m => m[1]);
+ok('每个打卡项的印字都是 1 个汉字（小程序现为 4 项）',
+   seVal.length === 4 && seVal.every(s => /^[\u4e00-\u9fff]$/.test(s)), seVal);
+// ⚠ 已知两端差异（非本轮引入，2026-10-27 核实备份 _bak_r7fb_20261026/learn.js 亦然）：
+//   桌面 CHECKIN_ITEMS 是 5 项（读/观/知/记/温），小程序 ITEMS 只有前 4 项，缺「每日温故」。
+//   这里不擅自补 —— 补第 5 项要连带动 满勤口径（桌面那套 noStreak 陷阱：全勤只算四项），
+//   属于功能改动，须枯木拍板。故只记录，不通过改代码「顺手抹平」。
+console.log('  NOTE 两端打卡项数不一致：桌面 5 项 / 小程序 ' + seVal.length + ' 项（缺「每日温故」）');
+
 console.log(fail ? '\nMP-RESULT fail=' + fail : '\nMP-RESULT all pass');
 process.exit(fail ? 1 : 0);

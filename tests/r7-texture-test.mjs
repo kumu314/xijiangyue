@@ -140,14 +140,19 @@ console.log('\n§A P0-1 篆刻印 SVG 化');
   });
   ok('印谱印位全部 SVG 化', album.n === 0 ? true : album.svg === album.n, album);
 
-  // 题签印同授残边
+  /* 题签印同授残边 —— 2026-10-27 改：残边从 .vtitle 本身移到 .vtitle::before。
+     为什么必须移：sealEdge 的 feDisplacementMap scale=3 在 CSS 元素上按 CSS 像素算，
+     挂在整块上会把 16px 的字一起位移 ±3px（笔画被打散约 19%），肉眼即「字发糊」；
+     挂在 ::before 上就只啃块缘，文字保持原生锐利。两处断言见下（此处 + 折行验证之后那条）。 */
   const vt = await page.evaluate(() => {
     const p = POEMS.find(x => x.level === '精读' && x.lines && x.lines.length > 3) || POEMS[0];
     openDetail(p.id);
     const e = document.querySelector('.vtitle');
-    return e ? getComputedStyle(e).filter : null;
+    if (!e) return null;
+    return { self: getComputedStyle(e).filter, before: getComputedStyle(e, '::before').filter };
   });
-  ok('竖排题签印继承 sealEdge 残边', !!vt && /sealEdge/.test(vt), vt);
+  ok('题签残边仍在（已移到 ::before，文字本身不带滤镜）',
+     !!vt && /sealEdge/.test(vt.before || '') && vt.self === 'none', vt);
 
   // 印章视觉语言未变：仍有旋转、尺寸未溢出容器（须回到学习页，详情视图下 rect 为 0）
   const sealBox = await page.evaluate(() => {
@@ -204,6 +209,27 @@ console.log('\n§B P1-2 竖排折行分组');
      perSize.map(x => `${x.size}:wrap=${x.wrapped}/${x.total},w=${x.w}`).join(' | '));
   ok('四档字号均产出续列分组（vcont>0）', perSize.every(x => x.vcont > 0),
      perSize.map(x => `${x.size}:vcont=${x.vcont}`).join(' | '));
+
+  /* 题签清晰度：残边滤镜只能挂在「块」上（.vtitle::before），绝不能挂到 .vtitle 本身。
+     原因：sealEdge 的 feDisplacementMap scale=3 在 CSS 元素上是按 **CSS 像素** 算的，
+     题签字 16px，被位移 ±3px ≈ 笔画被打散 19%，肉眼就是「字发糊」
+     （枯木 2026-10-27 截图反馈，判断正确）。SVG 印章里的同款滤镜落在 100 单位坐标系，
+     26px 印位只换算成 0.78px，所以印不糊、题签糊 —— 差别就在这个单位换算上。
+     实测佐证：修好后 .vtitle 文字渲染与「完全不加滤镜」逐像素相同；修之前明显被推歪。 */
+  const vt = await page.evaluate(() => {
+    const el = document.querySelector('.vtitle');
+    if (!el) return null;
+    const cs = getComputedStyle(el);
+    const pb = getComputedStyle(el, '::before');
+    return { self: cs.filter, before: pb.filter, bg: cs.backgroundColor,
+             beforeBg: pb.backgroundColor, name: (el.querySelector('.vt-name') || {}).textContent };
+  });
+  ok('题签残边只作用于块（::before 挂 sealEdge，文字本身无滤镜）',
+     vt !== null && vt.self === 'none' && /sealEdge/.test(vt.before || ''),
+     vt);
+  ok('题签底色已交给 ::before（元素本身透明，避免滤镜与底色打架）',
+     vt !== null && /rgba\(0, 0, 0, 0\)|transparent/.test(vt.bg) && !/rgba\(0, 0, 0, 0\)|transparent/.test(vt.beforeBg || ''),
+     vt && { self: vt.bg, before: vt.beforeBg });
   ok('容量随字号单调递减（特大最少）',
      perSize[0].unit < perSize[3].unit && perSize.every((x, i) => i === 0 || x.unit >= perSize[i - 1].unit),
      perSize.map(x => `${x.size}:${x.unit}`).join(' | '));
@@ -736,29 +762,60 @@ console.log('\n§E 打卡完成反馈（B 落印 + C 满勤卷）');
   await page.evaluate(() => { showView('view-learn'); renderLearn(); });
   await page.waitForTimeout(200);
 
-  // E1 完成态不再是玉绿
-  const palette = await page.evaluate(() => {
-    const it = document.querySelector('.ci-item');
-    it.click();                                   // 勾上第一项
-    const done = document.querySelector('.ci-item.done');
-    const ck = done.querySelector('.ck');
+  // E1 打卡图标：对号圆已由「五清植物」取代（2026-10-27）
+  /* ⚠ 必须每次重新查询 .ci-item：renderCheckin 是整卡重绘，点一下旧节点就脱离文档，
+     对脱离文档的元素取 getComputedStyle 会一律返回空值 —— 那样测出来的「全空」是假失败。
+     ⚠ 也要等抽芽动效（plantBloom 520ms）跑完再取「after」：否则最后点的那一项
+     会抓到动画中途的矩阵（实测 scale .62 那一帧），把「已回正」判成假失败。 */
+  const snapPlants = () => page.evaluate(() => [...document.querySelectorAll('.ci-item')].map(el => {
+    const ck = el.querySelector('.ck');
+    const cs = getComputedStyle(ck);
+    const u = el.querySelector('.ck use');
     return {
-      itemBg: getComputedStyle(done).backgroundImage + '|' + getComputedStyle(done).backgroundColor,
-      ckBg: getComputedStyle(ck).backgroundColor,
-      hasJade: /110,\s*139,\s*106/.test(getComputedStyle(done).backgroundImage + getComputedStyle(ck).backgroundColor + getComputedStyle(done).borderColor),
+      k: el.dataset.k, done: el.classList.contains('done'),
+      use: u ? u.getAttribute('href') : null,
+      color: cs.color,
+      tf: getComputedStyle(el.querySelector('.ck svg')).transform,
+      cardBg: getComputedStyle(el).backgroundColor,
+      cardBd: getComputedStyle(el).borderColor,
     };
-  });
-  /* 判据演进说明：
-     ① 原本是「完成态不许是玉绿 #6E8B6A」——玉绿在宣纸底上发灰、显脏，已废弃；
+  }));
+  const plants = { before: [], after: [] };
+  plants.before = await snapPlants();
+  await page.evaluate(() => { [...document.querySelectorAll('.ci-item')].forEach(el => toggleCheckin(el.dataset.k)); });
+  await page.waitForTimeout(760);
+  plants.after = await snapPlants();
+  plants.n = plants.after.length;
+  /* 判据演进说明（每一版都被枯木否过一次，别再往回改）：
+     ① 原本要求「完成态不许是玉绿 #6E8B6A」——玉绿在宣纸底上发灰、显脏，已废弃；
      ② 改成墨色勾选圆后，枯木 2026-10-26 反馈「墨色不好看，还不如红的」；
-     ③ 现为深朱 #8E2C22 = rgb(142,44,34)。用深朱而非印章同色 #B23A2E，
-        是为了让「印砸下来」仍是卡上最亮的那块红（同色会摊薄辨识度）。
-     故断言改为：无玉绿 + 勾选圆确为深朱 + 不与印章同色。 */
-  ok('完成态已脱离玉绿（淡墨底 + 深朱勾选圆）',
-     !palette.hasJade &&
-     /142,\s*44,\s*34/.test(palette.ckBg) &&
-     !/178,\s*58,\s*46/.test(palette.ckBg),
-     palette);
+     ③ 改深朱 #8E2C22 后，枯木 2026-10-27 反馈「深红有些单调」，改为五清植物
+        （梅兰竹菊松：未打卡＝枯灰下垂，打卡＝本色直立）。
+     现在的判据测四件事：未打卡是枯灰且下垂 / 打卡后五色互异且都不是枯色 /
+     打卡后姿态回正 / 五项各绑了不同的植物（形也互异，不只靠颜色）。 */
+  const WILT = 'rgb(143, 133, 119)';          // --p-wilt #8F8577
+  const SEAL = /178,\s*58,\s*46/;              // 印章朱砂，植物色不得与它同色
+  const C = plants.after.map(p => p.color);
+  ok('打卡图标为 5 个不同的植物（形互异：梅/兰/竹/菊/松）',
+     plants.n === 5 &&
+     new Set(plants.after.map(p => p.use)).size === 5 &&
+     plants.after.every(p => /^#plant-(mei|lan|zhu|ju|song)$/.test(p.use || '')),
+     plants.after.map(p => p.use));
+  ok('未打卡＝枯灰 #8F8577（不是玉绿、也不是本色）',
+     plants.before.length === 5 && plants.before.every(p => p.color === WILT) &&
+     !plants.before.some(p => /110,\s*139,\s*106/.test(p.color)),
+     plants.before.map(p => p.color));
+  /* 下垂 = rotate(-9deg) scale(.9)：矩阵为 matrix(.888919, -.140791, .140791, .888919, 0, 0)
+     （.9·cos9° / .9·sin9°）。别把 -0.15 当预期值写死——那是「只转不缩」时的数。 */
+  ok('未打卡带下垂姿态（rotate(-9deg) scale(.9)）',
+     plants.before.every(p => /matrix\(0\.8889\d*, -0\.1407\d*/.test(p.tf)), plants.before.map(p => p.tf));
+  ok('打卡后颜色各不相同、都不是枯灰、也都不与印章同色',
+     new Set(C).size === 5 && C.every(c => c !== WILT && !SEAL.test(c)), C);
+  ok('打卡后姿态回正（transform 为单位矩阵）',
+     plants.after.every(p => p.tf === 'matrix(1, 0, 0, 1, 0, 0)'), plants.after.map(p => p.tf));
+  ok('完成项卡片转为淡墨底、边框加深（状态不只靠图标）',
+     plants.after.every(p => /43,\s*38,\s*32/.test(p.cardBd) && /43,\s*38,\s*32/.test(p.cardBg)),
+     plants.after.map(p => p.cardBg + ' | ' + p.cardBd));
 
   // 复位，逐项细查动效（注意键名是 shiyun_checkin，不是 xjy_*）
   await page.evaluate(() => { localStorage.clear(); });
@@ -802,12 +859,18 @@ console.log('\n§E 打卡完成反馈（B 落印 + C 满勤卷）');
   const cleaned = await page.evaluate(() => document.querySelectorAll('.ci-item .spark').length);
   ok('溅点在 600ms 后自动清理干净', cleaned === 0, cleaned);
 
-  // E13 色弱冗余：颜色之外还有形状
+  // E13 色弱冗余：颜色之外还有形状与姿态
+  //   2026-10-27 起对号已撤，形状冗余由「植物形 + 常驻朱印」承担；
+  //   植物形五项本就互不同（见 E1），此处再钉住「印还在」+「图标确实是一张图不是纯色块」。
   const redundancy = await page.evaluate(() => {
     const d = document.querySelector('.ci-item.done');
-    return { check: !!d.querySelector('.ck svg'), stamp: !!d.querySelector('.stamp svg') };
+    const u = d.querySelector('.ck use');
+    return {
+      plant: !!(u && /^#plant-/.test(u.getAttribute('href') || '')),
+      stamp: !!d.querySelector('.stamp svg'),
+    };
   });
-  ok('完成态有形状冗余（勾选 svg + 常驻朱印），不只靠颜色', redundancy.check && redundancy.stamp, redundancy);
+  ok('完成态有形状冗余（植物形 + 常驻朱印），不只靠颜色', redundancy.plant && redundancy.stamp, redundancy);
 
   // E8 取消：无奖励动效
   // 注意：renderCheckin 是整卡重绘，点击后原 node 已被替换——

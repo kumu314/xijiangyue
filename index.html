@@ -17,6 +17,10 @@
     --cinnabar:#B23A2E; --cinnabar-deep:#8E2C22;
     --line:#E5D9C2; --line-soft:#EFE6D4;
     --jade:#4E6B4A; --gold:#8A6220; --blue:#3E5C6E;
+    /* 五清打卡配色（2026-10-27）：竹复用 --jade、菊复用 --gold，只新增 3 个本色 + 1 个枯色。
+       5 个本色对纸卡实测 5.61~7.02，枯灰 #8F8577 为 3.36 —— 均 ≥3:1（非文本 UI 底线）。
+       枯灰是刻意调出来的拐点：再淡掉到 3:1 以下，再深就不像「枯」。 */
+    --p-mei:#A6394F; --p-lan:#6A5A92; --p-song:#2F5D45; --p-wilt:#8F8577;
     /* —— 圆角 / 间距（严格遵循方案）—— */
     --r-card:18px; --r-pill:999px; --r-sm:12px; --gap:14px; --pad:20px;
     --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",serif;
@@ -141,9 +145,18 @@
   body.paper-off .original{background-image:var(--orig-grad);}
   .original::before{content:"";display:block;height:1px;background:rgba(178,58,46,.25);margin:0 4px 12px;box-shadow:0 3px 0 rgba(178,58,46,.12);}
   .vpoem{display:flex;flex-direction:row-reverse;gap:12px;align-items:stretch;}
-  .vtitle{writing-mode:vertical-rl;flex:0 0 auto;background:var(--cinnabar);color:#FBF6EA;border-radius:4px;
-    padding:12px 5px;display:flex;gap:5px;align-items:flex-start;justify-content:flex-start;box-shadow:0 3px 10px rgba(178,58,46,.30);
-    filter:url(#sealEdge);} /* #199 P0-1：题签印同授残边（字口+块缘一起被"啃"，投影同场变形不显假） */
+  /* #199 P0-1：题签印同授残边。**2026-10-27 修正**：残边只作用于「块」（::before），
+     不作用于文字。原因：sealEdge 的 feDisplacementMap scale=3 是按 **CSS 像素** 算的，
+     16px 字被位移 ±3px ≈ 笔画被打散 19%，肉眼就是「字发糊」（枯木截图反馈）。
+     而 SVG 印章里的同款滤镜落在 100 单位坐标系，26px 印位上只换算成 0.78px，所以印不糊。
+     投影一并移到 ::before，仍与块缘同场变形（不显假），文字保持锐利。 */
+  .vtitle{position:relative;writing-mode:vertical-rl;flex:0 0 auto;color:#FBF6EA;border-radius:4px;
+    padding:12px 5px;display:flex;gap:5px;align-items:flex-start;justify-content:flex-start;}
+  /* 层叠不用「负 z-index + isolation」：万一浏览器不支持 isolation，红块会掉到页面背景之后直接消失。
+     改成 ::before 用 z-index:0、文字用 z-index:1，任何实现下都不会出这个坑。 */
+  .vtitle::before{content:"";position:absolute;inset:0;background:var(--cinnabar);border-radius:4px;
+    box-shadow:0 3px 10px rgba(178,58,46,.30);filter:url(#sealEdge);z-index:0;}
+  .vtitle>*{position:relative;z-index:1;}
   .vtitle .vt-name{font-family:var(--reader-ff);font-weight:700;font-size:16px;letter-spacing:4px;}
   .vtitle.long .vt-name{font-size:13px;letter-spacing:2px;}
   .vtitle.xlong .vt-name{font-size:11px;letter-spacing:1px;}
@@ -344,17 +357,30 @@
   .rv-more{margin-top:6px;font-size:11px;color:var(--ink-3);text-align:right;}
   .ci-item{background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);padding:13px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .22s ease,border-color .22s ease,transform .09s ease;}
   /* #199 P2-3：完成态由「玉绿」收敛为「淡墨」——墨色是这套系统里本就有的，不再与朱砂冷暖割裂。
-     形状冗余保留（勾选圈 + 常驻朱印），色弱用户不靠颜色区分。 */
+     形状冗余：五清植物（梅兰竹菊松）从枯灰下垂变为本色直立 + 常驻朱印 + 卡片转淡墨底，
+     三重信号，色弱用户不靠颜色也能分辨（2026-10-27 起「勾选圈」已由植物取代）。 */
   .ci-item.done{background:radial-gradient(120% 110% at 96% 4%,rgba(178,58,46,.055),transparent 62%),rgba(43,38,32,.032);border-color:rgba(43,38,32,.28);}
   .ci-item:active{transform:translateY(1px) scale(.985);}
-  .ci-item .ck{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#fff;transition:background .14s ease,border-color .14s ease;}
-  .ci-item .ck svg{opacity:0;transition:opacity .12s ease .06s;}
-  /* 完成态勾选圆：深朱 #8E2C22（本文件里 ci-encourage.hot 也在用）。
-     为什么不用印章同色 #B23A2E：一张卡上出现两块同强度红，会摊薄「印砸下来」的辨识度；
-     为什么不用原来的墨色 rgba(43,38,32,.82)：偏灰闷，跟朱印并置显脏（枯木 2026-10-26 反馈）。
-     对比度：白勾 #FBF6EA 对该底 7.69（AA 文本门 4.5、图形门 3 均过）。 */
-  .ci-item.done .ck{background:#8E2C22;border-color:#8E2C22;}
-  .ci-item.done .ck svg{opacity:1;stroke:#FBF6EA;}
+  .ci-item .ck{width:24px;height:24px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    color:var(--p-wilt);transition:color .34s ease;}
+  .ci-item .ck svg{width:24px;height:24px;display:block;transform-origin:50% 94%;
+    transform:rotate(-9deg) scale(.9);transition:transform .42s cubic-bezier(.2,.9,.3,1.18);}
+  /* 未打卡＝枯灰 + 下垂（姿态也是信号，不只靠颜色）；
+     打卡＝该项植物本色 + 直立（竹取 --jade、菊取 --gold，复用既有色） */
+  .ci-item.done .ck{color:var(--plant,var(--jade));}
+  .ci-item.done .ck svg{transform:rotate(0) scale(1);}
+  .ci-item[data-k="read"]{--plant:var(--p-mei);}
+  .ci-item[data-k="watch"]{--plant:var(--p-lan);}
+  .ci-item[data-k="know"]{--plant:var(--jade);}
+  .ci-item[data-k="memory"]{--plant:var(--gold);}
+  .ci-item[data-k="review"]{--plant:var(--p-song);}
+  /* 抽芽：只挂在刚点的那一项（.fx），其余是静止的「已开」态 */
+  .ci-item.fx .ck svg{animation:plantBloom .52s cubic-bezier(.2,.9,.3,1.25) both;}
+  @keyframes plantBloom{
+    0%{transform:rotate(-11deg) scale(.62);}
+    58%{transform:rotate(2deg) scale(1.1);}
+    100%{transform:rotate(0) scale(1);}
+  }
   .ci-item .ct{font-size:13px;font-weight:600;}
   .ci-item .cd{font-size:10px;color:var(--ink-3);margin-top:2px;}
   .ci-encourage{margin-top:12px;padding:13px 15px;background:linear-gradient(135deg,rgba(178,58,46,.08),rgba(185,138,62,.08));border:1px dashed rgba(178,58,46,.3);border-radius:var(--r-sm);font-family:var(--serif);font-size:13.5px;line-height:1.7;color:var(--ink);text-align:center;transition:color .26s ease,border-color .26s ease,background .26s ease;}
@@ -404,6 +430,9 @@
   .ci-scroll.on .by{opacity:1;}
   @media (prefers-reduced-motion: reduce){
     .ci-item .stamp.fx{animation:none;transform:rotate(-2deg) scale(1);opacity:1;}
+    /* 抽芽不动，但状态必须照样显形：植物直接立在「已开」位（撤回动效不等于撤回信息） */
+    .ci-item.fx .ck svg{animation:none;transform:rotate(0) scale(1);}
+    .ci-item .ck svg{transition:none;}
     .ci-item.fx::after{display:none;}
     .ci-scroll{transition:none;}
   }
@@ -613,6 +642,64 @@
 <symbol id="gi-dragon-c" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M33 9.5 C20 5.5 9.5 13 9.5 24 C9.5 34.5 19 41.5 29.5 39.5 C34 38.6 37.5 36 39 32.5"/><path d="M33 9.5 C36 10.5 37.5 12.5 37.5 15 L31.5 16.5"/><path d="M31 8.5 C30.5 5.5 32 3.5 35 3"/><path d="M36 8.8 C36.5 6.2 38.5 5 41 5.2"/><path d="M37.5 15 C39.5 15.5 40.8 16.8 41.5 18.5 L36.5 20"/></g><circle cx="34.8" cy="13.4" r="1" fill="currentColor"/></symbol>
 <symbol id="gi-bamboo" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 9.5 V38.5"/><path d="M19 11 V37"/><path d="M25.5 9.5 V38.5"/><path d="M32 11 V37"/><path d="M38.5 9.5 V38.5"/><path d="M11 16.5 H40"/><path d="M11 30.5 H40"/></g></symbol>
 <symbol id="gi-paperbrush" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="21" width="30" height="16" rx="1.6"/><path d="M14 26.5 C18 25.2 23 25.2 26.5 26.2"/><path d="M20 29.5 L38 8.5"/></g><path d="M20 29.5 c-1.9 1.4 -3.2 3.3 -3.9 5.6 c2.3 -.3 4.2 -1.4 5.6 -3 Z" fill="currentColor"/></symbol>
+<!-- ============ 2026-10-27 打卡图标：五清（梅兰竹菊松）============
+     枯木拍板：把「对号圆」换成五种植物，未打卡=枯萎灰影，打卡=生机鲜明。
+     为什么是这五样：四君子（梅兰竹菊）+ 松 = 五清；松补「岁寒后凋」正好配「温故」——旧学如松，历久常青。
+     与五项一一对应（写在 CHECKIN_ITEMS 的 pl 字段）：
+       read→梅（雪中读，苦寒得香）  watch→兰（空谷幽兰，观其幽）
+       know→竹（竹有节，知有节）    memory→菊（菊傲霜耐久，记之久）
+       review→松（松长青，温故常新）
+     形状纪律（沿用印文的教训）：这五个轮廓必须**在 22px 下互不混淆**，故各自只留最辨识的一笔——
+       梅=五瓣圆花（团块）  兰=一点散开的长叶扇（扇形）  竹=带断口的竹竿+尖叶（竖线）
+       菊=放射细瓣+花盘（尖刺）  松=层叠三角（三角）
+     五者的外轮廓性质各不相同（圆/扇/线/刺/角），因此在色盲、灰度、极小尺寸下仍可区分；
+     状态另有三重冗余：颜色（枯灰↔本色）、姿态（下垂 −9° ↔ 直立）、卡片底色 + 常驻朱印。
+     ⚠ 别把它们画得更细：22px 下再细就糊成一团（兰、竹第一版就栽在这，已重做）。 -->
+<symbol id="plant-mei" viewBox="0 0 24 24">
+  <g fill="currentColor">
+    <circle cx="12" cy="6.6" r="3.15"/><circle cx="17.3" cy="10.4" r="3.15"/>
+    <circle cx="15.3" cy="16.6" r="3.15"/><circle cx="8.7" cy="16.6" r="3.15"/>
+    <circle cx="6.7" cy="10.4" r="3.15"/>
+  </g>
+  <circle cx="12" cy="12.2" r="1.75" fill="#FBF6EA"/>
+  <g fill="currentColor"><circle cx="12" cy="11.6" r=".42"/><circle cx="11.3" cy="12.4" r=".42"/><circle cx="12.7" cy="12.4" r=".42"/></g>
+</symbol>
+<symbol id="plant-lan" viewBox="0 0 24 24">
+  <g fill="none" stroke="currentColor" stroke-linecap="round">
+    <path d="M11.4 21.8 C9.2 16.6 5.9 11.9 2.2 8.6" stroke-width="2.05"/>
+    <path d="M11.4 21.8 C12.5 15.2 11.7 8.4 9.1 2.9" stroke-width="2.05"/>
+    <path d="M11.4 21.8 C13.6 16.9 16.7 12.4 21.2 9.2" stroke-width="2.05"/>
+    <path d="M11.4 21.8 C10.9 18.1 9 14.6 6.5 11.9" stroke-width="1.55"/>
+    <path d="M12.3 13.2 C13.6 9.9 15.5 7.1 18 4.8" stroke-width="1.3"/>
+  </g>
+  <ellipse cx="18.8" cy="3.9" rx="1.65" ry="1.2" transform="rotate(-32 18.8 3.9)" fill="currentColor"/>
+</symbol>
+<symbol id="plant-zhu" viewBox="0 0 24 24">
+  <g fill="none" stroke="currentColor" stroke-width="2.35" stroke-linecap="butt">
+    <path d="M10.5 21.4 V16.5"/><path d="M10.5 15 V10.5"/><path d="M10.5 9 V4.4"/>
+  </g>
+  <g fill="currentColor">
+    <path d="M11 9.2 C13.7 5.4 17.3 3.7 21.2 3.8 C18 6.6 14.6 8.4 11 9.2 Z"/>
+    <path d="M11 14 C13.9 11.5 17.4 10.5 20.9 10.9 C17.7 13.1 14.4 14.2 11 14 Z"/>
+    <path d="M10.2 6.3 C7.9 3.2 5.1 1.7 2 1.8 C4.7 4.1 7.4 5.8 10.2 6.3 Z"/>
+  </g>
+</symbol>
+<symbol id="plant-ju" viewBox="0 0 24 24">
+  <g stroke="currentColor" stroke-width="1.65" stroke-linecap="round">
+    <path d="M12 3.4 V8.2"/><path d="M12 15.8 V20.6"/>
+    <path d="M3.4 12 H8.2"/><path d="M15.8 12 H20.6"/>
+    <path d="M5.9 5.9 L9.2 9.2"/><path d="M14.8 14.8 L18.1 18.1"/>
+    <path d="M18.1 5.9 L14.8 9.2"/><path d="M9.2 14.8 L5.9 18.1"/>
+  </g>
+  <circle cx="12" cy="12" r="2.7" fill="currentColor"/>
+</symbol>
+<symbol id="plant-song" viewBox="0 0 24 24">
+  <g fill="currentColor">
+    <path d="M12 3.2 L7.7 10.3 H16.3 Z"/>
+    <path d="M12 8.5 L5.4 17.2 H18.6 Z"/>
+  </g>
+  <path d="M12 17.2 V21.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+</symbol>
 <!-- ============ #199 round7 P0-1 篆刻印 SVG 化 ============
      朱文印 vessel：印底残边（feTurbulence+feDisplacementMap 啃出不齐边）
      + 印底微噪（speckle 被印形 operator=in 裁住，不溢出）+ 字口残边。
@@ -69022,12 +69109,14 @@ function sealMarkup(ch){
   return `<svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true">${glyph}</svg>`;
 }
 const CHECKIN_ITEMS=[
-  {key:"read", t:"每日读一首", d:"读 / 看一首诗", se:"读"},
-  {key:"watch", t:"每日看动画", d:"看意象动画", se:"观"},
-  {key:"know", t:"每日了解", d:"读懂背景故事", se:"知"},
-  {key:"memory", t:"每日记忆", d:"背下一首诗", se:"记"},
-  {key:"review", t:"每日温故", d:"温习到期旧诗", se:"温", noStreak:true, wide:true}
+  {key:"read", t:"每日读一首", d:"读 / 看一首诗", se:"读", pl:"mei"},
+  {key:"watch", t:"每日看动画", d:"看意象动画", se:"观", pl:"lan"},
+  {key:"know", t:"每日了解", d:"读懂背景故事", se:"知", pl:"zhu"},
+  {key:"memory", t:"每日记忆", d:"背下一首诗", se:"记", pl:"ju"},
+  {key:"review", t:"每日温故", d:"温习到期旧诗", se:"温", noStreak:true, wide:true, pl:"song"}
 ];
+/* pl = 该项的「五清」植物（梅兰竹菊松）。未打卡＝枯灰下垂，打卡＝本色直立 + 抽芽动效。
+   对应关系与理由写在上方 <symbol id="plant-*"> 的注释里（四君子 + 松）。 */
 /* 全勤/连击口径：显式排除「温」——温故照落印、照展示，但不得进全勤判定（枯木拍板②）。
    注意不能写 CHECKIN_ITEMS.every()，那会自动把第 5 项算进去（陷阱）。 */
 const STREAK_ITEMS = CHECKIN_ITEMS.filter(it=>!it.noStreak);
@@ -69158,8 +69247,12 @@ function renderCheckin(){
   html += `<div class="ci-grid">`+CHECKIN_ITEMS.map(it=>{
     const d = checkin.done[it.key];
     const isFx = justStampKey===it.key;   // 只有本次刚勾上的那一项播落印（其余常驻静印）
-    return `<div class="ci-item ${d?'done':''}${it.wide?' wide':''}${isFx?' fx':''}" data-k="${it.key}" onclick="toggleCheckin('${it.key}')">
-      <div class="ck">${d?'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg>':''}</div>
+    return `<div class="ci-item ${d?'done':''}${it.wide?' wide':''}${isFx?' fx':''}" data-k="${it.key}"
+      role="button" tabindex="0" aria-pressed="${d?'true':'false'}"
+      aria-label="${it.t}${d?'，已完成':'，未完成'}"
+      onclick="toggleCheckin('${it.key}')"
+      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCheckin('${it.key}')}">
+      <div class="ck" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#plant-${it.pl||'mei'}"/></svg></div>
       <div><div class="ct">${it.t}</div><div class="cd">${it.d}</div></div>${d?`<div class="stamp${isFx?' fx':''}">${sealMarkup(it.se)}</div>`:''}</div>`;
   }).join("")+`</div>`;
   html += renderReviewCard(); // 今日温故卡（到期队列，每日上限 10）

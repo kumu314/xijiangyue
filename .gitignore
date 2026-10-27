@@ -55,3 +55,6 @@ node_modules/
 # 为什么要 ignore：下方注释已记录 2026-10-01 那次「同步前清未跟踪文件」把 out/ 产物
 # 整体 mv 走的事故；备份目录若同为「未跟踪」，同样可能被扫走 → 回滚路径当场失效。
 _bak_*/
+
+# 菊花候选小样的生成页（由 tools/ju_preview.py 产出，可重跑，不入库）
+out/r7-ju/preview.html

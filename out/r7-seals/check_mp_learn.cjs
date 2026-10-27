@@ -5,6 +5,8 @@ const wxml = fs.readFileSync(P + 'pages/learn/learn.wxml', 'utf8');
 const wxss = fs.readFileSync(P + 'pages/learn/learn.wxss', 'utf8');
 const js = fs.readFileSync(P + 'pages/learn/learn.js', 'utf8');
 const appwxss = fs.readFileSync(P + 'app.wxss', 'utf8');
+// 桌面版真值源：五清植物的形只此一份，小程序是它的派生（见 7.1b 两端同源）
+const HTML = fs.readFileSync('D:/ZCode/小程序/xijiangyue/index.html', 'utf8');
 
 let fail = 0;
 const ok = (n, c, x) => { console.log((c ? '  PASS ' : '  FAIL ') + n + (x !== undefined && !c ? '  → ' + JSON.stringify(x) : '')); if (!c) fail++; };
@@ -106,6 +108,50 @@ const colorOk = Object.entries(COLORS).every(([k, c]) => {
 });
 ok('枯态统一 #8F8577、生长期各是本项本色（梅红/兰紫/竹青/菊金/松绿）', colorOk,
    Object.keys(COLORS).join(','));
+
+/* 7.1b 两端同源（2026-10-27 新增）
+   为什么必须有这条：菊花的形是从桌面 index.html 的 <symbol> 派生的，小程序只是
+   换色 + base64。一旦有人手改 learn.wxss、或改了桌面忘了重跑生成器，两端就会分家，
+   而两边各自看都「正常」。这条逐字符比对形，专治这种静默漂移。 */
+const grabSymbol = (k) => {
+  const a = HTML.indexOf('<symbol id="plant-' + k + '"');
+  if (a < 0) return null;
+  const open = HTML.indexOf('>', a) + 1;
+  const close = HTML.indexOf('</symbol>', open);
+  return close < 0 ? null : HTML.slice(open, close).trim();
+};
+const norm = s => s.replace(/\s+/g, ' ').trim();
+const parityBad = [];
+for (const p of parsed) {
+  const src = grabSymbol(p.key);
+  if (src == null) { parityBad.push(p.key + ':桌面无此 symbol'); continue; }
+  const want = norm(src.replace(/currentColor/g, p.done ? COLORS[p.key] : WILT));
+  const got = norm(p.svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, ''));
+  if (got !== want) parityBad.push((p.done ? '生:' : '枯:') + p.key);
+}
+ok('两端同源：10 张图的形与 index.html 同名 symbol 逐字符一致（改一端忘另一端口会红）',
+   parityBad.length === 0, parityBad.join(' ') || null);
+
+/* 菊＝折枝（枯木 2026-10-27：「菊花不太像菊花，像太阳」）。纯 360° 放射在 24px 光栅下
+   必然读成太阳；加了茎之后轮廓才是「折枝」。这条挡的是「把茎删回纯花头」的退化。
+
+   ⚠ 这条是**代理判据**，不是几何判据，来历值得记一笔：第一版写成「有 stroke + 有 V 段」，
+   结果拿被否决的太阳版反向注入时**照样 PASS** —— 旧版太阳的 8 根光线本身就带 <g stroke>
+   和纵向 V 段（它底部那根光线形如茎，正是它被读成太阳的原因之一）。那种断言是空转的。
+   改成量「最长竖直 stroke 的纵向跨度」：太阳 8 根光线最长才 4.8（15.8→20.6），
+   折枝的茎是 8.2（13.2→21.4）。门槛 6 落在两者中间，两边都咬得住。
+   真正的几何判据（宽高比 <0.9）在桌面侧 tests/r7-texture-test.mjs 里，用 getBBox 实测。 */
+const vSpan = (svg) => {
+  let mx = 0;
+  for (const m of svg.matchAll(/M([\d.]+)\s+([\d.]+)\s*V([\d.]+)/g)) {
+    mx = Math.max(mx, Math.abs(+m[3] - +m[2]));
+  }
+  return mx;
+};
+const juSvgs = parsed.filter(p => p.key === 'ju');
+ok('菊花图有一根足够长的竖直茎（纵向跨度 ≥6；太阳版最长光线只有 4.8）',
+   juSvgs.length === 2 && juSvgs.every(p => /stroke="#/.test(p.svg) && vSpan(p.svg) >= 6),
+   juSvgs.map(p => (p.done ? '生:' : '枯:') + vSpan(p.svg)));
 ok('未打卡态带下垂姿态（rotate(-9deg)）', /rotate\(-9deg\)/.test(wxss), null);
 ok('完成态回正（rotate(0)）', /\.ci-item\.done \.ck \{[^}]*rotate\(0\)/.test(wxss), null);
 ok('打卡那一刻有抽芽动效 plantBloomMp', /@keyframes plantBloomMp/.test(wxss) && /animation:\s*plantBloomMp/.test(wxss), null);

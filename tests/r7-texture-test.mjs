@@ -817,6 +817,29 @@ console.log('\n§E 打卡完成反馈（B 落印 + C 满勤卷）');
      plants.after.every(p => /43,\s*38,\s*32/.test(p.cardBd) && /43,\s*38,\s*32/.test(p.cardBg)),
      plants.after.map(p => p.cardBg + ' | ' + p.cardBd));
 
+  /* 菊为什么不能用「正圆放射」——枯木 2026-10-27 反馈「菊花不太像菊花，像太阳」。
+     根因：纯 360° 放射在 24px 光栅下必然读成太阳/星芒（实测见 out/r7-ju/pixel.png）。
+     另四形都靠「轮廓性质」立住 —— 梅=团块、兰=扇形、松=三角、竹=竖线；菊花头的正圆
+     轮廓信息量为零，只能靠茎把轮廓定成「折枝」。所以判据锁两件事：
+     ① symbol 里必须有茎（带 stroke 的竖向路径）；
+     ② 加了茎之后整体高明显大于宽 —— 正圆放射的宽高比会顶到 1。
+     这两条挡的是「哪天有人觉得茎多余、把它删回纯花头」这种退化。 */
+  const ju = await page.evaluate(() => {
+    const sym = document.querySelector('#plant-ju');
+    if (!sym) return null;
+    const paths = [...sym.querySelectorAll('path')];
+    const stem = paths.filter(p => p.getAttribute('stroke') && /\sV\s|\sV\d/.test(p.getAttribute('d') || ''));
+    const use = document.querySelector('.ci-item[data-k="memory"] .ck use');
+    let bb = null;
+    try { const b = use.getBBox(); bb = { w: +b.width.toFixed(2), h: +b.height.toFixed(2) }; } catch (e) { bb = null; }
+    return { nPaths: paths.length, nStem: stem.length, bb };
+  });
+  ok('菊＝折枝形态：symbol 内有竖直茎（带 stroke 的 V 段）',
+     !!(ju && ju.nStem >= 1), ju);
+  ok('菊的轮廓高明显大于宽（比值 <0.9；正圆放射会顶到 1，即退回「太阳」）',
+     !!(ju && ju.bb && ju.bb.h > 0 && ju.bb.w / ju.bb.h < 0.9),
+     ju && ju.bb ? `w=${ju.bb.w} h=${ju.bb.h} ratio=${(ju.bb.w / ju.bb.h).toFixed(3)}` : ju);
+
   // 复位，逐项细查动效（注意键名是 shiyun_checkin，不是 xjy_*）
   await page.evaluate(() => { localStorage.clear(); });
   await page.reload({ waitUntil: 'domcontentloaded' });

@@ -606,6 +606,39 @@
       scroll-behavior:auto !important;
     }
   }
+  /* ===== C1 详情页出口条（2026-10-28 纯增量） =====
+     目的：读完一篇后不必回到顶部/翻 tab 就能进下一篇，并把「记住」做成一个显式动作。
+     为什么不做「读完自动入队」：既有 migrateReviewV2() 专门清理过「只读打开」污染，
+     自动入队会把它再污染一遍。 */
+  /* .view 自带 padding-bottom:28px，出口条是详情页最后一个元素，
+     不抵消就会在条下方露一条 --paper 色的缝（实测滚到底 barBottom=824 vs 视口底 852）。 */
+  #view-detail{padding-bottom:0;}
+  .poem-exit{
+    position:sticky; bottom:0; z-index:30;
+    display:grid; grid-template-columns:1fr 1.45fr 1fr; gap:8px;
+    align-items:center;
+    margin:20px calc(var(--pad) * -1) 0;
+    padding:10px var(--pad) calc(10px + env(safe-area-inset-bottom));
+    background:var(--paper-card-2);
+    border-top:1px solid var(--line);
+  }
+  .exit-btn{
+    height:42px; padding:0 6px; border-radius:var(--r-pill);
+    border:1px solid var(--line); background:var(--paper-card);
+    color:var(--ink-2); font-family:var(--sans); font-size:14px; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; -webkit-tap-highlight-color:transparent;
+    transition:background-color .16s ease,color .16s ease,border-color .16s ease;
+  }
+  .exit-btn:active{background:var(--line-soft);}
+  .exit-main{
+    border-color:var(--cinnabar); color:var(--cinnabar);
+    font-weight:600; letter-spacing:.02em;
+  }
+  .exit-main.on{
+    background:var(--cinnabar); color:var(--paper-card-2); border-color:var(--cinnabar);
+  }
+  @media (prefers-reduced-motion:reduce){ .exit-btn{transition:none;} }
 </style>
 </head>
 <body class="paper-light">
@@ -864,6 +897,11 @@
       <div class="panel" id="panel-mem"></div>
       <div class="panel" id="panel-use"></div>
       <div class="panel" id="panel-story"></div>
+      <div class="poem-exit" id="poemExit">
+        <button class="exit-btn" id="exitPrev" onclick="stepPoem(-1)">&lsaquo; 上一篇</button>
+        <button class="exit-btn exit-main" id="exitMem" onclick="rememberPoem()">记住这首</button>
+        <button class="exit-btn" id="exitNext" onclick="stepPoem(1)">下一篇 &rsaquo;</button>
+      </div>
     </section>
 
     <!-- ============ 学习 ============ -->
@@ -68587,6 +68625,38 @@ function scnUseTemplate(p){
 
 /* ============ 渲染：详情（五维） ============ */
 let currentPoemId=null, detailFrom="view-home";
+/* ============ C1 详情页出口（2026-10-28 纯增量） ============
+   三个函数只做三件事：翻篇 / 显式入温故队列 / 同步按钮态。
+   为什么「记住这首」是显式动作而不是「读完自动入队」：
+   既有 migrateReviewV2() 专门清理过「只读打开」污染，自动入队会把它再污染一遍。
+   stepPoem 走 POEMS 原顺序首尾相接，不改 id、不改顺序、不写库。 */
+function stepPoem(d){
+  if(!currentPoemId) return;
+  const i = POEMS.findIndex(p=>p.id===currentPoemId);
+  if(i < 0) return;
+  const n = POEMS.length, j = (i + d + n) % n;
+  openDetail(POEMS[j].id);
+}
+function rememberPoem(){
+  if(!currentPoemId) return;
+  const p = POEMS.find(x=>x.id===currentPoemId);
+  if(!p) return;
+  if(!reviewable(p)){ toast("本篇暂不进温故队列"); return; }
+  const r = getReview();
+  if(r[p.id]){ toast("已在温故队列 · " + r[p.id].due + " 到期"); return; }
+  touchReview(p);
+  toast("已加入温故队列");
+  refreshExitBar();
+}
+function refreshExitBar(){
+  const btn = document.querySelector("#exitMem");
+  if(!btn || !currentPoemId) return;
+  const p = POEMS.find(x=>x.id===currentPoemId);
+  const inQ = !!(p && getReview()[p.id]);
+  btn.classList.toggle("on", inQ);
+  btn.textContent = inQ ? "已在温故" : "记住这首";
+}
+
 function openDetail(id){
   stopSpeech(); // 离开/换诗必须打断旧朗读，防止叠音
   const p = POEMS.find(x=>x.id===id); if(!p) return;
@@ -68671,6 +68741,7 @@ function openDetail(id){
      pass1（不切分）→ 量折行列反推真实列容量 → pass2 切分，同任务同步执行无中间绘制。 */
   renderVbody($("#vbody"), bodyLines.slice(segA,segB), p.id, segA, !showOrig && getLayout()!=="horizontal");
   const vs=$("#vscroll"); if(vs) vs.scrollLeft=vs.scrollWidth; // 竖排卷轴初始停在篇首（最右）
+  refreshExitBar();
 }
 /* ============ #63② 诗笺分享卡（Canvas 手绘，零依赖） ============ */
 const SHARE_KAI='"KaiTi","STKaiti","Kaiti SC","楷体",serif';

@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""把选定的菊花稿（候选 D · 折枝菊）写回 index.html 的 <symbol id="plant-ju">。
+"""把选定的菊花稿写回 index.html 的 <symbol id="plant-ju">。
 
-为什么用脚本而不是手敲：这个 symbol 有 20 片花瓣，每片都要一个 rotate 坐标，
-手抄一次就可能错一位，而错了不会报错、只会悄悄变形。由 petal/ring/head 现算，
-几何只有一份真值源。
+决策史（别再来回翻）：
+· 2026-10-27 第一版：8 根放射直线 + 圆 → 枯木「像太阳」。
+· 2026-10-27 第二版：改「折枝」（重瓣花头 + 竖直茎 + 叶），靠茎把轮廓定住，24px 最清楚。
+  但枯木 10-28 看了候选图说「菊花，这个就可以」，选的是**无茎的花头稿**（F 乒乓菊）。
+· 2026-10-28 第三版（当前）：按 F 的形做 24px 适配 = F1（10 外瓣 + 7 内瓣 + 实心花心 1.9）。
+  F 原稿是 15+11+小圆点，96px 极像菊，但 24px 下每个元素只剩约 1px，被抗锯齿糊成一团星芒
+  （实测见 out/r7-ju/duel.png）。F1 把元素从 26 个砍到 18 个、瓣加粗，24px 下瓣与瓣仍分得开。
 
 用法：
   python tools/apply_ju_symbol.py --dry     # 只打印，不改文件
@@ -16,27 +20,16 @@ import re
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from ju_preview import C, head  # noqa: E402
+from ju_preview import C  # noqa: E402
+from ju_fix import F1  # noqa: E402
 
 BEGIN = '<symbol id="plant-ju" viewBox="0 0 24 24">'
 END = '</symbol>'
 
 
 def build() -> str:
-    """折枝菊：正面重瓣花头（外 12 / 内 8）+ 直茎 + 一片尖叶。
-
-    为什么带茎（本轮返工的根因）：纯 360° 放射在 24px 光栅下必然读成太阳/星芒。
-    四条已有植物都靠「轮廓性质」立住 —— 梅=团块、兰=扇形、松=三角、竹=竖线；
-    菊花头的正圆轮廓信息量为零，只能靠茎+叶把轮廓定成「折枝」。
-    实测截图见 out/r7-ju/pixel.png（24px 光栅放大 8 倍）。
-    """
-    body = head(12, 7.6, [(12, 1.4, 6.2, .90, 1.05, 0), (8, .9, 3.9, .72, .85, 15)], disc=1.0)
-    body = body.replace(C, 'currentColor')
-    return (f'{BEGIN}\n'
-            f'  {body}\n'
-            f'  <path d="M12 13.2 V21.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>\n'
-            f'  <path d="M12.5 17.2 C14.6 15.2 17.3 14.8 19.4 15.6 C17.5 17.7 14.8 18.3 12.5 17.2 Z" fill="currentColor"/>\n'
-            f'{END}')
+    body = F1().replace(C, 'currentColor')
+    return f'{BEGIN}\n  {body}\n{END}'
 
 
 def main():
@@ -58,8 +51,7 @@ def main():
 
     html = pat.sub(lambda m: block, html, count=1)
     p.write_text(html, encoding='utf-8')
-    print('✓ %s 已更新 plant-ju（%d 片花瓣 + 茎 + 叶）'
-          % (p, block.count('<path')))
+    print('✓ %s 已更新 plant-ju（F1：10 外瓣 + 7 内瓣 + 花心，无茎）' % p)
 
 
 if __name__ == '__main__':

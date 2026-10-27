@@ -132,26 +132,29 @@ for (const p of parsed) {
 ok('两端同源：10 张图的形与 index.html 同名 symbol 逐字符一致（改一端忘另一端口会红）',
    parityBad.length === 0, parityBad.join(' ') || null);
 
-/* 菊＝折枝（枯木 2026-10-27：「菊花不太像菊花，像太阳」）。纯 360° 放射在 24px 光栅下
-   必然读成太阳；加了茎之后轮廓才是「折枝」。这条挡的是「把茎删回纯花头」的退化。
+/* 菊（2026-10-28 第三版，枯木选定无茎花头稿 F 的 24px 适配版 F1）。
+   判据：小程序侧这张图必须是「纯填充花瓣」——无 stroke、填充 path ≥14（10 外 + 7 内 + 花心另算）。
+   挡两种退化：
+   · 退回 2026-10-27 第一版的「8 根描边光线 + 圆」→ 有 stroke、path 只有 8 条 → 红；
+   · 退回折枝版（带茎）→ 会多出 stroke 路径 → 红。
 
-   ⚠ 这条是**代理判据**，不是几何判据，来历值得记一笔：第一版写成「有 stroke + 有 V 段」，
-   结果拿被否决的太阳版反向注入时**照样 PASS** —— 旧版太阳的 8 根光线本身就带 <g stroke>
-   和纵向 V 段（它底部那根光线形如茎，正是它被读成太阳的原因之一）。那种断言是空转的。
-   改成量「最长竖直 stroke 的纵向跨度」：太阳 8 根光线最长才 4.8（15.8→20.6），
-   折枝的茎是 8.2（13.2→21.4）。门槛 6 落在两者中间，两边都咬得住。
-   真正的几何判据（宽高比 <0.9）在桌面侧 tests/r7-texture-test.mjs 里，用 getBBox 实测。 */
-const vSpan = (svg) => {
-  let mx = 0;
-  for (const m of svg.matchAll(/M([\d.]+)\s+([\d.]+)\s*V([\d.]+)/g)) {
-    mx = Math.max(mx, Math.abs(+m[3] - +m[2]));
-  }
-  return mx;
-};
+   ⚠ 这条的代理判据换过两次，都留档免得再踩：
+   1) 最早写「菊有 stroke + 有 V 段」，拿被否决的太阳版反向注入**照样 PASS** —— 旧版太阳
+      本来就有 <g stroke> 和纵向 V 段（它底部那根光线形如茎，正是它被读成太阳的原因之一）。
+   2) 改成量「最长竖直 stroke 跨度（太阳 4.8 / 折枝 8.2，门槛 6）」，对折枝版有效；
+      但设计改回纯花头后，这条整个失去意义，故本轮换掉。
+   3) 现在这条只测「是不是纯填充花瓣」，24px 下瓣分不分得开由桌面侧的真光栅判据负责
+      （tests/r7-texture-test.mjs 的 segs ≥6），那边有 canvas 能真按 24px 光栅去数。 */
 const juSvgs = parsed.filter(p => p.key === 'ju');
-ok('菊花图有一根足够长的竖直茎（纵向跨度 ≥6；太阳版最长光线只有 4.8）',
-   juSvgs.length === 2 && juSvgs.every(p => /stroke="#/.test(p.svg) && vSpan(p.svg) >= 6),
-   juSvgs.map(p => (p.done ? '生:' : '枯:') + vSpan(p.svg)));
+ok('菊是小程序侧的纯填充花瓣（无 stroke 描边、填充 path ≥14；退回太阳版或折枝版都会红）',
+   juSvgs.length === 2 && juSvgs.every(p => {
+     const nStroke = (p.svg.match(/stroke="#/g) || []).length;
+     const nPath = (p.svg.match(/<path /g) || []).length;
+     return nStroke === 0 && nPath >= 14;
+   }),
+   juSvgs.map(p => (p.done ? '生:' : '枯:')
+     + 'path=' + (p.svg.match(/<path /g) || []).length
+     + ' stroke=' + (p.svg.match(/stroke="#/g) || []).length));
 ok('未打卡态带下垂姿态（rotate(-9deg)）', /rotate\(-9deg\)/.test(wxss), null);
 ok('完成态回正（rotate(0)）', /\.ci-item\.done \.ck \{[^}]*rotate\(0\)/.test(wxss), null);
 ok('打卡那一刻有抽芽动效 plantBloomMp', /@keyframes plantBloomMp/.test(wxss) && /animation:\s*plantBloomMp/.test(wxss), null);

@@ -58,3 +58,5 @@ _bak_*/
 
 # 菊花候选小样的生成页（由 tools/ju_preview.py 产出，可重跑，不入库）
 out/r7-ju/preview.html
+out/r7-ju/pick.html
+out/r7-ju/_ju_index_backup.html

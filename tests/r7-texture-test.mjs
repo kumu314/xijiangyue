@@ -817,28 +817,75 @@ console.log('\n§E 打卡完成反馈（B 落印 + C 满勤卷）');
      plants.after.every(p => /43,\s*38,\s*32/.test(p.cardBd) && /43,\s*38,\s*32/.test(p.cardBg)),
      plants.after.map(p => p.cardBg + ' | ' + p.cardBd));
 
-  /* 菊为什么不能用「正圆放射」——枯木 2026-10-27 反馈「菊花不太像菊花，像太阳」。
-     根因：纯 360° 放射在 24px 光栅下必然读成太阳/星芒（实测见 out/r7-ju/pixel.png）。
-     另四形都靠「轮廓性质」立住 —— 梅=团块、兰=扇形、松=三角、竹=竖线；菊花头的正圆
-     轮廓信息量为零，只能靠茎把轮廓定成「折枝」。所以判据锁两件事：
-     ① symbol 里必须有茎（带 stroke 的竖向路径）；
-     ② 加了茎之后整体高明显大于宽 —— 正圆放射的宽高比会顶到 1。
-     这两条挡的是「哪天有人觉得茎多余、把它删回纯花头」这种退化。 */
-  const ju = await page.evaluate(() => {
+  /* 菊的判据演进史（每一版都是被枯木否掉后改的，别再往回改）：
+     ① 2026-10-27 第一版「8 根放射直线 + 圆」→ 枯木「菊花不太像菊花，像太阳」。
+        根因：纯 360° 放射在 24px 光栅下读成星芒。
+     ② 2026-10-27 第二版「折枝」（花头 + 竖直茎 + 叶），靠茎把轮廓定住，24px 最清楚。
+        当时判据是「有茎 + 宽高比 <0.9」。
+     ③ 2026-10-28 枯木看了候选图说「菊花，这个就可以」，选定**无茎的花头稿**（F 乒乓菊）。
+        但 F 原稿是 15 外瓣 + 11 内瓣挤在 24px 里，每片只剩约 1px，被抗锯齿糊成一团
+        （实测 out/r7-ju/duel.png：F 原稿 24px = 实心糊团）。所以按 F 的形做 24px 适配：
+        10 外瓣 + 7 内瓣 + 实心花心（F1），元素从 26 个砍到 18 个、瓣加粗。
+     ⇒ 判据改成三条，缺一条就会退回某一版被否掉的状态：
+     a) 纯花头（无茎无叶，宽高比 >0.95）—— 防退回折枝版；
+     b) 瓣是填充路径且 ≥12 片、无描边路径 —— 防退回「8 根描边光线 + 圆」的太阳版；
+     c) 24px 光栅后**内圈**（r=4）圆周上至少分出 5 段深色 —— 防「内圈花瓣挤成实心团」。
+        c 是本轮新增的真·尺寸判据，也是唯一拦得住 F 原稿的（a、b 都拦不住它）。
+        半径选 4 不是拍脑袋：实测（out/r7-ju/measure.cjs）各半径的深色段数是
+            F 原稿  r3=1  r4=1  r5=1  r6=3  r7=15
+            F1      r3=7  r4=6  r5=7  r6=10 r7=10
+        r=7 分不开（15 vs 10，那个半径落在瓣尖本来就分得开，第一版判据就栽在这），
+        **r=3~5 一刀切开**（1 vs 6~7）—— F 原稿塌的正是内圈。门槛取 5 落在中间。 */
+  const ju = await page.evaluate(async () => {
     const sym = document.querySelector('#plant-ju');
     if (!sym) return null;
     const paths = [...sym.querySelectorAll('path')];
-    const stem = paths.filter(p => p.getAttribute('stroke') && /\sV\s|\sV\d/.test(p.getAttribute('d') || ''));
+    /* 注意：判「有没有描边」不能只看 <path stroke="…">。2026-10-27 的太阳版把 stroke 挂在
+       父级 <g stroke="…"> 上，路径本身没有 stroke 属性 —— 只查 path 会漏判（已实测）。
+       所以这里对整个 symbol 的序列化文本查 stroke=，折枝版的茎（path 自带 stroke）
+       和太阳版的光线（g 带 stroke）都能抓到。 */
+    const nStroked = (sym.innerHTML.match(/stroke=/g) || []).length;
+    const nFilled = paths.filter(p => !p.getAttribute('stroke')).length;
     const use = document.querySelector('.ci-item[data-k="memory"] .ck use');
     let bb = null;
     try { const b = use.getBBox(); bb = { w: +b.width.toFixed(2), h: +b.height.toFixed(2) }; } catch (e) { bb = null; }
-    return { nPaths: paths.length, nStem: stem.length, bb };
+
+    // c) 真 24px 光栅：沿 r=4 圆周采样，数「深色连续段」= 内圈花瓣是否彼此分开
+    const src = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">'
+      + '<g color="#000">' + sym.innerHTML + '</g></svg>';
+    const url = URL.createObjectURL(new Blob([src], { type: 'image/svg+xml' }));
+    let segs = -1;
+    try {
+      const img = await new Promise((res, rej) => {
+        const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url;
+      });
+      const cv = document.createElement('canvas'); cv.width = cv.height = 24;
+      const cx2 = cv.getContext('2d'); cx2.drawImage(img, 0, 0, 24, 24);
+      const d = cx2.getImageData(0, 0, 24, 24).data;
+      const at = (x, y) => {
+        const xi = Math.round(x), yi = Math.round(y);
+        if (xi < 0 || yi < 0 || xi > 23 || yi > 23) return false;
+        return d[(yi * 24 + xi) * 4 + 3] > 110;
+      };
+      segs = 0;
+      let prev = false;
+      for (let i = 0; i <= 720; i++) {
+        const a = (i % 720) / 720 * Math.PI * 2;
+        const on = at(12 + 4 * Math.cos(a), 12 + 4 * Math.sin(a));
+        if (on && !prev) segs++;
+        prev = on;
+      }
+    } catch (e) { segs = -1; } finally { URL.revokeObjectURL(url); }
+    return { nPaths: paths.length, nStroked, nFilled, bb, segs };
   });
-  ok('菊＝折枝形态：symbol 内有竖直茎（带 stroke 的 V 段）',
-     !!(ju && ju.nStem >= 1), ju);
-  ok('菊的轮廓高明显大于宽（比值 <0.9；正圆放射会顶到 1，即退回「太阳」）',
-     !!(ju && ju.bb && ju.bb.h > 0 && ju.bb.w / ju.bb.h < 0.9),
-     ju && ju.bb ? `w=${ju.bb.w} h=${ju.bb.h} ratio=${(ju.bb.w / ju.bb.h).toFixed(3)}` : ju);
+  ok('菊＝纯花头（无茎无叶，宽高比 >0.95；退回折枝版会红）',
+     !!(ju && ju.nStroked === 0 && ju.bb && ju.bb.h > 0 && ju.bb.w / ju.bb.h > 0.95),
+     ju && ju.bb ? `stroked=${ju.nStroked} w=${ju.bb.w} h=${ju.bb.h} ratio=${(ju.bb.w / ju.bb.h).toFixed(3)}` : ju);
+  ok('菊的瓣是填充路径且 ≥12 片（不是 8 根描边光线冒充花；退回太阳版会红）',
+     !!(ju && ju.nFilled >= 12),
+     ju && { filled: ju.nFilled, paths: ju.nPaths });
+  ok('菊在真 24px 光栅下内圈（r=4）至少分出 5 段瓣（挤成实心团会红，实测 F 原稿只有 1 段）',
+     !!(ju && ju.segs >= 5), ju && `segs@r4=${ju.segs}`);
 
   // 复位，逐项细查动效（注意键名是 shiyun_checkin，不是 xjy_*）
   await page.evaluate(() => { localStorage.clear(); });

@@ -32,7 +32,8 @@ const ALLOW_ORIGINS = (process.env.ALLOW_ORIGINS || "https://kumu314.github.io")
    本地模式：任一缺失则回退内置 node:sqlite（现状行为，本地开发不受影响）。 */
 const TURSO_URL = process.env.TURSO_URL || "";
 // 启动期校验：只允许 https://*.turso.io（防环境变量被配成内网/任意地址形成 SSRF 面）
-if (TURSO_URL && !/^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+)*\.turso\.io\/?$/i.test(TURSO_URL)) {
+const TURSO_URL_RE = /^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+)*\.turso\.io\/?$/i;
+if (TURSO_URL && !TURSO_URL_RE.test(TURSO_URL)) {
   throw new Error("TURSO_URL 必须是 https://<db>.turso.io 形式");
 }
 const TURSO_TOKEN = process.env.TURSO_TOKEN || "";
@@ -56,8 +57,11 @@ function fromVal(v) {
 /* Turso SQL over HTTP：POST /v2/pipeline，Bearer 鉴权。
    凭据纪律：本函数错误信息只含 HTTP 状态与响应片段（不含 token）。 */
 async function tursoFetch(statements) {
+  // 出网点复验（防启动后变量被改）+ 禁重定向（防 302 跳内网形成 SSRF）
+  if (!TURSO_URL_RE.test(TURSO_URL)) throw new Error("turso url not allowed");
   const res = await fetch(TURSO_URL.replace(/\/+$/, "") + "/v2/pipeline", {
     method: "POST",
+    redirect: "error",
     headers: { "Content-Type": "application/json", Authorization: "Bearer " + TURSO_TOKEN },
     body: JSON.stringify({
       requests: statements.map((s) => ({ type: "execute", stmt: { sql: s.sql, args: s.args.map(toArg) } })).concat([{ type: "close" }]),
@@ -147,13 +151,15 @@ function assertPublicHttpUrl(raw) {
   try { u = new URL(raw); } catch { throw new Error("bad url"); }
   if (u.protocol !== "http:" && u.protocol !== "https:") throw new Error("scheme not allowed");
   const host = u.hostname.toLowerCase();
-  if (host === "localhost" || host.endsWith(".local") || host.endsWith(".internal")) throw new Error("host not allowed");
   if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) {
     const [a, b] = host.split(".").map(Number);
     if (a === 0 || a === 10 || a === 127 || (a === 172 && b >= 16 && b <= 31) ||
         (a === 192 && b === 168) || (a === 169 && b === 254) || a >= 224) throw new Error("host not allowed");
+  } else if (/^(0[xX][0-9a-fA-F]+|\d+)$/.test(host)) {
+    throw new Error("host not allowed"); // 十六进制/八进制/十进制整数型 IP 字面量（如 0x7f000001、2130706433）
   }
-  if (host === "::1" || host === "[::1]") throw new Error("host not allowed");
+  if (host.includes(":")) throw new Error("host not allowed"); // IPv6 字面量一律拒绝（出网端点均为域名；防 [::1]/[fd00::] 等绕过）
+  if (host === "localhost" || host.endsWith(".local") || host.endsWith(".internal")) throw new Error("host not allowed");
   return u;
 }
 
@@ -189,6 +195,7 @@ async function sendSms(phone, code) {
   const target = assertPublicHttpUrl(url); // 校验后才发出
   const r = await fetch(target, {
     method: "POST",
+    redirect: "error",
     headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
     body: JSON.stringify({ phone, code, template: "西江阅验证码：" + code }),
   });
@@ -237,7 +244,7 @@ async function route(req, res, url) {
     let openid = body.openid;
     if (body.code && process.env.WX_APPID && process.env.WX_SECRET && provider === "微信") {
       const u = assertPublicHttpUrl("https://api.weixin.qq.com/sns/jscode2session");
-      const r = await fetch(u, { method: "POST", headers: { "Content-Type": "application/json" },
+      const r = await fetch(u, { method: "POST", redirect: "error", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ appid: process.env.WX_APPID, secret: process.env.WX_SECRET, js_code: body.code, grant_type: "authorization_code" }) });
       const d = await r.json();
       if (!d.openid) return json(res, 401, { ok: false, error: "微信授权失败" });

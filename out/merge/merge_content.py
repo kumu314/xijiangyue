@@ -14,6 +14,12 @@
     缺报告或报告无放行结论 → 拒绝执行（连 dry 也拒）。无命令行绕过开关；
     要豁免/改报告名只能改本文件的 GATE_EXEMPT / GATE_ALIASES（留下代码 diff 供 review）。
 
+译文实质率门闸（2026-10-28 枯木授权，对策 trans-12~18 修前 48.36% 溜过旧门闸）：
+    trans 类批次在「报告放行」之外，额外须满足 真改写率 ≥ GATE_SUBSTANTIVE_MIN(=0.90)。
+    旧门闸只查报告有无放行词、不验译文本身，导致 48% 实质率的批次被放行。
+    新闸直接对源文件 lines[].m vs lines[].o 复算「真改写率」（四分类：照抄/仅加虚词/微改≤2/真改写），
+    低于阈值即拒（连 dry 也拒）。放宽阈值只能改 GATE_SUBSTANTIVE_MIN（留 diff 供 review）。
+
 设计要点：
 - 红线：935 首 id 与顺序逐位不变；未触及篇内容字节级零变化；只动 POEMS 数据。
   （2026-10-10 A 方案并条后由 970 → 935：35 组重复收录各保留 1 条，见 out/review-merge-a-20261010.md）
@@ -85,6 +91,58 @@ GATE_EXEMPT = {                       # 门闸生效前已合入、且无独立�
 }
 GATE_VERDICT_TOKENS = ("PASS", "放行", "通过")
 
+# 译文实质率门闸（2026-10-28 枯木授权新增，对策 trans-12~18 修前 48.36% 溜过旧门闸）
+# 旧门闸只查「有抽检报告 + 含放行词」，不验译文本身质量，导致 48% 实质率的批次被放行。
+# 新增第二层硬闸：trans 类批次的「真改写率」须 ≥ 90%，否则连 dry 也拒。
+#   真改写 = 既不是整句照抄(m==o)、也不是只加虚词(drop_func(m)==drop_func(o))、
+#           也不是微改(编辑距离≤2)。口径与 xijiangyue-content-batch-audit 量具一致。
+#   合理豁免：no_paraphrase / 异文照抄 等少量 m==o 合法存在，90% 阈值容纳 ≤10% 此类。
+#   不提供命令行绕过开关；要放宽阈值只能改本文件的 GATE_SUBSTANTIVE_MIN（留 diff 供 review）。
+GATE_SUBSTANTIVE_MIN = 0.90
+_GATE_PUNCT = '，。、；：？！""\'\'（）《》〈〉【】「」『』—…·,.;:?!()[]{}"\'\u3000'
+_GATE_FUNC = set('的了着地得之乎者也而是在于与和及以为所被把将向从对就都也还很太更最不没又便却已曾'
+                '其此彼这那们个些啊呀吧呢吗来去上下里中时后前')
+
+def _g_strip(s):
+    return ''.join(ch for ch in s if not ch.isspace() and ch not in _GATE_PUNCT
+                   and not ('\u3000' <= ch <= '\u303f') and not ('\uff00' <= ch <= '\uffef'))
+
+def _g_drop_func(s):
+    return ''.join(ch for ch in _g_strip(s) if ch not in _GATE_FUNC)
+
+def _g_lev(a, b):
+    if a == b: return 0
+    la, lb = len(a), len(b)
+    if not la: return lb
+    if not lb: return la
+    prev = list(range(lb + 1))
+    for i in range(1, la + 1):
+        cur = [i] + [0] * lb
+        for j in range(1, lb + 1):
+            cur[j] = min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (0 if a[i - 1] == b[j - 1] else 1))
+        prev = cur
+    return prev[lb]
+
+def trans_substantive_rate(path):
+    """返回 (rate, total, real, bad_samples)。rate = 真改写句数 / 总句数。"""
+    if not os.path.exists(path):
+        return (1.0, 0, 0, [])
+    d = json.load(open(path, encoding="utf-8"))
+    total = real = 0
+    bad = []
+    for p in d.get("poems", []):
+        for ln in p.get("lines", []):
+            o, m = ln.get("o", ""), ln.get("m", "")
+            total += 1
+            if m == o or _g_strip(m) == _g_strip(o) or _g_drop_func(m) == _g_drop_func(o) \
+               or _g_lev(_g_strip(o), _g_strip(m)) <= 2:
+                if len(bad) < 8:
+                    bad.append((p.get("id", "?"), o, m))
+            else:
+                real += 1
+    rate = real / total if total else 1.0
+    return (rate, total, real, bad)
+
 def gate_check():
     """返回 (ok, lines)。任一批缺报告或无放行结论 → ok=False。"""
     out, missing, blocked = [], [], []
@@ -99,12 +157,20 @@ def gate_check():
         body = io.open(rep, encoding="utf-8").read()
         if any(t in body for t in GATE_VERDICT_TOKENS):
             out.append("[gate] %-16s ✓ %s" % (stem, rep))
+            # 第二层硬闸：trans 类批次须实质翻译率 ≥ GATE_SUBSTANTIVE_MIN
+            if _kind == "trans":
+                rate, total, real, _ = trans_substantive_rate(path)
+                if total and rate < GATE_SUBSTANTIVE_MIN:
+                    blocked.append((stem, "实质翻译率 %.1f%% < %.0f%%（%d/%d 真改写），须修缮后重报"
+                                    % (rate * 100, GATE_SUBSTANTIVE_MIN * 100, real, total)))
+                else:
+                    out.append("[gate] %-16s 实质率 %.1f%%（%d/%d 真改写）" % (stem, rate * 100, real, total))
         else:
             blocked.append((stem, rep))
     for m in missing:
         out.append("[gate] %-16s ✗ 缺报告：%s" % (m[0], m[1]))
     for b in blocked:
-        out.append("[gate] %-16s ✗ 报告无放行结论（需含 %s）：%s" % (b[0], "/".join(GATE_VERDICT_TOKENS), b[1]))
+        out.append("[gate] %-16s ✗ %s" % (b[0], b[1]))
     ok = not missing and not blocked
     if not ok:
         out.append("")

@@ -639,6 +639,190 @@
     background:var(--cinnabar); color:var(--paper-card-2); border-color:var(--cinnabar);
   }
   @media (prefers-reduced-motion:reduce){ .exit-btn{transition:none;} }
+  /* ===== DESKTOP-ADAPT v2 ===== */
+  /* 桌面端显示：默认「自动」= 窗口 ≥1024px 走桌面布局，窄屏走手机布局。
+     与 v1 的差别：v1 只有媒体查询，宽屏用户没法退回手机版；
+     v2 改由 body.mode-desktop / body.mode-mobile 类驱动 + JS 三档开关，
+     媒体查询只保留最小兜底（JS 失效时宽屏仍不是 390px 手机框）。
+     ⚠ 两条实测铁律（v1 踩过，勿改）：
+       1) display:grid 必须挂在 .active 上 —— #view-home 是 ID 选择器(1,0,0)，
+          直接写 #view-home{display:grid} 会压过 .view{display:none}(0,1,0)，
+          结果是十个视图同时渲染（详情页被挤到首页下方 1330px 处）。
+       2) 出口条按钮直接钉列宽 210/300/210，别用 padding 百分比算带宽 ——
+          padding 的百分比基准是 grid area(1100)，不是加过负 margin 的 1180，会多算 80px。 */
+
+  /* ---------- 桌面端 ---------- */
+  body.mode-desktop{
+    /* 40px 在 1024 视口下偏大（内容只剩 944），改成随视口收缩、封顶 40 */
+    --pad:clamp(24px,3.2vw,40px);
+    background:radial-gradient(1200px 620px at 50% -12%,#EFE7D4 0%,#E4DBC5 58%,#DDD3BA 100%);
+  }
+  /* 外壳：从 390px 手机框变成可伸缩画布 */
+  body.mode-desktop .phone{
+    width:min(1180px,100%);
+    box-shadow:0 0 0 1px var(--line),0 30px 90px rgba(60,45,25,.20);
+  }
+  /* 假状态栏（时间/信号/电池）是手机模拟，桌面端纯噪音 —— 整条不显示 */
+  body.mode-desktop .statusbar{display:none;}
+
+  /* 底栏改顶部导航：只靠 order:-1 挪位置，DOM 顺序一个字不动
+     （r7-texture-test 比对的是 #view-home 直接子块序列，tabbar 是 .phone 的子元素，不受影响） */
+  body.mode-desktop .tabbar{
+    order:-1;
+    height:auto;
+    justify-content:center;
+    gap:6px;
+    padding:12px var(--pad) 12px;
+    background:linear-gradient(180deg,var(--paper-card-2) 0%,rgba(255,252,244,.78) 100%);
+    border-top:none;
+    border-bottom:1px solid var(--line);
+  }
+  body.mode-desktop .tabbar .tb{
+    flex:0 0 auto;
+    flex-direction:row;
+    gap:8px;
+    padding:9px 20px;
+    border-radius:var(--r-pill);
+    font-size:13px;
+    font-weight:600;
+    transition:background-color .16s ease,color .16s ease;
+  }
+  body.mode-desktop .tabbar .tb:hover{background:rgba(110,90,55,.07);color:var(--ink);}
+  body.mode-desktop .tabbar .tb.active{background:rgba(178,58,46,.10);}
+
+  /* 细滚动条（原规则是 .views::-webkit-scrollbar{width:0}，桌面端给回 10px） */
+  body.mode-desktop .views{scrollbar-width:thin;scrollbar-color:rgba(110,90,55,.26) transparent;}
+  body.mode-desktop .views::-webkit-scrollbar{width:10px;}
+  body.mode-desktop .views::-webkit-scrollbar-track{background:transparent;}
+  body.mode-desktop .views::-webkit-scrollbar-thumb{
+    background:rgba(110,90,55,.26);border-radius:99px;border:3px solid transparent;background-clip:content-box;
+  }
+  body.mode-desktop .views::-webkit-scrollbar-thumb:hover{background:rgba(110,90,55,.44);background-clip:content-box;}
+
+  /* 通用留白：桌面端页头更舒展，正文区上下各留一口气 */
+  body.mode-desktop .view{padding:0 var(--pad) 44px;}
+  body.mode-desktop .page-head{margin:20px 0 24px;}
+  body.mode-desktop .page-head .title{font-size:32px;}
+  body.mode-desktop .searchbar{max-width:620px;justify-self:start;}
+  /* hero 在 1100 宽里显得扁，加大内边距让它像一张完整的笺纸 */
+  body.mode-desktop .hero{padding:32px 30px 30px;}
+  body.mode-desktop .hero .poem-title{font-size:26px;}
+  /* 正文随用户设置的字号走（--reader-fs），桌面端只按比例放大 15% —— 不覆盖用户选择 */
+  body.mode-desktop .hero .verse{font-size:calc(var(--reader-fs) * 1.15);}
+  /* 小游戏入口：4 张卡在 1100 宽下排 2 列会各宽 544px，太扁；桌面端改 4 列 */
+  body.mode-desktop .game-entry{grid-template-columns:repeat(4,1fr);}
+
+  /* ---------- 首页：页头/搜索/今日一诗通栏 → 下方两栏 ---------- */
+  body.mode-desktop #view-home.active{
+    display:grid;
+    grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);
+    grid-template-rows:auto auto auto auto minmax(210px,auto) auto auto;
+    column-gap:44px;
+    align-items:start;
+  }
+  body.mode-desktop #view-home > .page-head{grid-column:1/-1;grid-row:1;}
+  body.mode-desktop #view-home > .searchbar{grid-column:1/-1;grid-row:2;}
+  body.mode-desktop #homeToday{grid-column:1/-1;grid-row:3;}
+  /* 第 4 子块 =「按体裁漫游」标题；第 7 子块 =「热学榜」标题 */
+  body.mode-desktop #view-home > .section-title:nth-child(4){grid-column:2;grid-row:4;}
+  body.mode-desktop #view-home > .section-title:nth-child(7){grid-column:1;grid-row:4;}
+  body.mode-desktop #homeCats{grid-column:2;grid-row:5;align-self:start;}
+  /* 进度卡与体裁卡同格，靠 align-self 一上一下：右栏填满整行、底部与左栏热学榜齐平，
+     不再在中间留 178px 空洞。minmax(210px) 是防重叠下限：体裁 97 + 进度 102 = 199 < 210。 */
+  body.mode-desktop #homeProgress{grid-column:2;grid-row:5;align-self:end;}
+  body.mode-desktop #homeHot{grid-column:1;grid-row:5;}
+  /* 第 9 子块 =「小游戏」标题；第 11 子块 = 游戏入口。
+     第 10 子块是 position:absolute 的 symbol 容器，不在流内，不占格。 */
+  body.mode-desktop #view-home > .section-title:nth-child(9){grid-column:1/-1;grid-row:6;}
+  body.mode-desktop #view-home > .game-entry{grid-column:1/-1;grid-row:7;}
+
+  /* ---------- 详情：原文左栏吸顶 + 解读右栏 ---------- */
+  /* min-height:100% 而不是 calc(100vh-64px)：详情页会隐藏底栏，
+     #views 实际高度比 100vh 少一条 tabbar，写死减法会差 20px（v1 实测 bar 底 880 vs 视口底 900）。 */
+  body.mode-desktop #view-detail.active{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,470px);
+    grid-template-rows:auto auto 1fr auto;
+    min-height:100%;
+    column-gap:40px;
+    align-items:start;
+    padding-top:10px;   /* 详情页隐藏了 tabbar，标题行贴顶会显局促 */
+  }
+  body.mode-desktop #view-detail > .detail-head{grid-column:1/-1;grid-row:1;}
+  /* 原文跨第 2、3 行并吸顶：读串讲时诗句一直留在左边。
+     min-height 把左栏下半段的空白收进卡片里（16 句竖排约 340px，不设的话左栏会空 400px，
+     看起来像「卡片掉在半空」）；上限 70vh 是防止卡片比视口还高、sticky 反而失效。
+     卡片内部改 flex column + 注文 margin-top:auto 沉底：留白落在「诗句与注文之间」，
+     读起来是一张完整宣纸，而不是「内容顶在半空、下面空一片」。
+     ⚠ 不要动 .vbody 的 height：竖排是「一句一列」，改高度会改变折行点（长调会多出续列），
+       那是原作者调过的断列结果，桌面端没理由重排。 */
+  body.mode-desktop #view-detail > .original{
+    grid-column:1;grid-row:2 / span 2;align-self:start;position:sticky;top:0;
+    padding:30px 26px 24px;
+    min-height:min(600px,70vh);
+    display:flex;flex-direction:column;
+  }
+  body.mode-desktop #view-detail > .original .note{margin-top:auto;}
+  /* 竖排长调在 590px 左栏里装不下（实测「兰陵王」24 列 / 1316px，要横滑 2.6 屏）。
+     手机端靠手指滑，桌面端必须把滚动条显示出来，否则用户不知道右边还有内容。
+     原规则是 .vscroll::-webkit-scrollbar{display:none}。 */
+  body.mode-desktop #view-detail .vscroll{
+    scrollbar-width:thin;scrollbar-color:rgba(110,90,55,.28) transparent;
+  }
+  body.mode-desktop #view-detail .vscroll::-webkit-scrollbar{height:6px;display:block;}
+  body.mode-desktop #view-detail .vscroll::-webkit-scrollbar-track{background:transparent;}
+  body.mode-desktop #view-detail .vscroll::-webkit-scrollbar-thumb{
+    background:rgba(110,90,55,.28);border-radius:99px;
+  }
+  body.mode-desktop #view-detail .vscroll::-webkit-scrollbar-thumb:hover{background:rgba(110,90,55,.46);}
+  body.mode-desktop #view-detail > .tabs{
+    grid-column:2;grid-row:2;
+    -webkit-mask-image:none;mask-image:none;overflow:visible;flex-wrap:wrap;
+  }
+  body.mode-desktop #view-detail > .panel{grid-column:2;grid-row:3;}
+  /* 出口条通栏，按钮收在 744px 阅读带内居中（直接钉列宽，理由见文件头铁律 2） */
+  body.mode-desktop #view-detail > .poem-exit{
+    grid-column:1/-1;grid-row:4;
+    grid-template-columns:210px 300px 210px;
+    justify-content:center;
+    gap:12px;
+  }
+
+  /* ---------- 其余单列页：收成阅读宽度居中 ---------- */
+  body.mode-desktop #view-learn,
+  body.mode-desktop #view-me,
+  body.mode-desktop #view-search,
+  body.mode-desktop #view-category,
+  body.mode-desktop #view-jieling,
+  body.mode-desktop #view-almanac,
+  body.mode-desktop #view-memory,
+  body.mode-desktop #view-login{
+    max-width:920px;margin-left:auto;margin-right:auto;
+  }
+
+  /* ---------- 鼠标才有意义的反馈（触屏端本来就靠 :active） ---------- */
+  body.mode-desktop .cat:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(110,90,55,.14);border-color:#DCCDB0;}
+  body.mode-desktop .rec:hover{background:rgba(110,90,55,.055);}
+  body.mode-desktop .tab:hover{background:rgba(110,90,55,.07);}
+  body.mode-desktop .tab.active:hover{background:var(--cinnabar);}
+  body.mode-desktop .exit-btn:hover{background:var(--line-soft);}
+  body.mode-desktop .menu .mi:hover{background:rgba(110,90,55,.05);}
+  body.mode-desktop .btn:hover{filter:brightness(.96);}
+  body.mode-desktop .seal:hover{transform:rotate(-3deg) scale(1.03);}
+
+  /* ---------- 移动端（手动强制，压过下面的兜底媒体查询） ---------- */
+  body.mode-mobile{--pad:20px !important;}
+  body.mode-mobile .phone{width:390px !important;max-width:100%;}
+  body.mode-mobile .statusbar{display:flex !important;}
+
+  /* ---------- 兜底：JS 失效时宽屏也不该是 390px 手机框 ---------- */
+  @media (min-width:1024px){
+    body:not(.mode-mobile) .phone{width:min(1180px,100%);}
+    body:not(.mode-mobile) .statusbar{display:none;}
+    body:not(.mode-mobile) .tabbar{order:-1;height:auto;justify-content:center;gap:6px;
+      padding:12px 40px;border-top:none;border-bottom:1px solid var(--line);}
+  }
+
 </style>
 </head>
 <body class="paper-light">
@@ -69382,6 +69566,7 @@ function renderMe(){
     <div class="stat"><div class="n">${POEMS.length}</div><div class="l">收录诗词</div></div>
     <div class="stat"><div class="n">${progress.streak}</div><div class="l">连续打卡</div></div>`;
   $("#meMenu").innerHTML = `
+    <div class="mi" onclick="openReadingSettings()"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="4" width="13" height="10" rx="1.6"/><path d="M6 17.5h6"/><rect x="17.5" y="9" width="4.2" height="9" rx="1.2"/><path d="M19.6 16.2h.01"/></svg></span><span class="mi-t">显示模式（桌面端 / 移动端）</span><span class="mi-ar">›</span></div>
     <div class="mi" onclick="goLogin()"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 8l7-5 7 5"/></svg></span><span class="mi-t">我的收藏</span><span class="mi-ar">›</span></div>
     <div class="mi" onclick="switchTab('learn')"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span><span class="mi-t">学习记录</span><span class="mi-ar">›</span></div>
     <div class="mi" onclick="toast('朗读设置：可调节语速与音色')"><span class="mi-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></span><span class="mi-t">朗读设置</span><span class="mi-ar">›</span></div>
@@ -69737,6 +69922,39 @@ function setLayout(v){
   renderReadingSettings();
 }
 function toggleLayout(){ setLayout(getLayout()==="vertical" ? "horizontal" : "vertical"); }
+/* ============ 显示模式：桌面端 / 移动端（v2） ============
+   三档：auto（默认，窗口 ≥1024px 走桌面）/ desktop / mobile。存 localStorage xjy_display。
+   CSS 侧：body.mode-desktop 挂全部桌面规则，body.mode-mobile 强制回 390 手机框；
+   媒体查询只留最小兜底（JS 失效时宽屏仍不是手机框）。
+   为什么要三档而不是纯媒体查询：宽屏用户也要能主动退回手机版（看真机效果、对比排版）。 */
+const DISPLAY_LABEL={auto:"自动", desktop:"桌面端", mobile:"移动端"};
+function getDisplay(){ try{ const v=localStorage.getItem("xjy_display"); return DISPLAY_LABEL[v] ? v : "auto"; }catch(e){ return "auto"; } }
+function effectiveDisplay(){
+  const v=getDisplay();
+  if(v!=="auto") return v;
+  return (window.matchMedia && window.matchMedia("(min-width:1024px)").matches) ? "desktop" : "mobile";
+}
+function applyDisplay(){
+  const eff=effectiveDisplay(), b=document.body.classList;
+  b.remove("mode-desktop","mode-mobile");
+  b.add("mode-"+eff);
+  document.body.setAttribute("data-display", eff);
+  return eff;
+}
+function setDisplay(v){
+  if(!DISPLAY_LABEL[v]) return;
+  try{ localStorage.setItem("xjy_display", v); }catch(e){}
+  const eff=applyDisplay();
+  if(document.querySelector("#rsetOverlay.active")) renderReadingSettings();
+  toast("显示模式：" + DISPLAY_LABEL[v] + (v==="auto" ? "（当前 " + DISPLAY_LABEL[eff] + "）" : ""));
+}
+(function watchDisplay(){
+  if(!window.matchMedia) return;
+  const mq=window.matchMedia("(min-width:1024px)");
+  const on=()=>{ if(getDisplay()==="auto") applyDisplay(); };
+  if(mq.addEventListener) mq.addEventListener("change",on);
+  else if(mq.addListener) mq.addListener(on);
+})();
 function renderReadingSettings(){
   const lay=getLayout(), f=getFont();
   const sz=f.size||"中", fm=f.family||"楷体", sp=f.spacing||"适中";
@@ -69746,6 +69964,15 @@ function renderReadingSettings(){
   const curVoice=getTts().voice;
   const voiceName = (!curVoice || curVoice==="auto") ? "自动优选" : String(curVoice).replace(/\s*\(.*\)/,"").slice(0,14);
   $("#rsetBody").innerHTML = `
+    <div class="rset-sec">
+      <div class="rset-sec-t">显示模式<span class="cur">${DISPLAY_LABEL[getDisplay()]}</span></div>
+      <div class="rset-opts">
+        <div class="rset-opt ${getDisplay()==="auto"?"on":""}" onclick="setDisplay('auto')">自动</div>
+        <div class="rset-opt ${getDisplay()==="desktop"?"on":""}" onclick="setDisplay('desktop')">桌面端</div>
+        <div class="rset-opt ${getDisplay()==="mobile"?"on":""}" onclick="setDisplay('mobile')">移动端</div>
+      </div>
+      <div class="rset-note">「自动」按窗口宽度判断：≥1024px 用桌面端，否则移动端。窗口很窄也想预览桌面版，直接选「桌面端」。</div>
+    </div>
     <div class="rset-sec">
       <div class="rset-sec-t">读诗排版<span class="cur">${lay==="vertical"?"竖排手卷":"横排现代式"}</span></div>
       <div class="rset-opts">
@@ -70168,7 +70395,7 @@ function toggleRecite(){
   if($("#view-detail") && $("#view-detail").classList.contains("active")) openDetail(currentPoemId);
 }
 
-applyLayout(); applyFont(); applyPaper();
+applyLayout(); applyFont(); applyPaper(); applyDisplay();
 if(API_BASE && currentUser && currentUser.token) syncPull();
 </script>
 

@@ -651,6 +651,13 @@
        2) 出口条按钮直接钉列宽 210/300/210，别用 padding 百分比算带宽 ——
           padding 的百分比基准是 grid area(1100)，不是加过负 margin 的 1180，会多算 80px。 */
 
+  /* ---------- 平板竖屏（768–1023）：单列不变，只把 390 手机框放宽 ----------
+     ⚠ 这块 v1(d190add) 有、v2 第一版漏了（2026-10-29 补回）。漏的后果：iPad 上
+     auto 档按「<1024 即移动端」判成 mode-mobile，退回 390 手机框，左右各留一条宽缝。 */
+  body.mode-tablet .phone{width:min(680px,100%);}
+  body.mode-tablet .tabbar{justify-content:center;}
+  body.mode-tablet .tabbar .tb{flex:0 0 160px;}
+
   /* ---------- 桌面端 ---------- */
   body.mode-desktop{
     /* 40px 在 1024 视口下偏大（内容只剩 944），改成随视口收缩、封顶 40 */
@@ -69923,37 +69930,45 @@ function setLayout(v){
 }
 function toggleLayout(){ setLayout(getLayout()==="vertical" ? "horizontal" : "vertical"); }
 /* ============ 显示模式：桌面端 / 移动端（v2） ============
-   三档：auto（默认，窗口 ≥1024px 走桌面）/ desktop / mobile。存 localStorage xjy_display。
+   三档：auto（默认，按窗口宽度自动判）/ desktop / mobile。存 localStorage xjy_display。
+   auto 实际会落成三档之一：≥1024 桌面端、768–1023 平板端、<768 移动端。
+   「平板端」是内部中间态，设置面板不单独暴露（只在 toast 里如实显示当前生效档）。
    CSS 侧：body.mode-desktop 挂全部桌面规则，body.mode-mobile 强制回 390 手机框；
    媒体查询只留最小兜底（JS 失效时宽屏仍不是手机框）。
    为什么要三档而不是纯媒体查询：宽屏用户也要能主动退回手机版（看真机效果、对比排版）。 */
-const DISPLAY_LABEL={auto:"自动", desktop:"桌面端", mobile:"移动端"};
-function getDisplay(){ try{ const v=localStorage.getItem("xjy_display"); return DISPLAY_LABEL[v] ? v : "auto"; }catch(e){ return "auto"; } }
+const DISPLAY_LABEL={auto:"自动", desktop:"桌面端", mobile:"移动端", tablet:"平板端"};
+const DISPLAY_MANUAL=["auto","desktop","mobile"];
+function getDisplay(){ try{ const v=localStorage.getItem("xjy_display"); return DISPLAY_MANUAL.indexOf(v)>=0 ? v : "auto"; }catch(e){ return "auto"; } }
 function effectiveDisplay(){
   const v=getDisplay();
   if(v!=="auto") return v;
-  return (window.matchMedia && window.matchMedia("(min-width:1024px)").matches) ? "desktop" : "mobile";
+  const w=window.innerWidth;
+  if(w>=1024) return "desktop";
+  if(w>=768) return "tablet";
+  return "mobile";
 }
 function applyDisplay(){
   const eff=effectiveDisplay(), b=document.body.classList;
-  b.remove("mode-desktop","mode-mobile");
+  b.remove("mode-desktop","mode-mobile","mode-tablet");
   b.add("mode-"+eff);
   document.body.setAttribute("data-display", eff);
   return eff;
 }
 function setDisplay(v){
-  if(!DISPLAY_LABEL[v]) return;
+  if(DISPLAY_MANUAL.indexOf(v)<0) return;
   try{ localStorage.setItem("xjy_display", v); }catch(e){}
   const eff=applyDisplay();
   if(document.querySelector("#rsetOverlay.active")) renderReadingSettings();
   toast("显示模式：" + DISPLAY_LABEL[v] + (v==="auto" ? "（当前 " + DISPLAY_LABEL[eff] + "）" : ""));
 }
+/* 自动档要跟着窗口宽度重算。用 resize + rAF 节流，比挂两个 matchMedia 少一处状态 */
 (function watchDisplay(){
-  if(!window.matchMedia) return;
-  const mq=window.matchMedia("(min-width:1024px)");
-  const on=()=>{ if(getDisplay()==="auto") applyDisplay(); };
-  if(mq.addEventListener) mq.addEventListener("change",on);
-  else if(mq.addListener) mq.addListener(on);
+  let raf=0;
+  const on=()=>{
+    if(raf) return;
+    raf=requestAnimationFrame(()=>{ raf=0; if(getDisplay()==="auto") applyDisplay(); });
+  };
+  window.addEventListener("resize", on, {passive:true});
 })();
 function renderReadingSettings(){
   const lay=getLayout(), f=getFont();

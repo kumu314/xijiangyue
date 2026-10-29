@@ -57,9 +57,10 @@ function fromVal(v) {
 /* Turso SQL over HTTP：POST /v2/pipeline，Bearer 鉴权。
    凭据纪律：本函数错误信息只含 HTTP 状态与响应片段（不含 token）。 */
 async function tursoFetch(statements) {
-  // 出网点复验（防启动后变量被改）+ 禁重定向（防 302 跳内网形成 SSRF）
+  // 出网双闸：turso.io 白名单 + assertPublicHttpUrl 公网校验（与短信/微信出网同口径），禁重定向
   if (!TURSO_URL_RE.test(TURSO_URL)) throw new Error("turso url not allowed");
-  const res = await fetch(TURSO_URL.replace(/\/+$/, "") + "/v2/pipeline", {
+  const target = assertPublicHttpUrl(TURSO_URL);
+  const res = await fetch(target.origin.replace(/\/+$/, "") + "/v2/pipeline", {
     method: "POST",
     redirect: "error",
     headers: { "Content-Type": "application/json", Authorization: "Bearer " + TURSO_TOKEN },

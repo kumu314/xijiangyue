@@ -336,6 +336,14 @@
   .rv-item.leech{border-color:rgba(185,138,62,.55);background:rgba(185,138,62,.08);}
   .rv-i-t{font-size:13px;font-weight:600;color:var(--ink);}
   .rv-i-a{font-size:11px;color:var(--ink-3);margin-top:2px;}
+  /* #279② 温故卡里的移出按钮：常驻淡显，hover 才实，避免抢「点进去读」的主操作 */
+  .rv-item{position:relative;padding-right:34px;}
+  .rv-x{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;
+    display:flex;align-items:center;justify-content:center;border:none;border-radius:50%;
+    background:transparent;color:var(--ink-3);font-size:16px;line-height:1;cursor:pointer;
+    opacity:.5;transition:opacity .15s ease,background-color .15s ease,color .15s ease;}
+  .rv-x:hover{opacity:1;background:rgba(178,58,46,.10);color:var(--cinnabar);}
+  .rv-x:active{transform:translateY(-50%) scale(.92);}
   .rv-note{margin-top:8px;font-size:11.5px;color:var(--ink-3);line-height:1.6;}
   /* #63④ 记忆曲线：我的记忆视图 */
   .mem-entry{cursor:pointer;}
@@ -68808,16 +68816,49 @@ function stepPoem(d){
   const n = POEMS.length, j = (i + d + n) % n;
   openDetail(POEMS[j].id);
 }
+/* #279② 移出温故的二次确认态。不用原生 confirm：移动端弹窗样式脱节，
+   且会打断正在进行的朗读。改成「第一次点变文案、4 秒内再点才真删」。 */
+let exitArm = null;
+function removeReview(id, silent){
+  const r = getReview();
+  if(!r[id]) return false;
+  delete r[id];
+  saveReview(r);
+  if(!silent) toast("已移出温故队列");
+  if(currentPoemId===id) refreshExitBar();
+  syncReviewViews();
+  return true;
+}
+function syncReviewViews(){
+  // 温故卡挂在「学习」页打卡区里，移出/加入后必须同步重渲染，否则用户看到旧条目
+  try{ if(document.querySelector("#view-learn.active")) renderLearn(); }catch(e){}
+}
 function rememberPoem(){
   if(!currentPoemId) return;
   const p = POEMS.find(x=>x.id===currentPoemId);
   if(!p) return;
   if(!reviewable(p)){ toast("本篇暂不进温故队列"); return; }
   const r = getReview();
-  if(r[p.id]){ toast("已在温故队列 · " + r[p.id].due + " 到期"); return; }
+  if(r[p.id]){
+    const btn = document.querySelector("#exitMem");
+    const now = Date.now();
+    if(exitArm && exitArm.id===p.id && now-exitArm.t < 4000){
+      exitArm = null;
+      removeReview(p.id, true);
+      toast("已移出温故队列");
+      return;
+    }
+    exitArm = {id:p.id, t:now};
+    if(btn) btn.textContent = "确认移出？";
+    toast("再点一次，移出温故队列");
+    setTimeout(()=>{ if(exitArm && exitArm.id===p.id){ exitArm=null; refreshExitBar(); } }, 4000);
+    return;
+  }
+  exitArm = null;
   touchReview(p);
   toast("已加入温故队列");
   refreshExitBar();
+  syncReviewViews();
 }
 function refreshExitBar(){
   const btn = document.querySelector("#exitMem");
@@ -70160,18 +70201,30 @@ function vColCapacity(){ // 公式兜底（直调 renderMaskLines 时的默认�
 }
 const FRAG_PUNCT=/[，。！？；、,.;:!?…—·]/;
 function fragLine(text, cap){
-  if(!text || !isFinite(cap) || text.length<=cap) return [text];
-  const clauses=[]; let cur="";
-  for(const ch of text){ cur+=ch; if(FRAG_PUNCT.test(ch)){ clauses.push(cur); cur=""; } }
-  if(cur) clauses.push(cur);
-  const frags=[]; let buf="";
+  if(!text || !isFinite(cap)) return [text];
+  // 全程按「码点」而非 UTF-16 码元操作：slice/text.length 会把增补平面的生僻字
+  // （𬴂、𫍴、𫍦 这类）从中间劈成两个半字，渲染出乱码方块。
+  const cps=Array.from(text);
+  if(cps.length<=cap) return [text];
+  const clauses=[]; let cur=[];
+  for(const ch of cps){ cur.push(ch); if(FRAG_PUNCT.test(ch)){ clauses.push(cur); cur=[]; } }
+  if(cur.length) clauses.push(cur);
+  const frags=[]; let buf=[];
   for(const c of clauses){
-    if((buf+c).length<=cap){ buf+=c; continue; }
-    if(buf){ frags.push(buf); buf=""; }
-    if(c.length<=cap){ buf=c; continue; }
-    for(let i=0;i<c.length;i+=cap) frags.push(c.slice(i,i+cap)); // 单句超容量才硬切（不挑标点）
+    if(buf.length+c.length<=cap){ buf=buf.concat(c); continue; }
+    if(buf.length){ frags.push(buf.join("")); buf=[]; }
+    if(c.length<=cap){ buf=c.slice(); continue; }
+    // 单句超容量才硬切。硬切点若正好落在标点前，把标点并进本段（标点悬挂）——
+    // 否则「君问归期未有期，」在 cap=7 时会被切成「君问归期未有期」+「，」，
+    // 逗号单独占一列，竖排看起来就是乱码。
+    let ci=0;
+    while(ci<c.length){
+      let seg=c.slice(ci,ci+cap); ci+=cap;
+      if(ci<c.length && FRAG_PUNCT.test(c[ci])){ seg=seg.concat([c[ci]]); ci++; }
+      frags.push(seg.join(""));
+    }
   }
-  if(buf) frags.push(buf);
+  if(buf.length) frags.push(buf.join(""));
   return frags.length?frags:[text];
 }
 function renderMaskLines(texts,id,off,vertical,cap){
@@ -70208,7 +70261,11 @@ function renderVbody(bodyEl, texts, id, off, vertical){
     const cols=Math.round(el.offsetWidth/unit);
     if(cols>=2){
       const n=[...texts[i]].length;                               // 码点数，不用 textContent（ruby 注音会掺长度）
-      if(n>0) cap=Math.min(cap, Math.ceil(n/cols)-1);             // -1 安全余量：同时盖住续列 .9em 缩进的占高
+      // cap = 每列实际字数。原来这里减 1 是给续列 .9em 缩进留余量，但首列也一起减了，
+      // 结果「一联 8 字 / 每列 8 字」被减成 7，fragLine 硬切把标点甩到单独一列
+      // （实测夜雨寄北 8 列、春晓 8 列）。每列实测能放 9~12 字，8 字远未溢出，
+      // 续列缩进也吃得下，所以不再减。
+      if(n>0) cap=Math.min(cap, Math.ceil(n/cols));
     }
   });
   if(isFinite(cap)){
@@ -70323,6 +70380,7 @@ function renderReviewCard(){
       <div class="rv-item${x.it.leech?" leech":""}" onclick="openDetail('${x.id}')">
         <div class="rv-i-t">${esc(x.p.title)}</div>
         <div class="rv-i-a">${esc(x.p.author)}${x.it.leech?" · 拗口":""}</div>
+        <button class="rv-x" type="button" aria-label="移出温故" title="移出温故" onclick="event.stopPropagation();removeReview('${x.id}')">&times;</button>
       </div>`).join("")}</div>
     ${leechCount?`<div class="rv-note">${leechCount} 首已连续回炉 ${LEECH_SLIP} 次，已放回 1 天桶，慢慢来。</div>`:""}
     ${due.length>cap.length?`<div class="rv-note">今日上限 ${REVIEW_DAILY_CAP} 首，余 ${due.length-cap.length} 首明日继续。</div>`:""}

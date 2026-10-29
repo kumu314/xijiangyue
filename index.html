@@ -882,9 +882,66 @@
     body.mode-mobile .disp-fab{display:flex;top:16px;left:calc(50% + 195px + 16px);}
   }
 
+  /* ===== HEAD-ACTIONS v2 (#279③) =====
+     原样：4 个按钮横排 flex-wrap，「诗笺」被挤到第二行，图标+文字参差。
+     两版并存，body.act-a / body.act-b 切换，出图供枯木选。 */
+  .head-more{
+    position:absolute;top:calc(100% + 6px);right:0;z-index:40;
+    min-width:132px;padding:6px;display:flex;flex-direction:column;gap:2px;
+    background:var(--paper-card-2);border:1px solid var(--line);border-radius:10px;
+    box-shadow:0 6px 22px rgba(60,45,20,.16);
+  }
+  .head-more[hidden]{display:none;}
+  .head-more button{
+    display:flex;align-items:center;gap:8px;width:100%;
+    padding:9px 10px;border:none;border-radius:7px;background:transparent;
+    font:inherit;font-size:13px;color:var(--ink);text-align:left;cursor:pointer;
+  }
+  .head-more button:hover{background:rgba(110,90,55,.08);}
+  .head-more button svg{flex:0 0 auto;}
+
+  /* ---------- 方案 A：外显朗读+竖排，其余进「⋯」 ---------- */
+  body.act-a .head-actions{position:relative;flex-wrap:nowrap;gap:8px;}
+  body.act-a .head-actions > .read-btn:not(.btn-primary):not(#layoutBtn){display:none;}
+  body.act-a .head-actions .more-btn{
+    flex:0 0 auto;width:36px;height:36px;padding:0;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:var(--r-pill);font-size:17px;line-height:1;letter-spacing:1px;
+    color:var(--ink-3);background:transparent;border:1px solid var(--line);
+  }
+  body.act-a .head-actions .more-btn:hover{color:var(--ink);background:rgba(110,90,55,.07);}
+  body.act-a .head-actions .more-btn.on{color:var(--cinnabar);border-color:rgba(178,58,46,.4);background:rgba(178,58,46,.08);}
+
+  /* ---------- 方案 B：右下角竖排悬浮工具条 ---------- */
+  body.act-b .head-actions{
+    position:fixed;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));
+    z-index:55;margin:0;flex-direction:column;flex-wrap:nowrap;gap:6px;
+    padding:7px;border-radius:var(--r-pill);
+    background:rgba(255,252,244,.94);
+    border:1px solid var(--line);
+    box-shadow:0 6px 24px rgba(60,45,20,.18);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  }
+  body.act-b .head-actions > .read-btn{
+    width:42px;height:42px;padding:0;margin:0;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:50%;border:none;background:transparent;color:var(--ink-2);
+  }
+  body.act-b .head-actions > .read-btn span{display:none;}   /* 只留图标，文字靠 title */
+  body.act-b .head-actions > .read-btn svg{width:19px;height:19px;}
+  body.act-b .head-actions > .btn-primary{
+    background:var(--cinnabar);color:#FBF6EA;
+    box-shadow:0 2px 8px rgba(178,58,46,.32);
+  }
+  body.act-b .head-actions > .read-btn:not(.btn-primary):hover{background:rgba(110,90,55,.10);}
+  body.act-b .head-actions .more-btn{display:none;}          /* B 版全部外显，不需要 ⋯ */
+  body.act-b .head-more{
+    position:absolute;right:calc(100% + 8px);top:auto;bottom:0;min-width:auto;
+  }
+
 </style>
 </head>
-<body class="paper-light">
+<body class="paper-light act-a">
 <div class="phone" id="phone">
   <div class="statusbar">
     <span id="clock">21:08</span>
@@ -1118,6 +1175,11 @@
           <button class="btn read-btn" id="reciteBtn" onclick="toggleRecite()" style="display:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.6 3 14.4 0 18-3-3.6-3-14.4 0-18"/></svg><span id="reciteBtnTxt">背原文</span></button>
           <button class="btn read-btn" id="shareBtn" onclick="openShare()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/><path d="M5 14v5h14v-5"/></svg><span>诗笺</span></button>
 
+                  <button class="btn more-btn" id="moreBtn" type="button" aria-label="更多操作" aria-expanded="false" onclick="toggleHeadMore(event)">⋯</button>
+          <div class="head-more" id="headMore" hidden>
+            <button type="button" onclick="cycleMask();closeHeadMore()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8M12 8v8"/></svg>背诵（遮字）</button>
+            <button type="button" onclick="openShare();closeHeadMore()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/><path d="M5 14v5h14v-5"/></svg>生成诗笺</button>
+          </div>
         </div>
       </div>
       <div class="original" id="dOriginal"></div>
@@ -69340,6 +69402,29 @@ let speechGen=0;
 const TTS_GAP={normal:260, long:420};
 function gapAfter(line){ return /[。！？!?]\s*$/.test(String(line)) ? TTS_GAP.long : TTS_GAP.normal; }
 function setReadBtn(txt){ const b=$("#readBtnTxt"); if(b) b.textContent=txt; }
+
+/* #279③ 「⋯」更多菜单：点外部关闭、Esc 关闭 */
+function toggleHeadMore(e){
+  if(e) e.stopPropagation();
+  const m=document.querySelector("#headMore"), b=document.querySelector("#moreBtn");
+  if(!m) return;
+  const open=m.hasAttribute("hidden");
+  if(open){ m.removeAttribute("hidden"); } else { m.setAttribute("hidden",""); }
+  if(b){ b.classList.toggle("on", open); b.setAttribute("aria-expanded", open?"true":"false"); }
+}
+function closeHeadMore(){
+  const m=document.querySelector("#headMore"), b=document.querySelector("#moreBtn");
+  if(m) m.setAttribute("hidden","");
+  if(b){ b.classList.remove("on"); b.setAttribute("aria-expanded","false"); }
+}
+document.addEventListener("click", (e)=>{
+  const m=document.querySelector("#headMore");
+  if(!m || m.hasAttribute("hidden")) return;
+  if(e.target.closest && (e.target.closest("#headMore") || e.target.closest("#moreBtn"))) return;
+  closeHeadMore();
+});
+document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeHeadMore(); });
+
 function stopSpeech(){
   speechGen++;
   speechState.mode="idle"; speechState.idx=0; speechState.loopIdx=-1;

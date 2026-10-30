@@ -592,6 +592,16 @@
   .fh-ok{color:#2A5C3A;background:rgba(110,139,106,.12);padding:14px;border-radius:var(--r-sm);border-left:3px solid var(--jade);}
   .fh-fail{color:#8E2C22;background:rgba(178,58,46,.08);padding:14px;border-radius:var(--r-sm);border-left:3px solid var(--cinnabar);}
   .fh-quote{display:block;margin-top:8px;font-family:var(--serif);font-size:14px;color:var(--ink);font-weight:600;}
+  /* #279① 答错揭示区：例句 + 篇名 + 作者 + 横排全诗 */
+  .fh-cite{margin-top:12px;text-align:left;background:var(--paper-card);border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;}
+  .fh-cite-head{display:flex;align-items:baseline;gap:8px;width:100%;padding:11px 13px;background:transparent;border:none;border-bottom:1px dashed var(--line);cursor:pointer;text-align:left;font:inherit;}
+  .fh-cite-head:active{background:rgba(178,58,46,.05);}
+  .fh-cite-title{font-family:var(--serif);font-weight:900;font-size:15px;color:var(--cinnabar);}
+  .fh-cite-author{font-size:12px;color:var(--ink-3);}
+  .fh-cite-go{margin-left:auto;font-size:11px;color:var(--ink-3);white-space:nowrap;}
+  .fh-cite-body{padding:12px 13px;font-family:var(--serif);font-size:13.5px;line-height:2;color:var(--ink);}
+  .fh-cite-row{word-break:break-word;}
+  .fh-cite-more{color:var(--ink-3);font-size:12px;margin-top:4px;}
   .fh-end{text-align:center;padding:36px 16px;}
   .fh-end-title{font-family:var(--serif);font-weight:900;font-size:28px;color:var(--ink);margin-bottom:24px;letter-spacing:2px;}
   .fh-end-stats{margin-bottom:32px;line-height:2;font-size:15px;color:var(--ink-2);}
@@ -70042,6 +70052,91 @@ function randExample(key){
   return pool[Math.floor(Math.random()*pool.length)];
 }
 
+/* ============ #279① 答错揭示：篇名 + 作者 + 横排全诗 ============
+   为什么不用池句反查篇目：实测池 71,710 条 × 库 935 首，精确交集仅 2,839 条（3.96%），
+   池是全唐诗级句子池、条目多为「两句连写无标点」形态，反查 96% 落空。
+   改为从库内挑一首含该字的诗：49 个关键字库内最少 33 首（松）、最多 423 首（人），
+   100% 有解。池句仅在库内一首都没有时兜底，正常走不到。 */
+const FH_CLIP_SEGS = 16;   // 台账口径：超过 16 句只显前 8 句
+const FH_SHOW_SEGS = 8;
+let FHLIB = null;
+function fhLibIndex(){
+  if(FHLIB) return FHLIB;
+  const m = new Map();
+  for(const k of FH.keys) m.set(k, []);
+  for(const p of POEMS){
+    const seen = new Set();
+    for(const l of (p.lines||[])){
+      const o = String(l.o||"");
+      for(const k of FH.keys){
+        if(o.indexOf(k)>=0 && !seen.has(k)){ seen.add(k); m.get(k).push(p); }
+      }
+    }
+  }
+  FHLIB = m;
+  return m;
+}
+function fhPickRef(key){
+  const lib = fhLibIndex().get(key) || [];
+  if(!lib.length) return null;
+  const used = new Set(fhState.history.map(h=>h.pid).filter(Boolean));
+  let pool = lib.filter(p=>!used.has(p.id));
+  if(!pool.length) pool = lib;   // 本局已把该字的诗用完，允许重复
+  const p = pool[Math.floor(Math.random()*pool.length)];
+  return { pid:p.id, title:p.title, author:p.author, lines:(p.lines||[]).map(l=>String(l.o||"")) };
+}
+/* 返回 {pid, hold, html}：hold 是揭示区停留毫秒数，有全诗给足 6.5 秒，无全诗沿用旧节奏 */
+function fhRevealHTML(key, head){
+  const ref = fhPickRef(key);
+  if(!ref){
+    const s = randExample(key);
+    return { pid:null, hold:2400,
+      html:'<div class="fh-fail">'+head+'<br>参考：<span class="fh-quote">'+esc(fmtLine(s))+'</span></div>' };
+  }
+  /* 截断必须以「含关键字的那一行」为锚，否则会出反证：
+     实测 key=酒 选中陆游《示儿》8 行，酒在「不须饮酒径自醉」第 6 行，
+     按「前 8 句」截断正好把它切掉 —— 揭示区显示的诗里一个「酒」都没有。 */
+  const segN = s => s.split(/[，。！？；、：]/).filter(Boolean).length || 1;
+  const ki = ref.lines.findIndex(l => l.indexOf(key) >= 0);
+  let start = 0, end = ref.lines.length - 1;
+  if(ki >= 0){
+    start = ki; end = ki;
+    let cnt = segN(ref.lines[ki]);
+    while(start > 0 && cnt + segN(ref.lines[start-1]) <= FH_SHOW_SEGS){ start--; cnt += segN(ref.lines[start]); }
+    while(end + 1 < ref.lines.length && cnt + segN(ref.lines[end+1]) <= FH_SHOW_SEGS){ end++; cnt += segN(ref.lines[end]); }
+  } else {
+    let cnt = 0;   // 理论走不到（ref 按 key 挑），兜底取前 8 句
+    for(let i = 0; i < ref.lines.length; i++){
+      const n = segN(ref.lines[i]);
+      if(cnt + n > FH_SHOW_SEGS) break;
+      end = i; cnt += n;
+    }
+  }
+  const rows = ref.lines.slice(start, end + 1);
+  const clipped = rows.length < ref.lines.length;
+  const body = (start > 0 ? '<div class="fh-cite-more">… 前面还有 '+start+' 行</div>' : "")
+    + rows.map(r=>'<div class="fh-cite-row">'+esc(r)+'</div>').join("")
+    + (end < ref.lines.length - 1 ? '<div class="fh-cite-more">… 全篇 '+ref.lines.length+' 行，点篇名读完整</div>' : "");
+  return { pid:ref.pid, hold: clipped ? 6000 : 6500,
+    html:'<div class="fh-fail">'+head
+      + '<div class="fh-cite">'
+      + '<button class="fh-cite-head" type="button" onclick="fhJump(\''+ref.pid+'\')">'
+      + '<span class="fh-cite-title">'+esc(ref.title)+'</span>'
+      + '<span class="fh-cite-author">'+esc(ref.author)+'</span>'
+      + '<span class="fh-cite-go">读全篇 ›</span>'
+      + '</button>'
+      + '<div class="fh-cite-body">'+body+'</div>'
+      + '</div></div>' };
+}
+/* 点篇名跳详情：先收 overlay 再 openDetail——openDetail 内部自己 showView("view-detail")
+   并记录 detailFrom（此时 active 仍是原 tab，返回能原路回去） */
+function fhJump(pid){
+  clearInterval(fhState.timer);
+  fhState.locked = true;
+  $("#feihuaOverlay").classList.remove("active");
+  openDetail(pid);
+}
+
 function openFeihua(){
   fhState.score=0; fhState.combo=0; fhState.round=0; fhState.usedKeys=[]; fhState.history=[]; fhState.locked=false;
   $("#feihuaOverlay").classList.add("active");
@@ -70075,6 +70170,8 @@ function updateFhStats(){
 }
 
 function nextRound(){
+  /* #279① 跳详情守卫：点篇名后 overlay 已收，残留定时器不许再改 DOM */
+  if(!$("#feihuaOverlay").classList.contains("active")) return;
   if(fhState.round>=fhState.maxRounds){ endGame(); return; }
   fhState.round++; fhState.timeLeft=15; fhState.locked=false;
   const key = pickKey();
@@ -70148,11 +70245,11 @@ function successAnswer(line){
 function failAnswer(msg){
   fhState.locked=true; clearInterval(fhState.timer);
   fhState.score=Math.max(0,fhState.score-5); fhState.combo=0;
-  fhState.history.push({ok:false,key:fhState.currentKey});
+  const reveal=fhRevealHTML(fhState.currentKey, "✗ "+msg);
+  fhState.history.push({ok:false,key:fhState.currentKey,pid:reveal.pid});
   updateFhStats();
-  const sample=randExample(fhState.currentKey);
-  $("#fhResult").innerHTML='<div class="fh-fail">✗ '+msg+'<br>参考：<span class="fh-quote">'+fmtLine(sample)+'</span></div>';
-  setTimeout(nextRound,2400);
+  $("#fhResult").innerHTML=reveal.html;
+  setTimeout(nextRound,reveal.hold);
 }
 
 function timeUp(){ failAnswer("时间到！"); }
@@ -70161,11 +70258,11 @@ function skipRound(){
   if(fhState.locked) return;
   fhState.locked=true; clearInterval(fhState.timer);
   fhState.score=Math.max(0,fhState.score-3); fhState.combo=0;
-  fhState.history.push({ok:false,key:fhState.currentKey,skip:true});
+  const reveal=fhRevealHTML(fhState.currentKey, "↪ 已跳过");
+  fhState.history.push({ok:false,key:fhState.currentKey,skip:true,pid:reveal.pid});
   updateFhStats();
-  const sample=randExample(fhState.currentKey);
-  $("#fhResult").innerHTML='<div class="fh-fail">↪ 已跳过<br>参考：<span class="fh-quote">'+fmtLine(sample)+'</span></div>';
-  setTimeout(nextRound,1900);
+  $("#fhResult").innerHTML=reveal.html;
+  setTimeout(nextRound,reveal.hold);
 }
 
 function endGame(){

@@ -112,7 +112,22 @@ python out/review-tools/dup_in_card.py \
 4. 引文双口径失配 **0**；禁 markdown / 套话 **0**；
 5. **未命中的 124 张卡（165−41）零变化**（逐字节 diff）；
 6. `串讲` 字段零变化；`id`/顺序/category/level 零变化；
-7. `index.html` 的 `POEMS` 段 sha256 保持 `0802270ca99e9631f506d3fbc20082ee`（本次不应变）。
+7. `index.html` **零改动**。首选判据（无歧义）：`git rev-parse HEAD:index.html` 仍为 `53fb72f22ea1d64359af3910a2505e9fdbf4cd33`，且 `git status --porcelain -- index.html` 为空。
+   若要用 POEMS 段 sha256 做二次确认，**切法必须写死**（2026-11-01 补，起因见下）：
+
+   ```python
+   import hashlib, re
+   b = open('index.html', 'rb').read()
+   s = re.search(rb'const POEMS\s*=\s*\[', b).start()   # 锚点：const POEMS 四个字起
+   print(hashlib.sha256(b[s:]).hexdigest())            # 切到文件末尾 EOF
+   ```
+   该切法下期望值 = `0802270ca99e9631f506d3fbc20082ee`。
+
+   > **为什么补这段**：原任务书只给了 hash、没给切法。trae 按「数组本体 `[..]`」切，
+   > 得到 `920859342da9705f47a1bc7bd2d3109b`，与本条对不上，于是如实报了「基准漂移」并停下。
+   > 两个值都对，错在任务书没定口径——**裸 hash 不是判据，hash + 切法才是**。
+   > 今后写这类条款一律用「git blob hash」或「脚本 + 期望值」成对给，不要只给一个 hex。
+
 
 任一项不满足 → 退回重改，不进合入队列。
 

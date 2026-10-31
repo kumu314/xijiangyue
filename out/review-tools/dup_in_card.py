@@ -16,7 +16,13 @@
 用法：
   python dup_in_card.py <batch-20.json> [batch-21.json ...]
   python dup_in_card.py --json <file.json>     # 机器可读输出
+  python dup_in_card.py --cross-card <file>    # 追加「同诗不同卡之间」重复检查
 退出码：0 = 无命中；1 = 有命中。
+
+关于 --cross-card（2026-11-01 灵玉补）：
+  默认判据只管「同一张卡内部」。复核 #281 时实测发现漏了「把句子搬到隔壁卡」这一类——
+  卡内归零但同诗两张卡说的是同一句。默认行为**保持不变**（#281 的验收就是按默认口径判的），
+  --cross-card 是追加检查，只在需要更严时开。
 """
 import json
 import os
@@ -69,12 +75,33 @@ def find_dup(d):
     return hits
 
 
-def scan_batch(path):
+def find_dup_cross(cards):
+    """同一首诗内、不同卡之间的重复（--cross-card 用）。"""
+    hits = []
+    for i in range(len(cards)):
+        for j in range(i + 1, len(cards)):
+            for s1 in split_sents(cards[i].get('d') or ''):
+                for s2 in split_sents(cards[j].get('d') or ''):
+                    a, b = strip_all(s1), strip_all(s2)
+                    if not a or not b:
+                        continue
+                    if a == b:
+                        hits.append((i, j, s1, s2, '完全相同', 0))
+                        continue
+                    if len(a) >= 6 and len(b) >= 6:
+                        dd = lev(a, b)
+                        if dd <= max(2, int(0.2 * min(len(a), len(b)))):
+                            hits.append((i, j, s1, s2, '近重复', dd))
+    return hits
+
+
+def scan_batch(path, cross=False):
     data = json.load(open(path, encoding='utf-8'))
     bn = data.get('batch') or os.path.basename(path).replace('.json', '')
     rows, total = [], 0
     for p in data.get('poems') or []:
-        for idx, card in enumerate(p.get('memory_new') or []):
+        cards = p.get('memory_new') or []
+        for idx, card in enumerate(cards):
             total += 1
             hits = find_dup(card.get('d', ''))
             if hits:
@@ -84,23 +111,32 @@ def scan_batch(path):
                     'd': card.get('d', ''), 'len': len(strip_all(card.get('d', ''))),
                     'hits': [{'s1': h[0], 's2': h[1], 'kind': h[2], 'dist': h[3]} for h in hits],
                 })
+        if cross:
+            for i, j, s1, s2, kind, dd in find_dup_cross(cards):
+                rows.append({
+                    'batch': bn, 'pid': p.get('id'), 'title': p.get('title', ''),
+                    'card_idx': f'{i}↔{j}', 't': '跨卡', 'd': '', 'len': 0,
+                    'hits': [{'s1': s1, 's2': s2, 'kind': kind, 'dist': dd}],
+                })
     return bn, rows, total
 
 
 def main(argv):
     as_json = '--json' in argv
+    cross = '--cross-card' in argv
     files = [a for a in argv if not a.startswith('--')]
     if not files:
         print(__doc__)
         return 2
     all_rows, grand_hit, grand_tot = [], 0, 0
     for f in files:
-        bn, rows, total = scan_batch(f)
+        bn, rows, total = scan_batch(f, cross=cross)
         grand_hit += len(rows)
         grand_tot += total
         pct = (len(rows) / total * 100) if total else 0
         if not as_json:
-            print(f'{bn}: 命中 {len(rows)}/{total} 张（{pct:.1f}%）'
+            tag = '（含跨卡）' if cross else ''
+            print(f'{bn}: 命中 {len(rows)}/{total} 张（{pct:.1f}%）{tag}'
                   f'，涉及 {len(set(r["pid"] for r in rows))} 首')
             for r in rows:
                 print(f'  · {r["pid"]} 卡{r["card_idx"]} [{r["t"]}] {r["len"]}字')

@@ -7,16 +7,28 @@
 判据（SPEC 增补建议条款）：
   单卡 d 按 。；！？ 切句 → 任两句去标点空白后
     ① 完全相同，或
-    ② 两句都 ≥6 字且编辑距离 ≤ max(2, 20% × 较短句长)
+    ② 一句是另一句的完整子串（被含句 ≥8 字），或
+    ③ 两句都 ≥6 字且编辑距离 ≤ max(2, 20% × 较短句长)
   → 判为「卡内自我重复」。
 
 为什么需要这条：SPEC 对 memory 卡只有字数（55–100）与词表约束。
 「同一句话换个说法再写一遍」正好能把 d 凑到 55 字下限，13 项机械判据全绿。
 
+★★ 2026-11-01 判据修正（重要，此前读数作废重算）
+  原判据只有 ①③，漏了 ②「包含型」：当短句是长句的后缀时，
+  编辑距离恒等于 len(长)-len(短)，必然超阈值 ⇒ 永远漏报。
+  实测 batch-18《夏云峰》：「…迟来的珍惜即幽恨。迟来的珍惜即幽恨。」
+  整卡两句、第二句逐字重复，旧判据却判 0 命中。
+  修正后全库 99/1866 张命中（batch-16 起劣化，20/21 达 40%+）。
+  要复现旧读数请加 --no-contain。
+  教训：编辑距离判据只能测「等长改写」，测不了「子串复述」；
+  判据要覆盖「同一句话说了两遍」的全部形态，不是只覆盖最像的那一种。
+
 用法：
   python dup_in_card.py <batch-20.json> [batch-21.json ...]
   python dup_in_card.py --json <file.json>     # 机器可读输出
   python dup_in_card.py --cross-card <file>    # 追加「同诗不同卡之间」重复检查
+  python dup_in_card.py --no-contain <file>    # 退回 2026-11-01 前的旧判据
 退出码：0 = 无命中；1 = 有命中。
 
 关于 --cross-card（2026-11-01 灵玉补）：
@@ -30,6 +42,7 @@ import re
 import sys
 
 PUNCT = set("，。；：！？、（）《》「」『』“”‘’—…·〈〉,.;:!?()[]{}<>\"' \t\n\r\u3000")
+CONTAIN_MIN = 8  # 包含型判据：被含句至少 8 字（太短易误报）
 
 
 def strip_all(s):
@@ -56,8 +69,11 @@ def split_sents(d):
     return [p for p in (x.strip() for x in re.split(r'[。；！？]', d)) if p]
 
 
-def find_dup(d):
-    """返回 [(句1, 句2, 类型, 编辑距离), ...]"""
+def find_dup(d, contain=True):
+    """返回 [(句1, 句2, 类型, 距离/长度差), ...]
+
+    contain=True 时启用包含型判据（2026-11-01 修正）。
+    """
     ss = split_sents(d)
     hits = []
     for i in range(len(ss)):
@@ -68,6 +84,15 @@ def find_dup(d):
             if a == b:
                 hits.append((ss[i], ss[j], '完全相同', 0))
                 continue
+            if contain:
+                if len(a) > len(b) and len(b) >= CONTAIN_MIN and b in a:
+                    sub = 'A后缀' if a.endswith(b) else ('B前缀' if a.startswith(b) else 'C中段')
+                    hits.append((ss[i], ss[j], '包含型-' + sub, len(a) - len(b)))
+                    continue
+                if len(b) > len(a) and len(a) >= CONTAIN_MIN and a in b:
+                    sub = 'A后缀' if b.endswith(a) else ('B前缀' if b.startswith(a) else 'C中段')
+                    hits.append((ss[i], ss[j], '包含型-' + sub, len(b) - len(a)))
+                    continue
             if len(a) >= 6 and len(b) >= 6:
                 dd = lev(a, b)
                 if dd <= max(2, int(0.2 * min(len(a), len(b)))):
@@ -95,7 +120,7 @@ def find_dup_cross(cards):
     return hits
 
 
-def scan_batch(path, cross=False):
+def scan_batch(path, cross=False, contain=True):
     data = json.load(open(path, encoding='utf-8'))
     bn = data.get('batch') or os.path.basename(path).replace('.json', '')
     rows, total = [], 0
@@ -103,7 +128,7 @@ def scan_batch(path, cross=False):
         cards = p.get('memory_new') or []
         for idx, card in enumerate(cards):
             total += 1
-            hits = find_dup(card.get('d', ''))
+            hits = find_dup(card.get('d', ''), contain=contain)
             if hits:
                 rows.append({
                     'batch': bn, 'pid': p.get('id'), 'title': p.get('title', ''),
@@ -124,13 +149,14 @@ def scan_batch(path, cross=False):
 def main(argv):
     as_json = '--json' in argv
     cross = '--cross-card' in argv
+    contain = '--no-contain' not in argv
     files = [a for a in argv if not a.startswith('--')]
     if not files:
         print(__doc__)
         return 2
     all_rows, grand_hit, grand_tot = [], 0, 0
     for f in files:
-        bn, rows, total = scan_batch(f, cross=cross)
+        bn, rows, total = scan_batch(f, cross=cross, contain=contain)
         grand_hit += len(rows)
         grand_tot += total
         pct = (len(rows) / total * 100) if total else 0

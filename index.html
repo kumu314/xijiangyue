@@ -166,9 +166,11 @@
   .vbody{writing-mode:vertical-rl;height:300px;display:inline-block;padding:6px 2px;}
   .vline{font-family:var(--reader-ff);font-size:var(--reader-fs);letter-spacing:2.5px;color:var(--ink);line-height:var(--reader-lh);
     border-block-start:1px solid rgba(178,58,46,.18);padding:0 9px;}
-  /* #199 P1-2：折行续列片段——朱丝栏仍只在句首列；续列无界线 + 顶部缩进 + 极弱朱砂底（.05 档）。
-     形状冗余：缩进与弱底双标记，不只靠一样；色弱可辨（位置差 + 明度差）。 */
-  .vline.vcont{border-block-start:none;padding-top:.9em;background:rgba(178,58,46,.05);border-radius:2px;}
+  /* #199 P1-2：折行续列片段——朱丝栏仍只在句首列；续列无界线 + 极弱朱砂底（.05 档）。
+     形状冗余：无朱丝栏 + 弱底双标记（原来还有 .9em 顶部缩进，但缩进直接吃掉列容量：
+     特大档 288px 列高被缩进占去 21.6px，容量从 6 字掉到 5 字，六字句也被迫切分，
+     实测「春晓」从 2 段变 8 段。#279 ⑧ 修复时去掉缩进，容量回到真实值）。 */
+  .vline.vcont{border-block-start:none;background:rgba(178,58,46,.10);border-radius:2px;}
   .original .note{margin-top:12px;font-size:12px;color:var(--ink-3);border-top:1px dashed var(--line);padding-top:12px;}
 
   /* 读诗排版：横排现代式（body.layout-horizontal 时生效；竖排手卷为默认） */
@@ -70537,10 +70539,11 @@ function vColUnit(){ // 单列宽（块方向）= line-height×字号 + .vline �
   const lh=parseFloat(FONT_LH_MAP[f.spacing]||"2");
   return lh*fs+18;
 }
-function vColCapacity(){ // 公式兜底（直调 renderMaskLines 时的默认值）；主路径走 renderVbody 实测
+function vColCapacity(){ // 按字号档位算单列容量（视图未激活/行高为 normal 时的兜底）
   const f=getFont();
   const fs=parseFloat(FONT_SIZE_MAP[f.size]||"18px");
-  return Math.max(4, Math.floor((300-VBODY_PAD_V)/(1.5*fs))-1);
+  const lh=parseFloat(FONT_LH_MAP[f.spacing]||"2")*fs;   // 实测行高=倍数×字号（原来误用 1.5×fs，容量算大 1~2 字）
+  return Math.max(4, Math.floor((300-VBODY_PAD_V)/lh));   // 续列缩进已去掉（见 .vline.vcont 注释），不再扣 .9em
 }
 const FRAG_PUNCT=/[，。！？；、,.;:!?…—·]/;
 function fragLine(text, cap){
@@ -70560,9 +70563,14 @@ function fragLine(text, cap){
     // 单句超容量才硬切。硬切点若正好落在标点前，把标点并进本段（标点悬挂）——
     // 否则「君问归期未有期，」在 cap=7 时会被切成「君问归期未有期」+「，」，
     // 逗号单独占一列，竖排看起来就是乱码。
+    // 分段长度取「均衡」而非「每段塞满 cap」：后者头重脚轻，实测特大档
+    // 「君问归期未有期，」(8字/cap5) 被切成「君问归期未」+「有期，」，
+    // 断在「未/有期」之间读不通；均衡切成「君问归期」+「未有期，」，断点自然。
+    const parts=Math.ceil(c.length/cap), base=Math.floor(c.length/parts), rem=c.length%parts;
     let ci=0;
-    while(ci<c.length){
-      let seg=c.slice(ci,ci+cap); ci+=cap;
+    for(let k=0;k<parts;k++){
+      const len=base+(k<rem?1:0);
+      let seg=c.slice(ci,ci+len); ci+=len;
       if(ci<c.length && FRAG_PUNCT.test(c[ci])){ seg=seg.concat([c[ci]]); ci++; }
       frags.push(seg.join(""));
     }
@@ -70595,26 +70603,22 @@ function renderMaskLines(texts,id,off,vertical,cap){
    → pass2 按实测容量切分。横排/横排原文直接单遍不切。 */
 function renderVbody(bodyEl, texts, id, off, vertical){
   if(!vertical){ bodyEl.innerHTML=renderMaskLines(texts,id,off,false); return; }
-  bodyEl.innerHTML=renderMaskLines(texts,id,off,false);           // pass1
-  const unit=vColUnit();
-  const kids=[...bodyEl.children];
-  let cap=Infinity;
-  if(kids.some(el=>el.offsetWidth===0)) cap=vColCapacity();       // 视图未激活量不到 → 公式兜底（保守）
-  else kids.forEach((el,i)=>{
-    const cols=Math.round(el.offsetWidth/unit);
-    if(cols>=2){
-      const n=[...texts[i]].length;                               // 码点数，不用 textContent（ruby 注音会掺长度）
-      // cap = 每列实际字数。原来这里减 1 是给续列 .9em 缩进留余量，但首列也一起减了，
-      // 结果「一联 8 字 / 每列 8 字」被减成 7，fragLine 硬切把标点甩到单独一列
-      // （实测夜雨寄北 8 列、春晓 8 列）。每列实测能放 9~12 字，8 字远未溢出，
-      // 续列缩进也吃得下，所以不再减。
-      if(n>0) cap=Math.min(cap, Math.ceil(n/cols));
-    }
-  });
-  if(isFinite(cap)){
-    cap=Math.max(4,cap);
-    bodyEl.innerHTML=renderMaskLines(texts,id,off,true,cap);      // pass2
+  bodyEl.innerHTML=renderMaskLines(texts,id,off,false);           // pass1（只为量行高）
+  /* 单列容量：优先实测行高（字体 fallback 会改变实际行高），量不到退回按档位算。
+     不能用 offsetWidth 反推「折成几列」——竖排下 .vline 宽度恒为 1 列
+     （高度被 .vbody 的 300px 钳死，内容直接溢出而不折列），那条路永远算出 cols=1、
+     cap 保持 Infinity、pass2 整个跳过，长句就一路溢出被 .vscroll{overflow-y:hidden}
+     裁掉。实测（#279 ⑧）：四例×四档 16 组合里 12 组合裁字 6~14 个，
+     小档「夜雨寄北」32 字只剩 18 字。 */
+  const probe=[...bodyEl.children].find(el=>el.offsetWidth>0);
+  let cap=0;
+  if(probe){
+    const cs=getComputedStyle(probe);
+    const lh=parseFloat(cs.lineHeight), fs=parseFloat(cs.fontSize)||16;
+    if(lh>0 && isFinite(lh)) cap=Math.max(4, Math.floor((300-VBODY_PAD_V)/lh));
   }
+  if(!cap) cap=vColCapacity();                                    // 视图未激活 / line-height:normal
+  bodyEl.innerHTML=renderMaskLines(texts,id,off,true,cap);        // pass2（短句 fragLine 原样返回，不受影响）
 }
 let curRhymeMa=false;
 /* review v1：{bucket, due, last}，本地日（toISOString 是 UTC，早 8 点前会错位） */

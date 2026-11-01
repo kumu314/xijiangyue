@@ -42,10 +42,18 @@ for (const size of SIZES) {
       const cs = els[0] ? getComputedStyle(els[0]) : null;
       const lhPx = cs ? parseFloat(cs.lineHeight) : 0;
       const avail = body.clientHeight - 12;   // padding 6px × 2
+      /* 字数必须剔除 ruby 注音（rt/rp）：竖排下注音占的是列宽方向，不占列高。
+         不剔除会误报——《山行》首列 textContent 含「xiá（叶韵）」共 15 字，
+         实际只有 8 个字撑列高。 */
+      const realLen = (el) => {
+        const c = el.cloneNode(true);
+        c.querySelectorAll('rt,rp').forEach(x => x.remove());
+        return [...(c.textContent || '')].length;
+      };
       return {
         title, lhPx, avail,
         cols: els.map(e => {
-          const n = [...e.textContent].length;
+          const n = realLen(e);
           return { li: e.dataset.li, chars: n, need: Math.round(n * lhPx) };
         }),
       };

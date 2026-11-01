@@ -64,6 +64,18 @@ SRC = [
     ("out/content_production/batch-10.json",   "v2_batch"),   # 串讲 + memory_new
     # ---- merge-07（batch-11；灵玉抽检 PASS 放行，2026-10-25；枯木裁「可以合入」；河伯一字讹合入前已订正）----
     ("out/content_production/batch-11.json",   "v2_batch"),   # 串讲 + memory_new
+    # ---- merge-08（batch-12~19 八批；2026-11-01 枯木批「满足合入条件就合入」）----
+    # 八批抽检报告均在（out/review-batch-12..19.md，含 PASS）；b12~b15 已过 #219 七项订正，
+    # b16~b18 已过 #282 的 18 张自我重复整改（dup_in_card 0/270）。
+    # batch-19 的 37 张重复卡整改另行派单（Qoder-cn），返回后对本文件幂等重跑即得增量。
+    ("out/content_production/batch-12.json",   "v2_batch"),   # 串讲 + memory_new
+    ("out/content_production/batch-13.json",   "v2_batch"),   # 串讲 + memory_new
+    ("out/content_production/batch-14.json",   "v2_batch"),   # 串讲 + memory_new
+    ("out/content_production/batch-15.json",   "v2_batch"),   # 串讲 + memory_new
+    ("out/content_production/batch-16.json",   "v2_batch"),   # 串讲 + memory_new
+    ("out/content_production/batch-17.json",   "v2_batch"),   # 串讲 + memory_new
+    ("out/content_production/batch-18.json",   "v2_batch"),   # 串讲 + memory_new
+    ("out/content_production/batch-19.json",   "v2_batch"),   # 串讲 + memory_new（37 张重复卡整改未回，先合原样）
 ]
 if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))

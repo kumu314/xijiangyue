@@ -9,7 +9,7 @@
      ⑦ 被挡数 62 → 0
      ⑧ 三档 375/390/428 无横向溢出；控制台 errs=[]
 */
-const { chromium } = require("D:/AgentHub/temp/wb-ui-review/node_modules/playwright-core");
+const { chromium } = require("D:/ZCode/小程序/xijiangyue/tests/node_modules/playwright-core");
 
 const FILE = "file:///D:/ZCode/%E5%B0%8F%E7%A8%8B%E5%BA%8F/xijiangyue/index.html";
 const R = [];
@@ -89,11 +89,14 @@ async function probe(page, pid) {
     });
     return { before, after, hiddenNoPP, placeholder, samples };
   });
-  // 修正前被挡 = 62（合并 trans-02 时读数）+ 20（trans-03 已并入）= 82，全部命中 82 篇
-  // 修正后 = 0（拓展篇只要 lines[].m 有内容就不再走占位分支，82 篇全部解锁）
-  ok("被挡数：修正前 82（含 trans-03）", blk.before === 82, blk.before);
-  ok("被挡数：修正后 0（82 篇全部解锁）", blk.after === 0, blk.after);
-  ok("被挡数：拓展无译文仍占位 593（反向证据）", blk.placeholder === 593, blk.placeholder);
+  // 修正前被挡 / 占位数是「随库内内容漂移的计数」，不是不变量：
+  //   每次内容合入都会让 有译文篇↑（before↑）、无译文占位↓（placeholder↓）。
+  //   **真正的不变量是 after === 0（新逻辑零被挡）与 hiddenNoPP === 5。**
+  //   计数漂移后必须重钉并写明原因——2026-11-01 merge-08（b12~b19）合入后：
+  //   before 82→177（+95 篇新有译文拓展篇）、placeholder 593→465（−128 篇解锁）。
+  ok("被挡数：修正前（随合入重钉，2026-11-01=177）", blk.before === 177, blk.before);
+  ok("被挡数：修正后 0（新逻辑零被挡，不变量）", blk.after === 0, blk.after);
+  ok("被挡数：拓展无译文仍占位（随合入重钉，2026-11-01=465）", blk.placeholder === 465, blk.placeholder);
   ok("no_paraphrase 有意隐藏（设计内）计数", blk.hiddenNoPP === 5, blk.hiddenNoPP);
   console.log("  · 拓展无译文→占位（正确）:", blk.placeholder, "篇");
 

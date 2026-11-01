@@ -1,5 +1,5 @@
 /* #68 合并真渲染冒烟：3 篇（新并串讲记忆 / 新并译文 / 外国诗）+ 全库红线 */
-const { chromium } = require("D:/AgentHub/temp/wb-ui-review/node_modules/playwright-core");
+const { chromium } = require("D:/ZCode/小程序/xijiangyue/tests/node_modules/playwright-core");
 const path = require("path");
 
 const FILE = "file:///D:/ZCode/%E5%B0%8F%E7%A8%8B%E5%BA%8F/xijiangyue/index.html";
@@ -54,15 +54,16 @@ const ok = (n, c, d) => R.push([c ? "PASS" : "FAIL", n, d === undefined ? "" : S
     await page.waitForTimeout(250);
   };
 
-  // 1) 新并串讲记忆：xf_8065f6a3 采薇（pilot-01）
-  await page.evaluate(() => openDetail("xf_8065f6a3"));
+  // 1) 新并串讲记忆：s3_01288664 曲玉管·陇首云飞（batch-12，2026-11-01 merge-08 合入）
+  //    旧探针 xf_8065f6a3 已在 970→935 并条时剔出库，从那时起本项就是假 FAIL。
+  await page.evaluate(() => openDetail("s3_01288664"));
   await page.waitForTimeout(200);
   await clickTab("记忆");
   let r = await page.evaluate(() => {
     const d = document.querySelector("#view-detail");
     const txt = d ? d.innerText : "";
     return {
-      hasMem: txt.includes("两条抓手") || txt.includes("薇亦作止"),
+      hasMem: txt.includes("名句锚点") || txt.includes("一场消黯"),
       ovf: d ? (d.scrollWidth - d.clientWidth) : -1,
       len: txt.length,
     };
@@ -72,7 +73,7 @@ const ok = (n, c, d) => R.push([c ? "PASS" : "FAIL", n, d === undefined ? "" : S
   r = await page.evaluate(() => {
     const d = document.querySelector("#view-detail");
     const txt = d ? d.innerText : "";
-    return { hasSc: txt.includes("戍卒的归思") || txt.includes("杨柳依依"), ovf: d ? (d.scrollWidth - d.clientWidth) : -1 };
+    return { hasSc: txt.includes("时间的两根指针") || txt.includes("陇首云飞"), ovf: d ? (d.scrollWidth - d.clientWidth) : -1 };
   });
   ok("[冒烟1/串讲记忆] 串讲渲染内容", r.hasSc);
   ok("[冒烟1/串讲记忆] 详情无横向溢出", r.ovf <= 1, "ovf=" + r.ovf);

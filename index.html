@@ -69912,7 +69912,7 @@ let stampAlbum = JSON.parse(localStorage.getItem(LS_ALBUM)||"[]"); // 印谱：[
 function saveAlbum(){ localStorage.setItem(LS_ALBUM, JSON.stringify(stampAlbum)); }
 let currentUser = JSON.parse(localStorage.getItem(LS_USER)||"null");
 let checkin = JSON.parse(localStorage.getItem(LS_CHECKIN)||"null");
-let progress = JSON.parse(localStorage.getItem(LS_PROGRESS)||'{"learned":12,"streak":5}');
+let progress = JSON.parse(localStorage.getItem(LS_PROGRESS)||'{"learned":0,"streak":0}'); /* #体验② 未登录默认真值 0/0——原 12/5 是假进度，新用户首开即「已学12首/打卡5天」 */
 
 const ENCOURAGE=[
   "坚持第 {n} 天，诗词已成习惯 ✦",
@@ -71070,13 +71070,28 @@ function renderLearn(){
   ].map(p=>`<div class="path-card card"><div class="pi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">${p.ic}</svg></div>
     <div><div class="pt">${p.t}</div><div class="pd">${p.d}</div></div><div class="bar"><i style="width:${p.w}%"></i></div></div>`).join("");
   const t0=(dayIndex()*3)%POEMS.length;
-  $("#learnTasks").innerHTML = [0,1,2].map(i=>{
-    const p=POEMS[(t0+i)%POEMS.length];
-    return `
+  /* #体验③ 今日任务不再断言用户状态：原版写死「✓ 复习·已掌握·可挑战背诵」，
+     与同屏「今日温故：今日无到期」自相矛盾。现在首卡优先取真实到期温故
+     （reviewDueList 按到期日升序的第一首，与本页温故卡同源），无到期才退回轮换推荐；
+     文案只描述「建议做什么」，不说「你已经会什么」。 */
+  const due0=(typeof reviewDueList==="function")?(reviewDueList()[0]||null):null;
+  const pool=[];
+  for(let k=0;pool.length<3 && k<POEMS.length+3;k++){
+    const c=POEMS[(t0+k)%POEMS.length];
+    if(!due0 || c.id!==due0.p.id) pool.push(c);
+  }
+  const ltCards = due0
+    ? [[due0.p,'⟳','温故《'+due0.p.title+'》','巩固记忆 · 约 5 分钟'],
+       [pool[0],'▶','新学《'+pool[0].title+'》','五维学习 · 约 8 分钟'],
+       [pool[1],'＋','新学《'+pool[1].title+'》','进阶拓展 · 约 6 分钟']]
+    : [[pool[0],'▶','今日首学《'+pool[0].title+'》','五维学习 · 约 8 分钟'],
+       [pool[1],'▶','新学《'+pool[1].title+'》','五维学习 · 约 8 分钟'],
+       [pool[2],'＋','新学《'+pool[2].title+'》','进阶拓展 · 约 6 分钟']];
+  $("#learnTasks").innerHTML = ltCards.map(([p,no,t,a])=>`
     <div class="rec" onclick="openDetail('${p.id}')">
-      <div class="no">${i===0?'✓':(i===1?'▶':'＋')}</div>
-      <div class="body"><div class="t">${i===0?'复习《'+p.title+'》':'新学《'+p.title+'》'}</div><div class="a">${i===0?'已掌握 · 可挑战背诵':(i===1?'五维学习 · 约 8 分钟':'进阶拓展 · 约 6 分钟')}</div></div>
-    </div>`;}).join("");
+      <div class="no">${no}</div>
+      <div class="body"><div class="t">${t}</div><div class="a">${a}</div></div>
+    </div>`).join("");
 }
 
 /* ============ 我的页 ============ */
@@ -71751,6 +71766,15 @@ function fragLine(text, cap){
     for(let k=0;k<parts;k++){
       const len=base+(k<rem?1:0);
       let seg=c.slice(ci,ci+len); ci+=len;
+      // #体验⑤ 断点避虚词：均衡切分的段界若正好落在「兮」前（下段以兮开头），
+      // 把兮并入本段（楚辞的兮是句内节奏点，跟上一句才读得通）。
+      // 实测特大+松档 cap=4：「目眇眇兮愁予」原切「目眇眇」+「兮愁予」，现在「目眇眇兮」+「愁予」。
+      // 守卫：拉入后若紧跟标点悬挂会突破 cap（如 seg=cap-1、拉兮后=cap、再挂标点=cap+1），
+      // 则放弃拉入（维持原切法），保证任何段长 ≤ cap、⑧ 的容量结论不被推翻。
+      if(ci<c.length && c[ci]==="兮" && seg.length<cap){
+        const nx=c[ci+1];
+        if(!(nx && FRAG_PUNCT.test(nx) && seg.length+1>=cap)){ seg=seg.concat([c[ci]]); ci++; }
+      }
       if(ci<c.length && FRAG_PUNCT.test(c[ci])){ seg=seg.concat([c[ci]]); ci++; }
       frags.push(seg.join(""));
     }
@@ -71799,6 +71823,24 @@ function renderVbody(bodyEl, texts, id, off, vertical){
   }
   if(!cap) cap=vColCapacity();                                    // 视图未激活 / line-height:normal
   bodyEl.innerHTML=renderMaskLines(texts,id,off,true,cap);        // pass2（短句 fragLine 原样返回，不受影响）
+  /* #体验④ 竖排区自适应收高（B 路线）：cap 仍按 300px 上限算（容量不缩、折列判定不变），
+     渲染完量实际内容进距（字进距 = fontSize + .vline 的 letter-spacing 2.5px），
+     把容器收到 min(300, 内容高+呼吸)。短诗不再留 43%~64% 空白；
+     只在 computed writing-mode 仍为竖排时生效（layout-horizontal / orig-lang 是 height:auto，不能被内联样式压住）。
+     不变量：收高只改容器高度、不改 cap ⇒ pass2 已定的折列/裁字结论不会被推翻。 */
+  try{
+    const wm=getComputedStyle(bodyEl).writingMode||"";
+    if(wm.indexOf("vertical")===0){
+      // 字号必须量 .vline（var(--reader-fs) 在那），.vbody 本体是 16px 基准、不随档位变
+      const vline0=bodyEl.children[0];
+      const fs=parseFloat(getComputedStyle(vline0||bodyEl).fontSize)||16;
+      const adv=fs+2.5;
+      let maxLen=0;
+      for(const el of bodyEl.children) maxLen=Math.max(maxLen, Array.from(el.textContent).length);
+      const need=Math.ceil(maxLen*adv*1.08)+VBODY_PAD_V;          // 1.08 兜注音/字形浮动
+      bodyEl.style.height=Math.min(300, Math.max(140, need))+"px";
+    }
+  }catch(e){}
 }
 let curRhymeMa=false;
 /* review v1：{bucket, due, last}，本地日（toISOString 是 UTC，早 8 点前会错位） */

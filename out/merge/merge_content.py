@@ -76,6 +76,11 @@ SRC = [
     ("out/content_production/batch-17.json",   "v2_batch"),   # 串讲 + memory_new
     ("out/content_production/batch-18.json",   "v2_batch"),   # 串讲 + memory_new
     ("out/content_production/batch-19.json",   "v2_batch"),   # 串讲 + memory_new（37 张重复卡整改未回，先合原样）
+    # ---- merge-09（batch-20/21 串讲线收官两批；2026-11-01 枯木批「达成条件后就可以合入」）----
+    # 重检报告 out/review-batch-20/21.md（灵玉 v2，PASS）；#281+#283/#284 三轮卡内重复整改已入库（633a25a）；
+    # b21《湘夫人》醴→澧 3 处已于合入前订正（对齐 f0afd09 库内校勘），订正后全量复算仍 PASS。
+    ("out/content_production/batch-20.json",   "v2_batch"),   # 串讲 + memory_new（90 卡）
+    ("out/content_production/batch-21.json",   "v2_batch"),   # 串讲 + memory_new（75 卡）
 ]
 if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))

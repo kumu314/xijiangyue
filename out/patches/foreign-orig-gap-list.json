@@ -1,0 +1,233 @@
+[
+ {
+  "id": "w_prometheus",
+  "title": "普罗米修斯",
+  "author": "〔德〕歌德",
+  "empty_m_rows": [
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_zhongde",
+  "title": "中德四季晨昏杂咏（节选）",
+  "author": "〔德〕歌德",
+  "empty_m_rows": [
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_beihai",
+  "title": "北海（节选）",
+  "author": "〔德〕海涅",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_mianbao",
+  "title": "面包与美酒",
+  "author": "〔德〕荷尔德林",
+  "empty_m_rows": [
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_adonis",
+  "title": "阿多尼司（节选）",
+  "author": "〔英〕雪莱",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_guxuan",
+  "title": "希腊古瓮颂",
+  "author": "〔英〕济慈",
+  "empty_m_rows": [
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_france",
+  "title": "啊，法兰西的星",
+  "author": "〔美〕惠特曼",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_venus",
+  "title": "金星号遇难",
+  "author": "〔美〕朗费罗",
+  "empty_m_rows": [
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_demo",
+  "title": "恶魔（节选）",
+  "author": "〔俄〕莱蒙托夫",
+  "empty_m_rows": [
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_damen",
+  "title": "大门前（节选）",
+  "author": "〔俄〕涅克拉索夫",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_gemao",
+  "title": "割草人",
+  "author": "〔俄〕叶赛宁",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_yun",
+  "title": "穿裤子的云（节选）",
+  "author": "〔俄〕马雅可夫斯基",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_zuihou",
+  "title": "最后一首",
+  "author": "〔俄〕阿赫玛托娃",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_hafei",
+  "title": "抒情诗（无题）",
+  "author": "〔波斯〕哈菲兹",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_qiangwei",
+  "title": "蔷薇园（节选）",
+  "author": "〔波斯〕萨迪",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_bike",
+  "title": "马克丘·毕克丘之巅（节选）",
+  "author": "〔智利〕聂鲁达",
+  "empty_m_rows": [
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_migong",
+  "title": "迷宫",
+  "author": "〔阿根廷〕博尔赫斯",
+  "empty_m_rows": [
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_taiyang",
+  "title": "太阳石（节选）",
+  "author": "〔墨〕帕斯",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_huayuan",
+  "title": "远方的花园",
+  "author": "〔西〕希梅内斯",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_xin",
+  "title": "我的心略大于宇宙",
+  "author": "〔葡〕佩索阿",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_yingxiong",
+  "title": "英雄的挽歌",
+  "author": "〔希〕埃利蒂斯",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_zhuanzhe",
+  "title": "转折点",
+  "author": "〔希〕塞弗里斯",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_liwu",
+  "title": "礼物",
+  "author": "〔波〕米沃什",
+  "empty_m_rows": [
+   1
+  ],
+  "total_lines": 2
+ },
+ {
+  "id": "w_zuiyaoyuan",
+  "title": "世界上最遥远的距离",
+  "author": "佚名（误传为泰戈尔）",
+  "empty_m_rows": [
+   0,
+   1
+  ],
+  "total_lines": 2
+ }
+]

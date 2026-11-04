@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>记忆卡 v2 呈现小样（#280 B 部规格）</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#E7DFCB;font-family:"Noto Serif SC","Songti SC","SimSun",serif;color:#2B2620;padding:26px;display:flex;flex-direction:column;gap:20px;align-items:center;}
+.hd{width:390px;}
+.hd h1{font-size:17px;letter-spacing:2px;}
+.hd p{font-size:11.5px;color:#6E6248;line-height:1.8;margin-top:5px;}
+/* —— 记忆卡 v2：三段式 + 意象小印 + 先图后文 —— */
+.mem2{position:relative;width:390px;background:#FBF6EA;border:1px solid #E5D9C2;border-radius:12px;padding:14px 16px 12px;}
+/* 意象小印：20×20，朱红 15% 透明，右上角固定位——图不遮字纪律 */
+.mem2 .mini-seal{position:absolute;top:10px;right:12px;width:20px;height:20px;opacity:.85;}
+.mem2 .mini-seal svg{display:block;width:20px;height:20px;}
+/* 引文锚 15px 「」朱红 */
+.mem2 .anchor{font-size:15px;letter-spacing:1px;line-height:1.7;padding-right:26px;}
+.mem2 .anchor q{quotes:"「" "」";color:#B23A2E;font-weight:600;}
+/* 正文 13px，折叠 */
+.mem2 details{margin-top:8px;}
+.mem2 details[open]{margin-top:8px;margin-bottom:6px;}
+.mem2 summary{list-style:none;cursor:pointer;font-family:"Noto Sans SC",sans-serif;font-size:11px;color:#6E6248;letter-spacing:1px;display:flex;align-items:center;gap:5px;}
+.mem2 summary::-webkit-details-marker{display:none;}
+.mem2 summary::before{content:"";width:0;height:0;border-left:5px solid #C9BFAE;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s ease;}
+.mem2 details[open] summary::before{transform:rotate(90deg);}
+.mem2 .body{font-size:13px;line-height:1.8;color:#3A3226;margin-top:6px;}
+.mem2 .body .pair{color:#B23A2E;}
+/* 动作指令行 12px 斜体 + 竖排小签（不用 emoji，去 AI 味纪律） */
+.mem2 .act{margin-top:6px;padding-top:6px;border-top:1px dashed #E5D9C2;display:flex;align-items:center;gap:9px;}
+.mem2 .act .sign{writing-mode:vertical-rl;font-family:"LXGW WenKai","Kaiti SC","KaiTi",serif;font-size:10px;letter-spacing:2px;color:#FBF6EA;background:#B23A2E;padding:5px 2px;border-radius:2px;flex:none;}
+.mem2 .act .cmd{font-size:12px;font-style:italic;color:#5C5246;line-height:1.7;}
+.assert{width:390px;font-family:"Noto Sans SC",sans-serif;font-size:11px;line-height:1.9;color:#2F5D45;white-space:pre-line;}
+</style>
+</head>
+<body>
+<div class="hd">
+  <h1>记忆卡 v2 · 呈现小样（#280 B 部）</h1>
+  <p>三段式＝引文锚 15px「」朱红 → 正文 13px（折叠）→ 动作指令 12px 斜体＋「背时想」竖排小签；段距 8/6px；意象小印 20×20 朱红 15% 固定右上不遮字；先图后文＝默认只露 印+引文+动作，正文点开。三张卡全部取自库内真实 memory 数据。</p>
+</div>
+
+<!-- 卡1 · 镜头式 · 静夜思（库内真实 memory） -->
+<div class="mem2" data-mem="v2">
+  <span class="mini-seal" aria-hidden="true"><svg viewBox="0 0 20 20"><rect x="1" y="1" width="18" height="18" rx="3" fill="rgba(178,58,46,.15)"/><path d="M6 4 L6 13 M6 6 Q10 5 11 8 M11 4 L11 13 M14 4 L14 16" stroke="#B23A2E" stroke-width="1.6" fill="none" opacity=".8"/></svg></span>
+  <div class="anchor"><q>床前明月光，疑是地上霜。</q></div>
+  <details>
+    <summary>记法 · 镜头式</summary>
+    <div class="body">明月初上→疑为霜→举头→低头，像四个电影镜头，按顺序背不卡。</div>
+  </details>
+  <div class="act"><span class="sign">背时想</span><span class="cmd">闭眼过四个镜头：月光、白霜、抬头、低头。</span></div>
+</div>
+
+<!-- 卡2 · 对仗式 · 山居秋暝（库内真实 memory） -->
+<div class="mem2" data-mem="v2">
+  <span class="mini-seal" aria-hidden="true"><svg viewBox="0 0 20 20"><rect x="1" y="1" width="18" height="18" rx="3" fill="rgba(178,58,46,.15)"/><path d="M10 3 Q14 6 10 10 Q6 14 10 17 M4 10 L16 10" stroke="#B23A2E" stroke-width="1.6" fill="none" opacity=".8"/></svg></span>
+  <div class="anchor"><q>明月松间照，清泉石上流。</q></div>
+  <details>
+    <summary>记法 · 对仗成对</summary>
+    <div class="body"><span class="pair">明月↔清泉、松间↔石上</span>，上句配下句，成对记忆最省力。</div>
+  </details>
+  <div class="act"><span class="sign">背时想</span><span class="cmd">上句找对子：明月对清泉，松间对石上。</span></div>
+</div>
+
+<!-- 卡3 · 感官顺序 · 山居秋暝（库内真实 memory） -->
+<div class="mem2" data-mem="v2">
+  <span class="mini-seal" aria-hidden="true"><svg viewBox="0 0 20 20"><rect x="1" y="1" width="18" height="18" rx="3" fill="rgba(178,58,46,.15)"/><path d="M5 11 Q8 5 10 10 Q12 15 15 9" stroke="#B23A2E" stroke-width="1.6" fill="none" opacity=".8"/></svg></span>
+  <div class="anchor"><q>竹喧归浣女，莲动下渔舟。</q></div>
+  <details>
+    <summary>记法 · 感官顺序</summary>
+    <div class="body">雨（触）→月（视）→泉（听）→人声（听），按感官切换顺序记，画面感强。</div>
+  </details>
+  <div class="act"><span class="sign">背时想</span><span class="cmd">先摸到雨，再看见月，然后听见泉与人声。</span></div>
+</div>
+
+<div class="assert" id="out"></div>
+<script>
+function assert(n, ok, d){ return n + '：' + (ok ? 'PASS' : 'FAIL') + (d ? '（' + d + '）' : ''); }
+window.addEventListener('load', () => setTimeout(() => {
+  const r = [];
+  const cards = document.querySelectorAll('.mem2');
+  r.push(assert('三张 v2 卡', cards.length === 3));
+  /* 三段式结构：每卡 引文锚+details+动作行 */
+  cards.forEach((c, i) => {
+    r.push(assert('卡' + (i+1) + ' 三段齐（锚/折叠正文/动作行）',
+      !!c.querySelector('.anchor') && !!c.querySelector('details') && !!c.querySelector('.act')));
+    /* 印不遮字：印的几何框与引文「行内字形框」（q 元素）不相交——量 q 不量块级 .anchor（块盒含空白 padding 区） */
+    const s = c.querySelector('.mini-seal').getBoundingClientRect();
+    const t = c.querySelector('q').getBoundingClientRect();
+    const overlap = !(s.left >= t.right || s.right <= t.left || s.top >= t.bottom || s.bottom <= t.top);
+    r.push(assert('卡' + (i+1) + ' 印不遮字', !overlap));
+    /* 印规格 20×20 */
+    r.push(assert('卡' + (i+1) + ' 印 20×20', Math.round(s.width) === 20 && Math.round(s.height) === 20));
+  });
+  /* 折叠生效：默认收起高度 < 点开后高度（取卡2 演示展开） */
+  const c2 = cards[1], d = c2.querySelector('details');
+  const hClosed = c2.getBoundingClientRect().height;
+  d.open = true;
+  const hOpen = c2.getBoundingClientRect().height;
+  r.push(assert('先图后文折叠（收 ' + Math.round(hClosed) + ' < 开 ' + Math.round(hOpen) + '）', hOpen > hClosed));
+  d.open = false;
+  /* 无 emoji：全文不含 emoji 码位 */
+  const noEmoji = !/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(document.body.innerText);
+  r.push(assert('零 emoji（去 AI 味纪律）', noEmoji));
+  const el = document.getElementById('out');
+  el.textContent = '断言 ' + r.length + ' 条（0 FAIL 为过）\n' + r.join('\n');
+  el.innerHTML = el.textContent.replace(/：PASS/g, '：<span style="color:#2F5D45">PASS</span>').replace(/：FAIL/g, '：<b>FAIL</b>');
+  console.log('[memv2-ui-sample]\n' + r.join('\n'));
+}, 60));
+</script>
+</body>
+</html>

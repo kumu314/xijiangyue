@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>竖排双端预案 · writing-mode vs 逐字 flex</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#E7DFCB;font-family:"Noto Serif SC","Songti SC","SimSun",serif;color:#2B2620;display:flex;flex-wrap:wrap;gap:28px;padding:30px;align-items:flex-start;}
+.hd{width:100%;font-family:"Noto Serif SC",serif;}
+.hd h1{font-size:20px;letter-spacing:2px;margin-bottom:6px;}
+.hd p{font-size:12.5px;color:#6E6248;line-height:1.8;max-width:900px;}
+.panel{background:#FBF6EA;border:1px solid #E5D9C2;border-radius:8px;padding:18px 16px 14px;width:352px;}
+.panel h2{font-size:15px;letter-spacing:2px;margin-bottom:4px;}
+.panel .tag{font-size:11px;color:#6E6248;margin-bottom:12px;line-height:1.7;}
+.stage{background:#F1E9D7;border:1px solid #E5D9C2;border-radius:4px;padding:12px;height:318px;overflow:hidden;position:relative;}
+/* —— A：writing-mode（现网方案） —— */
+.vwm{writing-mode:vertical-rl;height:100%;display:inline-block;}
+.vwm .vline{font-size:17px;letter-spacing:2.5px;line-height:2;padding:0 8px;border-block-start:1px solid rgba(178,58,46,.18);}
+/* —— B：逐字 flex 字列（预案） —— */
+.vflex{display:flex;flex-direction:row;height:100%;justify-content:flex-start;gap:0;}
+.vflex .col{display:flex;flex-direction:column;padding:2px 8px;border-left:1px solid rgba(178,58,46,.18);}
+.vflex .col:first-child{border-left:none;} /* 最左列无界线与 A 的 border-block-start 序一致 */
+.vflex .ch{font-size:17px;line-height:2;letter-spacing:0;display:block;}
+.vflex .ch.punct{font-feature-settings:"vert" 1;} /* 竖排标点形：，。转 90° 竖形 */
+.vflex .ch.masked{color:transparent;background-image:linear-gradient(to top,rgba(178,58,46,.55) 0 2px,transparent 2px);}
+/* 断言输出 */
+.assert{margin-top:12px;font-family:"Noto Sans SC",sans-serif;font-size:11px;line-height:1.9;color:#2F5D45;white-space:pre-line;}
+.assert b{color:#B23A2E;}
+</style>
+</head>
+<body>
+<div class="hd">
+  <h1>竖排双端预案 · A/B 对照（黑板建议 1，#199 延伸）</h1>
+  <p>依据：微信小程序 writing-mode: vertical-rl 存在 iOS 失效公开案例（SegmentFault 2023-09：安卓正常、iOS 全失效）与旧安卓内核整列旋转 90° 前科。本页证明<b>逐字 flex 字列</b>可在零 writing-mode 的前提下复刻现网卷轴语言（右起、朱丝栏、遮字、竖排标点形），供小程序端在不支持/不可靠环境下替换使用。两栏内容、字号、界线完全一致，只换实现。</p>
+</div>
+
+<div class="panel">
+  <h2>A · writing-mode vertical-rl</h2>
+  <div class="tag">现网方案。标点竖形由浏览器自动处理；iOS 小程序 webview 为风险区（未真机复现，标注未验证）。</div>
+  <div class="stage"><div class="vwm" id="panelA">
+    <div class="vline">空山新雨后，天气晚来秋。</div>
+    <div class="vline">明月松间照，清泉石上流。</div>
+  </div></div>
+  <div class="assert" id="outA"></div>
+</div>
+
+<div class="panel">
+  <h2>B · 逐字 flex 字列（零 writing-mode）</h2>
+  <div class="tag">每句一列（flex row，DOM 顺序=阅读顺序），列内逐字向下排；标点用 font-feature-settings "vert" 取竖形（Noto Serif SC / 苹方均带 vert 特性，Android 思源宋带）。遮字演示：两个 masked 字。</div>
+  <div class="stage"><div class="vflex" id="panelB"></div></div>
+  <div class="assert" id="outB"></div>
+</div>
+
+<script>
+/* 逐字切列：句 → 列（DOM 顺序即右起阅读序，用 row + DOM 倒序装载） */
+const LINES = ["空山新雨后，天气晚来秋。","明月松间照，清泉石上流。"];
+const MASK = new Set(["明","泉"]); /* 演示遮字 */
+const wrap = document.getElementById('panelB');
+/* 右起：第一句在最右 → flex row 中排最后。先建全部列再 insert:每列 append 顺序=倒序 */
+const cols = LINES.map((ln, li) => {
+  const col = document.createElement('div'); col.className = 'col';
+  [...ln].forEach(chr => {
+    const s = document.createElement('span');
+    s.className = 'ch' + (/[，。、；：？！]/.test(chr) ? ' punct' : '') + (MASK.has(chr) ? ' masked' : '');
+    s.textContent = chr;
+    col.appendChild(s);
+  });
+  return col;
+});
+cols.reverse().forEach(c => wrap.appendChild(c)); /* reverse 后第一句在最右 */
+
+/* —— 断言（打开页面即自检，结果写进面板） —— */
+function assert(name, ok, detail){ return name + '：' + (ok ? 'PASS' : 'FAIL') + (detail ? '（' + detail + '）' : ''); }
+function runAsserts(){
+  const outA = document.getElementById('outA'), outB = document.getElementById('outB');
+  const A = document.getElementById('panelA'), B = document.getElementById('panelB');
+  const r = [];
+  /* 共同断言 */
+  const charsA = A.textContent.replace(/\s/g,'').length;
+  const charsB = B.textContent.replace(/\s/g,'').length;
+  r.push(assert('字数一致 A=B=' + charsA, charsA === charsB && charsA === 24));
+  /* A：writing-mode 生效 */
+  const wm = getComputedStyle(A.querySelector('.vline')).writingMode;
+  r.push(assert('A writing-mode=' + wm, wm.indexOf('vertical') === 0));
+  /* B：零 writing-mode 依赖 */
+  const wms = [...B.querySelectorAll('.ch')].map(c => getComputedStyle(c).writingMode);
+  r.push(assert('B 全字 writing-mode=horizontal', wms.every(w => w.indexOf('horizontal') === 0)));
+  /* B：列序 = 右起（DOM 倒序装载：最后一个 .col 是第一句空山句，应在最右） */
+  const allCols = B.querySelectorAll('.col');
+  const colFirst = allCols[allCols.length - 1]; /* 空山句 */
+  const colSecond = allCols[0];                 /* 明月句 */
+  const c1 = colFirst.getBoundingClientRect();
+  const c2 = colSecond.getBoundingClientRect();
+  r.push(assert('B 右起列序（句1 在句2 右侧）', c1.left > c2.left, Math.round(c1.left) + '>' + Math.round(c2.left)));
+  /* B：列内字序自上而下 */
+  const chs = colFirst.querySelectorAll('.ch');
+  r.push(assert('B 列内首字=空 末字=。', chs[0].textContent === '空' && chs[chs.length-1].textContent === '。'));
+  /* B：竖排标点形已启用 */
+  const ff = getComputedStyle(B.querySelector('.ch.punct')).fontFeatureSettings || '';
+  r.push(assert('B 标点 vert 特性', /vert/.test(ff), ff));
+  /* B：遮字 span 可定位（与现网背诵遮字同构） */
+  r.push(assert('B masked 字数=2', B.querySelectorAll('.ch.masked').length === 2));
+  /* 高度不溢出 */
+  const sh = B.parentElement.getBoundingClientRect();
+  r.push(assert('B 无纵向溢出（列高≤舞台 ' + Math.round(sh.height) + 'px）', c1.height <= sh.height + 1, '列高 ' + Math.round(c1.height)));
+  const html = '断言 ' + r.length + ' 条\n' + r.join('\n');
+  outB.textContent = html;
+  outB.innerHTML = html.replace(/PASS/g, '<span style="color:#2F5D45">PASS</span>').replace(/FAIL/g, '<b>FAIL</b>');
+  outA.textContent = '断言 1 条\n' + r[1];
+  console.log('[r7b-vertical-fallback]\n' + html);
+  return r.every(x => x.indexOf('FAIL') < 0);
+}
+window.addEventListener('load', () => setTimeout(runAsserts, 60));
+</script>
+</body>
+</html>

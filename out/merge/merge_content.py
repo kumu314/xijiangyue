@@ -81,6 +81,26 @@ SRC = [
     # b21《湘夫人》醴→澧 3 处已于合入前订正（对齐 f0afd09 库内校勘），订正后全量复算仍 PASS。
     ("out/content_production/batch-20.json",   "v2_batch"),   # 串讲 + memory_new（90 卡）
     ("out/content_production/batch-21.json",   "v2_batch"),   # 串讲 + memory_new（75 卡）
+    # ---- merge-10（trans-08~21 + 曲类译文 Q1/Q2；2026-11-05 枯木令「补齐提审缺口」）----
+    # 全 16 批真改写率 ≥98%（详见 out/merge-report-10.md）；报告矩阵：
+    #   trans-08（PASS）/ trans-12~18（修后单批 PASS×7）/ trans-19~21（首产 PASS×3）/
+    #   trans-Q1、Q2（PASS×2）/ trans-09~11（修后 zcode 托管复验 PASS，GATE_ALIASES 指向共用报告）
+    ("out/content_production/trans-08.json",   "trans"),      # lines[].m（30 首 199 行）
+    ("out/content_production/trans-09.json",   "trans"),      # lines[].m（30 首 228 行，修后 100%）
+    ("out/content_production/trans-10.json",   "trans"),      # lines[].m（30 首 230 行，修后 100%）
+    ("out/content_production/trans-11.json",   "trans"),      # lines[].m（30 首 185 行，修后 100%）
+    ("out/content_production/trans-12.json",   "trans"),      # lines[].m（30 首 218 行，修后 100%）
+    ("out/content_production/trans-13.json",   "trans"),      # lines[].m（30 首 237 行，修后 100%）
+    ("out/content_production/trans-14.json",   "trans"),      # lines[].m（30 首 238 行，修后 100%）
+    ("out/content_production/trans-15.json",   "trans"),      # lines[].m（30 首 271 行，修后 100%）
+    ("out/content_production/trans-16.json",   "trans"),      # lines[].m（30 首 237 行，修后 100%）
+    ("out/content_production/trans-17.json",   "trans"),      # lines[].m（30 首 232 行，修后 100%）
+    ("out/content_production/trans-18.json",   "trans"),      # lines[].m（30 首 209 行，修后 100%）
+    ("out/content_production/trans-19.json",   "trans"),      # lines[].m（30 首 232 行，首产 100%）
+    ("out/content_production/trans-20.json",   "trans"),      # lines[].m（30 首 253 行，首产 100%）
+    ("out/content_production/trans-21.json",   "trans"),      # lines[].m（11 首 103 行，收官 100%）
+    ("out/content_production/trans-Q1.json",   "trans"),      # lines[].m（曲类 25 首 113 行，100%）
+    ("out/content_production/trans-Q2.json",   "trans"),      # lines[].m（曲类 25 首 99 行，收官 100%）
 ]
 if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))
@@ -102,6 +122,11 @@ GATE_ALIASES = {                      # 报告文件名不合 out/review-<批名
     "batch-02": "out/review-prod-batch-02.md",
     "qoder-01": "out/review-r5-51-qoder01.md",
     "jingdu-batch-01": "out/review-jingdu-batch-01-pi.md",
+    # merge-10（zcode，2026-11-05）：trans-09/10/11 原审 FAIL，修缮后由 zcode 托管复核
+    # （机械全量复算真改写率 100%，o 零变化），复验报告单文件三批共用：
+    "trans-09": "out/review-trans-09-11-postrepair-zcode.md",
+    "trans-10": "out/review-trans-09-11-postrepair-zcode.md",
+    "trans-11": "out/review-trans-09-11-postrepair-zcode.md",
 }
 GATE_EXEMPT = {                       # 门闸生效前已合入、且无独立报告文件的历史批（只减不增）
     "pilot-01": "门闸建立前已合入；LEDGER 记「灵玉 PASS（#46）」，无独立报告文件",

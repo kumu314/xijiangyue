@@ -312,14 +312,11 @@ async function route(req, res, url) {
 
 /* ---------- 静态文件（同源托管前端，方便本地演示） ---------- */
 const MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8", ".png": "image/png", ".svg": "image/svg+xml", ".ico": "image/x-icon" };
-function serveStatic(res, urlPath) {
-  let p = decodeURIComponent(urlPath.split("?")[0]);
-  if (p === "/" || p === "") p = "/index.html";
-  const file = path.normalize(path.join(ROOT, p));
-  if (!file.startsWith(ROOT)) { res.writeHead(403); return res.end(); }
-  if (!fs.existsSync(file) || !fs.statSync(file).isFile()) { res.writeHead(404); return res.end("not found"); }
-  const data = fs.readFileSync(file);
-  res.writeHead(200, { "Content-Type": MIME[path.extname(file)] || "application/octet-stream", "Content-Length": data.length });
+/* 静态服务（path-traversal 根治）：前端为单文件应用，仅服务 /index.html 一个文件。
+   路径常量硬编码，无任何用户输入参与路径运算。 */
+function serveIndex(res) {
+  const data = fs.readFileSync(path.join(ROOT, "index.html"));
+  res.writeHead(200, { "Content-Type": MIME[".html"], "Content-Length": data.length });
   res.end(data);
 }
 
@@ -338,7 +335,11 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://x");
   try {
     if (url.pathname.startsWith("/api/")) return await route(req, res, url);
-    if (req.method === "GET") return serveStatic(res, url.pathname);
+    if (req.method === "GET") {
+      // 静态面白名单：仅服务 /index.html（单文件应用），其余路径一律 404
+      if (url.pathname !== "/" && url.pathname !== "/index.html") return json(res, 404, { ok: false, error: "not found" });
+      return serveIndex(res);
+    }
     return json(res, 404, { ok: false, error: "not found" });
   } catch (e) {
     console.error("[err]", url.pathname, e.message);

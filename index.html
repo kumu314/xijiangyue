@@ -71825,24 +71825,7 @@ function renderVbody(bodyEl, texts, id, off, vertical){
   }
   if(!cap) cap=vColCapacity();                                    // 视图未激活 / line-height:normal
   bodyEl.innerHTML=renderMaskLines(texts,id,off,true,cap);        // pass2（短句 fragLine 原样返回，不受影响）
-  /* #体验④ 竖排区自适应收高（B 路线）：cap 仍按 300px 上限算（容量不缩、折列判定不变），
-     渲染完量实际内容进距（字进距 = fontSize + .vline 的 letter-spacing 2.5px），
-     把容器收到 min(300, 内容高+呼吸)。短诗不再留 43%~64% 空白；
-     只在 computed writing-mode 仍为竖排时生效（layout-horizontal / orig-lang 是 height:auto，不能被内联样式压住）。
-     不变量：收高只改容器高度、不改 cap ⇒ pass2 已定的折列/裁字结论不会被推翻。 */
-  try{
-    const wm=getComputedStyle(bodyEl).writingMode||"";
-    if(wm.indexOf("vertical")===0){
-      // 字号必须量 .vline（var(--reader-fs) 在那），.vbody 本体是 16px 基准、不随档位变
-      const vline0=bodyEl.children[0];
-      const fs=parseFloat(getComputedStyle(vline0||bodyEl).fontSize)||16;
-      const adv=fs+2.5;
-      let maxLen=0;
-      for(const el of bodyEl.children) maxLen=Math.max(maxLen, Array.from(el.textContent).length);
-      const need=Math.ceil(maxLen*adv*1.08)+VBODY_PAD_V;          // 1.08 兜注音/字形浮动
-      bodyEl.style.height=Math.min(300, Math.max(140, need))+"px";
-    }
-  }catch(e){}
+  // 注：竖排区固定 300px（见 .vbody CSS），不做自适应收高——枯木 2026-11-05 裁定「留白削减大可不必」。
 }
 let curRhymeMa=false;
 /* review v1：{bucket, due, last}，本地日（toISOString 是 UTC，早 8 点前会错位） */

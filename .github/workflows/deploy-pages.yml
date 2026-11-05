@@ -1,0 +1,64 @@
+name: Deploy Pages (manual)
+
+# 发版与合并解耦。
+#
+# 背景：此前 GitHub Pages 是 legacy 分支部署（source = main:/），
+# 所以「合并 PR 到 main」等于「立刻上线」，无法先合代码后择时发版。
+# 本 workflow 把部署改成手动触发：合并只进主干，上线要单独点一次 Run workflow。
+#
+# 附带收益：legacy 部署会把仓库根目录整个发到公网（backend/server.js、
+# render.yaml、fly.toml 均实测可访问 200）。本 workflow 只发 index.html，
+# 顺带收掉这个信息暴露面。
+#
+# 回滚方式（保留 legacy 能力）：仓库 Settings → Pages → Source 改回
+# "Deploy from a branch" / main / (root)，线上立即恢复由 main 自动部署。
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "发布哪个引用（分支 / 标签 / SHA），默认 main"
+        required: false
+        default: "main"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || 'main' }}
+
+      - name: 组装 _site（单文件应用：只发 index.html）
+        run: |
+          set -euo pipefail
+          test -f index.html || { echo "::error::index.html 不存在，中止"; exit 1; }
+          mkdir -p _site
+          cp index.html _site/index.html
+          echo "发布 index.html : $(wc -c < _site/index.html) 字节"
+          echo "sha256          : $(sha256sum _site/index.html | cut -d' ' -f1)"
+
+      - name: 配置 Pages
+        uses: actions/configure-pages@v5
+
+      - name: 上传产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: 部署
+        id: deployment
+        uses: actions/deploy-pages@v4

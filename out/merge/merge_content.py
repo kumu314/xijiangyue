@@ -101,6 +101,10 @@ SRC = [
     ("out/content_production/trans-21.json",   "trans"),      # lines[].m（11 首 103 行，收官 100%）
     ("out/content_production/trans-Q1.json",   "trans"),      # lines[].m（曲类 25 首 113 行，100%）
     ("out/content_production/trans-Q2.json",   "trans"),      # lines[].m（曲类 25 首 99 行，收官 100%）
+    # ---- merge-11（外国诗原文附注 trans-W1；2026-11-05 枯木 §9 批准 #321 核验补丁）----
+    # 6 首 12 行中 7 行 m 填入（A/A- 类核验通过），其余 5 行留空（B/C 类见 out/foreign-orig-verified-patch.md）。
+    # 外国诗 m=原文附注，m/o 比超 2.2 为该类特性（先例 w_prometheus 德文 3.5 已在库）。
+    ("out/content_production/trans-W1.json",   "trans"),      # lines[].m（外国诗 6 首 12 行，7 行填入）
 ]
 if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))
@@ -127,6 +131,14 @@ GATE_ALIASES = {                      # 报告文件名不合 out/review-<批名
     "trans-09": "out/review-trans-09-11-postrepair-zcode.md",
     "trans-10": "out/review-trans-09-11-postrepair-zcode.md",
     "trans-11": "out/review-trans-09-11-postrepair-zcode.md",
+    # merge-11（zcode，2026-11-05）：trans-12~18 修后托管复验（真改写率 100%，七批 1642 句）
+    "trans-12": "out/review-trans-12-18-postrepair-zcode.md",
+    "trans-13": "out/review-trans-12-18-postrepair-zcode.md",
+    "trans-14": "out/review-trans-12-18-postrepair-zcode.md",
+    "trans-15": "out/review-trans-12-18-postrepair-zcode.md",
+    "trans-16": "out/review-trans-12-18-postrepair-zcode.md",
+    "trans-17": "out/review-trans-12-18-postrepair-zcode.md",
+    "trans-18": "out/review-trans-12-18-postrepair-zcode.md",
 }
 GATE_EXEMPT = {                       # 门闸生效前已合入、且无独立报告文件的历史批（只减不增）
     "pilot-01": "门闸建立前已合入；LEDGER 记「灵玉 PASS（#46）」，无独立报告文件",

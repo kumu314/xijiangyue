@@ -28,8 +28,24 @@ const ok = (n, c, extra) => {
 };
 const sk = (n, why) => { skip++; console.log('  – SKIP ' + n + '  (' + why + ')'); };
 
-/* 锁定常量（round6 基线，见 §D1/§D2） */
-const POEMS_COUNT = 935;
+/* 锁定常量（round6 基线，见 §D1/§D2）
+   ⚠ 2026-11-18：原值写死 935，但网页版实际已 1025 首（935 是 round6 时代的旧口径，项目备忘已作废），
+   导致每次跑都出一条与本次改动无关的固定 FAIL，把真回归埋掉。改为「有参照物才断言」：
+     · 给了 BASE_HTML  → 期望值 = 基线篇数（真·零增删判据，最硬）
+     · 显式 POEMS_COUNT=<n> → 期望值 = 该值（用于锁定某个已知版本）
+     · 两者都没有     → SKIP 并写明无参照物，不伪装成 PASS
+   期望值在 §D 代码块里解析（因需先读基线），此处仅保留环境变量原值。 */
+const POEMS_COUNT_ENV = (() => {
+  const raw = process.env.POEMS_COUNT;
+  if (raw === undefined || raw === '') return null;
+  const n = Number(raw);
+  /* 非法值必须当场炸掉，不能退化成 `cur.n === NaN` 这种「永远红、原因不明」的假 FAIL */
+  if (!Number.isInteger(n) || n <= 0) {
+    console.error('POEMS_COUNT 非法：' + JSON.stringify(raw) + '（需正整数，如 POEMS_COUNT=1025）');
+    process.exit(2);
+  }
+  return n;
+})();
 
 const browser = await chromium.launchPersistentContext(PROFILE, {
   channel: 'chrome', args: ['--no-sandbox'], viewport: { width: 390, height: 844 },
@@ -593,21 +609,31 @@ console.log('\n§D 硬验收门');
     return r;
   };
   const cur = await read(URL_);
-  ok(`POEMS 篇数 = ${POEMS_COUNT}（零增删）`, cur.n === POEMS_COUNT, cur.n);
   ok('POEMS id 均为非空字符串且首末稳定', typeof cur.ids[0] === 'string' && cur.ids[0].length > 0 &&
      typeof cur.ids[cur.ids.length - 1] === 'string', cur.ids.slice(0, 3).concat(cur.ids.slice(-1)));
   ok('POEMS id 无重复', new Set(cur.ids).size === cur.ids.length, { n: cur.ids.length, uniq: new Set(cur.ids).size });
 
+  /* 「零增删」期望值三档锚点：BASE 基线 > POEMS_COUNT 环境变量 > 无参照物则 SKIP。
+     不复用同一条判据两次：BASE 模式下这里就是那条基线断言本身，不额外叠一条重复的。 */
   if (BASE) {
     const base = await read('file:///' + BASE.replace(/\\/g, '/'));
-    ok('POEMS 篇数 与 round6 基线一致', cur.n === base.n, { cur: cur.n, base: base.n });
+    ok('POEMS 篇数 与 round6 基线一致（零增删）', cur.n === base.n, { cur: cur.n, base: base.n });
     ok('POEMS 正文哈希 与 round6 基线逐字一致', cur.hash === base.hash, { cur: cur.hash, base: base.hash });
     ok('POEMS id 序列 与 round6 基线完全一致',
        JSON.stringify(cur.ids) === JSON.stringify(base.ids),
        { curLen: cur.ids.length, baseLen: base.ids.length });
     ok('首页区块 与 round6 基线完全一致（零新增）',
        JSON.stringify(cur.home) === JSON.stringify(base.home), { cur: cur.home, base: base.home });
+  } else if (POEMS_COUNT_ENV !== null) {
+    ok(`POEMS 篇数 = ${POEMS_COUNT_ENV}（零增删，锚点=POEMS_COUNT 环境变量）`,
+       cur.n === POEMS_COUNT_ENV, { cur: cur.n, expect: POEMS_COUNT_ENV });
+    sk('POEMS 正文哈希 与基线逐字比对', '未提供 BASE_HTML');
+    sk('POEMS id 序列 与基线比对', '未提供 BASE_HTML');
+    sk('首页区块 与基线比对（零新增）', '未提供 BASE_HTML');
   } else {
+    /* 注意：这是 SKIP 不是 PASS。没有外部锚点时「零增删」在逻辑上无法判定，
+       写成 PASS 等于留一条永远绿的空断言 —— 正是本轮要清掉的那类假绿。 */
+    sk('POEMS 篇数（零增删）', '未提供 BASE_HTML 或 POEMS_COUNT 参照物，无外部锚点可判零增删');
     sk('POEMS 正文哈希 与基线逐字比对', '未提供 BASE_HTML');
     sk('POEMS id 序列 与基线比对', '未提供 BASE_HTML');
     sk('首页区块 与基线比对（零新增）', '未提供 BASE_HTML');
@@ -783,7 +809,25 @@ console.log('\n§E 打卡完成反馈（B 落印 + C 满勤卷）');
   const plants = { before: [], after: [] };
   plants.before = await snapPlants();
   await page.evaluate(() => { [...document.querySelectorAll('.ci-item')].forEach(el => toggleCheckin(el.dataset.k)); });
-  await page.waitForTimeout(760);
+  /* 原先这里是一句 waitForTimeout(760)。plantBloom 本身只有 .52s，但 5 项是逐个 toggle、
+     每次都重建 DOM，末项的动画起跑晚于首次点击；机器负载高时 760ms 会取到
+     matrix(0.993308, -0.00231929, …) 这种「还差 0.38° 没跑完」的中间态 ——
+     2026-11-18 反向注入轮实测到过一次随机红，与本轮改动无关。
+     固定睡眠不是同步手段，改为「等这 5 株的动画真的收敛」：
+     只盯 .ci-item 内的动画（避开印章呼吸一类的常驻动画），轮询到 running 数为 0，
+     上限 3s 兜底。判据本身没动：动画若收敛在歪掉的姿态，下一条断言照样红。 */
+  await page.evaluate(async () => {
+    const pending = () => document.getAnimations().filter(a => {
+      const t = a.effect && a.effect.target;
+      return a.playState === 'running' && t && t.closest && t.closest('.ci-item');
+    }).length;
+    const t0 = performance.now();
+    while (performance.now() - t0 < 3000) {
+      if (pending() === 0) break;
+      await new Promise(r => requestAnimationFrame(r));
+    }
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  });
   plants.after = await snapPlants();
   plants.n = plants.after.length;
   /* 判据演进说明（每一版都被枯木否过一次，别再往回改）：

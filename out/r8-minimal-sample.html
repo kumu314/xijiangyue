@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>极简轮对照小样 · P1-1 标签渐进披露 / P1-2 hero 动作减一</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+:root{
+  --paper:#F1E9D7; --paper-card:#FBF6EA; --paper-card-2:#FFFCF4;
+  --ink:#2B2620; --ink-2:#5C5246; --ink-3:#6E6248;
+  --cinnabar:#B23A2E; --cinnabar-deep:#8E2C22;
+  --line:#E5D9C2; --line-soft:#EFE6D4;
+  --kai:"LXGW WenKai","LXGW WenKai GB","Kaiti SC","STKaiti","KaiTi","DFKai-SB","Noto Serif SC",serif;
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",serif;
+  --sans:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#E7DFCB;font-family:var(--sans);color:var(--ink);padding:30px 26px 40px;}
+.hd{max-width:1240px;margin:0 auto 22px;}
+.hd h1{font-family:var(--kai);font-weight:700;font-size:21px;letter-spacing:2px;}
+.hd p{font-size:12px;color:var(--ink-3);line-height:1.9;margin-top:6px;max-width:980px;}
+.hd .rule{font-size:11.5px;color:var(--ink-2);background:var(--paper-card);border:1px dashed var(--line);border-radius:8px;padding:8px 12px;margin-top:10px;line-height:1.9;display:inline-block;}
+.sec{max-width:1240px;margin:0 auto 26px;}
+.sec h2{font-family:var(--kai);font-weight:700;font-size:17px;letter-spacing:2px;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.sec h2::before{content:"";width:4px;height:16px;background:var(--cinnabar);border-radius:2px;}
+.sec .sub{font-size:11.5px;color:var(--ink-3);margin-bottom:14px;line-height:1.8;}
+.row{display:flex;gap:18px;flex-wrap:wrap;}
+.stage{width:390px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px;position:relative;box-shadow:0 8px 24px rgba(110,90,55,.10);}
+.stage .cap{font-size:11px;color:var(--ink-3);line-height:1.75;margin-top:12px;border-top:1px dashed var(--line);padding-top:8px;}
+.stage .cap b{color:var(--ink-2);}
+.badge{position:absolute;top:-9px;left:14px;font-size:10.5px;font-weight:700;letter-spacing:1px;background:var(--paper-card-2);border:1px solid var(--line);border-radius:999px;padding:2px 10px;color:var(--ink-2);}
+/* ===== P1-1 标签条（复刻现网 .tabs 语言） ===== */
+.tabs{display:flex;gap:4px;overflow-x:auto;padding:4px;background:var(--paper-card);border:1px solid var(--line);border-radius:999px;align-items:center;}
+.tab{flex:0 0 auto;padding:9px 11px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink-2);white-space:nowrap;cursor:default;transition:all .2s ease;}
+.tab.active{background:var(--cinnabar);color:#fff;box-shadow:0 4px 12px rgba(178,58,46,.3);}
+/* v1 渐进披露 */
+.tab.more{color:var(--ink-3);font-weight:500;border:1px solid var(--line);display:inline-flex;align-items:center;gap:5px;cursor:pointer;background:var(--paper-card);}
+.tab.more::after{content:"";width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--ink-3);transition:transform .16s ease;}
+.tab.more.open::after{transform:rotate(180deg);}
+.sheet{margin-top:10px;background:var(--paper-card-2);border:1px solid var(--line);border-radius:12px;padding:4px 0;display:none;}
+.sheet.open{display:block;animation:fade .22s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+.sheet .si{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line-soft);font-size:13px;font-weight:500;color:var(--ink-2);}
+.sheet .si:last-child{border-bottom:none;}
+.sheet .si .no{font-family:var(--kai);font-size:11px;color:var(--cinnabar);letter-spacing:2px;flex:0 0 auto;}
+.sheet .si .d{font-size:11px;color:var(--ink-3);margin-left:auto;letter-spacing:.5px;}
+/* v2 次级降权 */
+.tab.demoted{font-size:11px;font-weight:400;color:var(--ink-3);padding:9px 8px;}
+.tab.sep{flex:0 0 auto;width:1px;height:16px;background:var(--line);margin:0 3px;}
+/* ===== P1-2 hero（复刻现网 .hero 语言） ===== */
+.hero{position:relative;overflow:hidden;padding:20px 18px 18px;
+  background:radial-gradient(120% 90% at 88% 8%,rgba(178,58,46,.10),transparent 60%),linear-gradient(160deg,#FCF8EE 0%,#F6EEDC 100%);
+  border:1px solid var(--line);border-radius:4px;}
+.hero::before{content:"";position:absolute;inset:6px;border:1px solid rgba(178,58,46,.30);border-radius:2px;pointer-events:none;}
+.hero .tag{position:absolute;top:-1px;right:16px;transform:rotate(2deg);transform-origin:top center;font-size:11px;color:var(--cinnabar-deep);
+  background:var(--paper-card-2);border:1px solid rgba(178,58,46,.35);border-top:none;border-radius:0 0 8px 8px;padding:5px 12px;letter-spacing:1px;}
+.hero .poem-title{font-family:var(--kai);font-weight:700;font-size:21px;letter-spacing:2px;}
+.hero .poem-author{font-size:12px;color:var(--ink-3);margin:4px 0 10px;}
+.hero .verse{font-family:var(--kai);font-size:17px;line-height:2;letter-spacing:1.5px;}
+.hero .actions{display:flex;gap:10px;margin-top:14px;align-items:center;}
+.btn{border:none;cursor:default;font-family:var(--sans);font-weight:600;border-radius:999px;padding:10px 18px;font-size:13px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:none;}
+.btn-primary{background:var(--cinnabar);color:#fff;box-shadow:0 6px 16px rgba(178,58,46,.32);}
+.btn-ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line);}
+.btn-ghost svg,.btn-icon svg,.btn-quiet svg{display:block;flex:none;}
+/* v1 图标位 */
+.btn-icon{background:transparent;border:1px solid var(--line);color:var(--ink-2);width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;padding:0;}
+/* v2 ghost 降权（无边框弱化） */
+.btn-quiet{background:transparent;border:none;color:var(--ink-3);font-weight:500;font-size:12.5px;padding:10px 8px;white-space:nowrap;flex:none;}
+/* 断言 */
+.assert{max-width:1240px;margin:0 auto;font-size:11.5px;line-height:1.9;color:#2F5D45;white-space:pre-line;background:var(--paper-card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;}
+.assert b{color:var(--cinnabar);}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <h1>极简轮对照小样 · P1-1 标签渐进披露 ／ P1-2 hero 动作减一</h1>
+  <p>对照口径：现状＝线上实现复刻；提案 v1／v2 为两个方向。内容全部真实（山居秋暝，库 id shanju；标签六项为现网实排序）。视觉令牌与现网逐字一致（DESIGN.md）。</p>
+  <div class="rule">三问测试（每个提案都要过）：①删掉它任务还能完成吗 ②删掉后信息更清楚还是更糊 ③删掉后还是西江阅吗 ｜ 口径提醒：枯木「留白削减大可不必」仅限当时竖排区 cap 一处，本样不含任何留白改动；印章/朱丝栏/朱砂仪式不动。</div>
+</div>
+
+<!-- ============ P1-1 ============ -->
+<div class="sec">
+  <h2>P1-1 · 详情页标签条（六项 → 首层两枚＋更多）</h2>
+  <div class="sub">方法论：NN/g 渐进披露（首层给多数任务够用的，次级清晰标注）＋ Maeda 组织律（让多显得少）。判据：解读=默认落点，记忆=背诵动线伴生（高频）；串讲/动画/场景/背景=查证型（低频），收次级不减功能。</div>
+  <div class="row">
+
+    <div class="stage"><span class="badge">现状</span>
+      <div class="tabs" id="t0">
+        <span class="tab active">解读</span><span class="tab">串讲</span><span class="tab">动画</span><span class="tab">记忆</span><span class="tab">场景</span><span class="tab">背景</span>
+      </div>
+      <div class="cap"><b>六项平级，无主次。</b>首屏标签条即 6 个可点目标；新用户须逐个试错才知道哪层是什么。栏宽 390px 时 6 项 394px 已触边溢出（现网靠横向滚动兜底）。</div>
+    </div>
+
+    <div class="stage"><span class="badge">提案 v1 · 渐进披露（点击「更多」可交互）</span>
+      <div class="tabs" id="t1">
+        <span class="tab active">解读</span><span class="tab">记忆</span>
+        <span class="tab more open" id="moreBtn">更多</span>
+      </div>
+      <div class="sheet open" id="sheet">
+        <div class="si"><span class="no">三</span>串讲<span class="d">逐句串成一条故事线</span></div>
+        <div class="si"><span class="no">四</span>动画<span class="d">意象场景可视化</span></div>
+        <div class="si"><span class="no">五</span>场景<span class="d">今天什么时刻能用</span></div>
+        <div class="si"><span class="no">六</span>背景<span class="d">创作背景与典故</span></div>
+      </div>
+      <div class="cap"><b>首层 2+1。</b>高频双项留在首层，四项收「更多」次级面板（书目化行语言，带一句定位）。代价：查证型内容多一步点击。次级面板每项带定位语——收起来不是藏起来。</div>
+    </div>
+
+    <div class="stage"><span class="badge">提案 v2 · 次级降权（不减项）</span>
+      <div class="tabs" id="t2">
+        <span class="tab active">解读</span><span class="tab">记忆</span><span class="sep"></span>
+        <span class="tab demoted">串讲</span><span class="tab demoted">动画</span><span class="tab demoted">场景</span><span class="tab demoted">背景</span>
+      </div>
+      <div class="cap"><b>六项全留，只分主次。</b>次级四枚 11px/400/ink-3（对比度 5.56 AA 不降档），细分隔线示意两组。代价：减法幅度小，首层目标仍是 6 个；适合「不想改变用户习惯」的保守路线。</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ P1-2 ============ -->
+<div class="sec">
+  <h2>P1-2 · 首页 hero 动作区（双按钮 → 一主一次）</h2>
+  <div class="sub">方法论：减法优先（每个元素是用户的一个决定）＋ Maeda Embody（主按钮仪式感保留）。判据：开始学习=今日任务主动作；听朗读=伴生功能，降呈现层级不删功能。</div>
+  <div class="row">
+
+    <div class="stage"><span class="badge">现状</span>
+      <div class="hero">
+        <span class="tag">今日一诗 · 唐诗</span>
+        <div class="poem-title">山居秋暝</div>
+        <div class="poem-author">〔唐〕王维 · 五言律诗 · 精读</div>
+        <div class="verse">空山新雨后，天气晚来秋。<br>明月松间照，清泉石上流。</div>
+        <div class="actions">
+          <button class="btn btn-primary">开始学习 →</button>
+          <button class="btn btn-ghost"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>听朗读</button>
+        </div>
+      </div>
+      <div class="cap"><b>双按钮等权并排。</b>首屏动作区 2 个可点目标，ghost 描边框与主按钮争夺注意力。</div>
+    </div>
+
+    <div class="stage"><span class="badge">提案 v1 · 图标位</span>
+      <div class="hero">
+        <span class="tag">今日一诗 · 唐诗</span>
+        <div class="poem-title">山居秋暝</div>
+        <div class="poem-author">〔唐〕王维 · 五言律诗 · 精读</div>
+        <div class="verse">空山新雨后，天气晚来秋。<br>明月松间照，清泉石上流。</div>
+        <div class="actions">
+          <button class="btn btn-primary">开始学习 →</button>
+          <button class="btn-icon" title="听朗读" aria-label="听朗读"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg></button>
+        </div>
+      </div>
+      <div class="cap"><b>文字按钮→38px 圆形图标位。</b>动作区只剩一个文字按钮的重量。代价：纯图标可发现性下降（无文字标注）；需真机观察点击率，跌了就退 v2。</div>
+    </div>
+
+    <div class="stage"><span class="badge">提案 v2 · ghost 降权（保文字）</span>
+      <div class="hero">
+        <span class="tag">今日一诗 · 唐诗</span>
+        <div class="poem-title">山居秋暝</div>
+        <div class="poem-author">〔唐〕王维 · 五言律诗 · 精读</div>
+        <div class="verse">空山新雨后，天气晚来秋。<br>明月松间照，清泉石上流。</div>
+        <div class="actions">
+          <button class="btn btn-primary">开始学习 →</button>
+          <button class="btn-quiet"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>听朗读</button>
+        </div>
+      </div>
+      <div class="cap"><b>去框、降号、降色（12.5px/ink-3）。</b>文字保留可发现性不降档，只把视觉重量让给主按钮。代价：减法幅度小于 v1。</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="assert" id="out">断言运行中…</div>
+
+<script>
+function assert(n, ok, d){ return n + '：' + (ok ? 'PASS' : 'FAIL') + (d ? '（' + d + '）' : ''); }
+window.addEventListener('load', () => setTimeout(() => {
+  const _mb = document.getElementById('moreBtn'), _sheet = document.getElementById('sheet');
+  _mb.addEventListener('click', () => { _mb.classList.toggle('open'); _sheet.classList.toggle('open'); });
+  const r = [];
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  /* P1-1 */
+  r.push(assert('现状六标签', $$('#t0 .tab').length === 6));
+  r.push(assert('v1 首层 3 目标（解读/记忆/更多）', $$('#t1 .tab').length === 3));
+  r.push(assert('v1 展开层 4 项', $$('#sheet .si').length === 4));
+  const sheet = $('#sheet'), mb = $('#moreBtn');
+  mb.click(); const closed = !sheet.classList.contains('open') && getComputedStyle(sheet).display === 'none';
+  mb.click(); const reopened = sheet.classList.contains('open') && getComputedStyle(sheet).display === 'block';
+  r.push(assert('v1 更多交互可用（收起↔展开）', closed && reopened));
+  r.push(assert('v2 六项全在（减权重不减功能）', $$('#t2 .tab').length === 6));
+  const dem = $('#t2 .tab.demoted'), cs = getComputedStyle(dem);
+  r.push(assert('v2 次级 11px/400/ink-3', cs.fontSize === '11px' && cs.fontWeight === '400' && cs.color === 'rgb(110, 98, 72)'));
+  r.push(assert('v2 次级对比度 5.56 AA（ink-3/paper-card 查表值，DESIGN.md §二）', true, '表值'));
+  /* P1-2 */
+  const heroes = $$('.hero');
+  r.push(assert('hero 三版齐全', heroes.length === 3));
+  heroes.forEach((h, i) => {
+    const p = h.querySelector('.btn-primary');
+    r.push(assert('hero' + (i+1) + ' 主按钮朱砂底（仪式保留）', p && getComputedStyle(p).backgroundColor === 'rgb(178, 58, 46)'));
+    r.push(assert('hero' + (i+1) + ' 动作目标=2（减呈现不减功能）', h.querySelectorAll('.actions button').length === 2));
+    r.push(assert('hero' + (i+1) + ' 题签仍在（tag）', !!h.querySelector('.tag')));
+  });
+  r.push(assert('v2 ghost 无边框', getComputedStyle($('.btn-quiet')).borderStyle === 'none'));
+  /* 通用 */
+  r.push(assert('零 emoji', !/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(document.body.innerText)));
+  const fail = r.filter(x => x.indexOf('FAIL') >= 0).length;
+  const el = $('#out');
+  el.textContent = '断言 ' + r.length + ' 条（0 FAIL 为过）\n' + r.join('\n');
+  el.innerHTML = el.textContent.replace(/：PASS/g, '：<span style="color:#2F5D45">PASS</span>').replace(/：FAIL/g, '：<b>FAIL</b>');
+  console.log('[r8-minimal-sample]\n' + r.join('\n'));
+}, 80));
+</script>
+</body>
+</html>

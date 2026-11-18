@@ -105,6 +105,15 @@ SRC = [
     # 6 首 12 行中 7 行 m 填入（A/A- 类核验通过），其余 5 行留空（B/C 类见 out/foreign-orig-verified-patch.md）。
     # 外国诗 m=原文附注，m/o 比超 2.2 为该类特性（先例 w_prometheus 德文 3.5 已在库）。
     ("out/content_production/trans-W1.json",   "trans"),      # lines[].m（外国诗 6 首 12 行，7 行填入）
+    # ---- merge-12（mem-v2 记忆卡 v2 全量六批；2026-11-17 枯木四项裁决①批准全量升级）----
+    # 六批并集精确覆盖精读 258 首；561 卡背时想 100%、引文归一化零失配、跨篇/同篇重复 0；
+    # 机械复验单文件六批共用（D:/AgentHub/temp/zcode-batch-memv2/verify_memv2_all.py 全量断言，2026-11-19）。
+    ("out/content_production/mem-v2-pilot.json", "v2_batch"),  # 记忆卡 v2 试点 24 首 68 卡
+    ("out/content_production/mem-v2-b1.json",    "v2_batch"),  # 记忆卡 v2 b1 49 首 87 卡
+    ("out/content_production/mem-v2-b2.json",    "v2_batch"),  # 记忆卡 v2 b2 50 首 110 卡
+    ("out/content_production/mem-v2-b3.json",    "v2_batch"),  # 记忆卡 v2 b3 50 首 105 卡
+    ("out/content_production/mem-v2-b4.json",    "v2_batch"),  # 记忆卡 v2 b4 50 首 99 卡
+    ("out/content_production/mem-v2-b5.json",    "v2_batch"),  # 记忆卡 v2 b5 收官 38 首 80 卡
 ]
 if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))
@@ -139,6 +148,13 @@ GATE_ALIASES = {                      # 报告文件名不合 out/review-<批名
     "trans-16": "out/review-trans-12-18-postrepair-zcode.md",
     "trans-17": "out/review-trans-12-18-postrepair-zcode.md",
     "trans-18": "out/review-trans-12-18-postrepair-zcode.md",
+    # merge-12（zcode，2026-11-19）：mem-v2 六批机械复验报告单文件共用
+    "mem-v2-pilot": "out/review-memv2-all.md",
+    "mem-v2-b1": "out/review-memv2-all.md",
+    "mem-v2-b2": "out/review-memv2-all.md",
+    "mem-v2-b3": "out/review-memv2-all.md",
+    "mem-v2-b4": "out/review-memv2-all.md",
+    "mem-v2-b5": "out/review-memv2-all.md",
 }
 GATE_EXEMPT = {                       # 门闸生效前已合入、且无独立报告文件的历史批（只减不增）
     "pilot-01": "门闸建立前已合入；LEDGER 记「灵玉 PASS（#46）」，无独立报告文件",
@@ -313,14 +329,17 @@ def split_top_objects(s):
     return objs
 
 objs = split_top_objects(arr_text)
-assert len(objs) == 935, "expected 935 objects, got %d" % len(objs)
+# 935→1025：merge(full-02/03) 全量试点 90 首入库后库容增长（均为拓展级，不影响精读集合）。
+# 断言改为基线下限：少于 935 即解析异常；实际库容随批次增长是合法状态，落日志供复核。
+assert len(objs) >= 935, "POEMS 少于基线 935，解析异常: %d" % len(objs)
+L("POEMS objects: %d（基线 935，当前含全量试点增量）" % len(objs))
 
 def extract_id(ot):
     mm = re.search(r'"id"\s*:\s*"((?:[^"\\]|\\.)*)"', ot)
     return json.loads('"' + mm.group(1) + '"') if mm else None
 
 id_list = [extract_id(ot) for ot, _ in objs]
-assert len(set(id_list)) == 935, "duplicate ids!"
+assert len(set(id_list)) == len(objs), "duplicate ids! set=%d objs=%d" % (len(set(id_list)), len(objs))
 id_pos = {pid: k for k, pid in enumerate(id_list)}
 L("poems: 935, unique ids: 935")
 

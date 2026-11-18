@@ -117,9 +117,11 @@ page{
 
 字体族小程序端按 §三 原样可用（iOS 认 Kaiti SC / Songti SC，安卓回落 serif）。
 
-### 竖排双端风险（P0，未决）
+### 竖排双端风险（P0，已裁决：不统一）
 
-微信小程序 `writing-mode: vertical-rl` 有 iOS 失效公开案例（SegmentFault 2023-09：安卓正常 iOS 全失效）与旧安卓内核 90° 旋转前科。**预案**＝逐字 flex 字列（web 背诵遮字本就是逐字 `.ch` span，架构同源）。演示与断言：`out/r7b-vertical-fallback/`。**小程序端是否受影响待小羽确认实现方式后裁决。**
+微信小程序 `writing-mode: vertical-rl` 有 iOS 失效公开案例（SegmentFault 2023-09：安卓正常 iOS 全失效）与旧安卓内核 90° 旋转前科。**预案**＝逐字 flex 字列（web 背诵遮字本就是逐字 `.ch` span，架构同源）。演示与断言：`out/r7b-vertical-fallback/`。
+
+**裁决（2026-11-18 枯木）：双端不统一。** web 保留竖排手卷、小程序保留横排逐句列表，维持各自形态，不强行拉齐。理由：两端加载场景不同（手卷＝沉浸赏读、逐句＝背诵清单），统一只有审美收益、无功能收益；且 iOS 竖排失效风险在真机验证前不宜强上。逐字 flex 预案 `out/r7b-vertical-fallback/` 保留为「若将来要统一」的现成路径，当前不启用。此条不再是未决项。
 
 ## 八、维护规矩
 

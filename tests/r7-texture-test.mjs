@@ -5,8 +5,10 @@
                                  排版矩阵 / prefers-reduced-motion 全覆盖）
 
    跑法：node tests/r7-texture-test.mjs
-   基线比对：BASE_HTML=<round6 基线版 index.html 路径> node tests/r7-texture-test.mjs
-            （不给 BASE_HTML 时 §D1/§D2 以锁定常量判，给了则额外做逐项 diff）
+   基线比对：BASE_HTML=<基线版 index.html 的**绝对路径**> node tests/r7-texture-test.mjs
+            §D1「零增删」三档锚点：给了 BASE_HTML → 与基线逐项 diff（最硬）；
+            只给 POEMS_COUNT=<n> → 锁该篇数；两者都没有 → SKIP，不伪装 PASS。
+            （相对路径会被拼成 file:///_bak… 而 ERR_FILE_NOT_FOUND，务必绝对路径）
 
    环境注记：本机 C 盘满载，chromium.launch() 会被 SIGTERM 连杀，
    故改用 launchPersistentContext(userDataDir 落 D 盘) + TMPDIR 指向 D 盘。
@@ -17,7 +19,11 @@ process.env.TMP = process.env.TMP || 'D:/AgentHub/tmp';
 
 import { chromium } from 'playwright-core';
 
-const URL_ = 'file:///D:/ZCode/小程序/xijiangyue/index.html';
+/* 被测地址。TEST_HTML 只供**反向注入**用（把一个故意破掉的副本喂给同一套判据，
+   证明判据仍会红），正常跑不要设 —— 设了就是换了被测物，判据再绿也不代表产品是绿的。
+   给了就在开头打印出来，不做暗箱。 */
+const TEST_HTML = process.env.TEST_HTML || '';
+const URL_ = TEST_HTML || 'file:///D:/ZCode/小程序/xijiangyue/index.html';
 const BASE = process.env.BASE_HTML || '';
 const PROFILE = 'D:/AgentHub/tmp/chrome-r7-test';
 
@@ -69,6 +75,8 @@ async function freshPage(seed) {
 }
 
 /* ══════════════════════════ §A 篆刻印 SVG 化 ══════════════════════════ */
+console.log('被测：' + URL_ + (TEST_HTML ? '   ← TEST_HTML 指定，非产品文件！' : ''));
+console.log('基线：' + (BASE || '(未提供，§D 走 POEMS_COUNT 或 SKIP)'));
 console.log('\n§A P0-1 篆刻印 SVG 化');
 {
   const page = await freshPage({ xjy_layout: 'vertical' });
@@ -534,19 +542,68 @@ console.log('\n§C2 意象底余量 0.18 不压缩');
     return { b64: prev, stable: false, shots: tries + 1 };
   };
 
-  const per = {};
-  for (const v of ['off', 'light', 'heavy']) per[v] = await settledShot(v);
-  const unstable = Object.entries(per).filter(([, o]) => !o.stable).map(([v, o]) => ({ level: v, shots: o.shots }));
-  const dOL = await stats(per.off.b64, per.light.b64);
-  const dLH = await stats(per.light.b64, per.heavy.b64);
   const same = (d) => !d.sizeMismatch && d.maxDelta <= 1 && d.over1 === 0;
-  if (unstable.length) {
-    sk('hero 三档截图像素等价', '连续两枪仍不一致，本次无法判定；' + JSON.stringify(unstable));
+
+  /* 整组收敛重试（2026-11-18 枯木选方案②）。
+     **阈值一个字没动**：仍是 maxDelta ≤ 1 且 差值>1 的像素数 = 0。
+     要解决的是另一件事：三档各自内部都能拍到「连续两枪一致」，但**跨档**仍可能差
+     1~3 个色阶、几百个像素（实测 366/73920、maxDelta=3）。同刻的「样式指纹」断言是绿的，
+     ⇒ 不是纸纹漏入，是跨档光栅化 / 子像素 AA 抖动。原写法一撞到它就判红，逼人重跑。
+     做什么：整组（三档一起）重拍，最多 GROUP_ROUNDS 轮。
+     为什么这不算放水 —— 分水岭是「可复现性」，不是「数值大小」：
+       · 真漏入**每一轮都一模一样地红**。2026-11-18 实测（往 .hero-bg::after 叠随档位变化的
+         纸纹噪声，用 TEST_HTML 喂进去）：三轮读数 over1 = 72194 / 72188 / 72188，
+         maxDelta 恒为 10，offVsLight 在 72188/73920 个像素上都有差。
+         重拍只会拿到同一份读数，该红还是红。
+       · 抖动是「这一轮差 366 像素、下一轮干净」，才需要重拍。
+     量级参考（同一支判据、同一取样框实测）：抖动 366 像素 / maxDelta=3；
+     真漏入 72188 像素 / maxDelta=10。**像素数差约 197 倍**，但 maxDelta 只差 3.3 倍 ——
+     所以别拿「阈值够宽」当理由，真正顶事的是「真回归复现得出来」。
+     残余风险：若抖动连续 3 轮都出现，仍会判红（这是对的 —— 连续 3 轮都复现就不再是抖动了）。
+     代价：只在需要重拍时付，正常一轮就过、零额外开销；判真红时最多慢 3 倍。
+     判定顺序：取**最后一个「三档全稳」轮**的结论下判断（该轮若不等价就照判红）；
+     一轮都稳不下来才 SKIP —— 「判不了就不硬判」这条老规矩不变。 */
+  const GROUP_ROUNDS = 3;
+  let per = {};            // 最后一轮的三档截图；后面测最坏像素还要用（不管稳不稳）
+  let judged = null;       // 最后一个「三档全稳」轮次的结论
+  let lastUnstable = [];
+  let rounds = 0;
+  const history = [];
+  for (let r = 0; r < GROUP_ROUNDS; r++) {
+    rounds = r + 1;
+    per = {};
+    for (const v of ['off', 'light', 'heavy']) per[v] = await settledShot(v);
+    const unstable = Object.entries(per).filter(([, o]) => !o.stable).map(([v, o]) => ({ level: v, shots: o.shots }));
+    if (unstable.length) {
+      lastUnstable = unstable;
+      history.push({ 轮次: rounds, 结果: '未稳', 未稳档位: unstable });
+      continue;
+    }
+    const dOL = await stats(per.off.b64, per.light.b64);
+    const dLH = await stats(per.light.b64, per.heavy.b64);
+    const pass = same(dOL) && same(dLH);
+    judged = { per, dOL, dLH, pass };
+    history.push({
+      轮次: rounds, 结果: pass ? '等价' : '不等价',
+      maxDelta: Math.max(dOL.maxDelta || 0, dLH.maxDelta || 0),
+      over1: Math.max(dOL.over1 || 0, dLH.over1 || 0),
+    });
+    if (pass) break;
+  }
+  /* 绿跑也要留痕：ok() 只在判红时打印 extra，若重拍到第 3 轮才通过，
+     输出会和「一轮就过」长得一模一样 —— 那样「重试到绿」就成了暗箱。
+     这条日志就是用来区分「真干净」与「重拍了几轮才干净」的。 */
+  if (rounds > 1) console.log('    · §C2 重拍 ' + rounds + ' 轮才下结论：' + JSON.stringify(history));
+  if (!judged) {
+    sk('hero 三档截图像素等价', `连拍 ${GROUP_ROUNDS} 轮仍无一轮三档全稳，本次无法判定；` + JSON.stringify(lastUnstable));
   } else {
-    ok('hero 三档截图像素等价（纸纹确未压在意象底上）',
-       same(dOL) && same(dLH),
-       { 稳定帧耗时枪数: { off: per.off.shots, light: per.light.shots, heavy: per.heavy.shots },
-         offVsLight: dOL, lightVsHeavy: dLH, 判据: 'maxDelta<=1 且 差值>1 像素=0' });
+    ok('hero 三档截图像素等价（纸纹确未压在意象底上）', judged.pass,
+       { 重拍轮次: rounds,
+         /* 只在多轮时才把每轮读数摊开：一轮就过是常态，不必刷屏；
+            但一旦重拍过，复核者必须能看见前几轮差多少，否则「重试到绿」就成了暗箱。 */
+         各轮读数: history.length > 1 ? history : undefined,
+         稳定帧耗时枪数: { off: judged.per.off.shots, light: judged.per.light.shots, heavy: judged.per.heavy.shots },
+         offVsLight: judged.dOL, lightVsHeavy: judged.dLH, 判据: 'maxDelta<=1 且 差值>1 像素=0' });
   }
 
   // 实测最坏像素 vs --ink-2 / --ink

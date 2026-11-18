@@ -93,6 +93,8 @@
   .btn{border:none;cursor:pointer;font-family:var(--sans);font-weight:600;border-radius:var(--r-pill);padding:10px 18px;font-size:13px;display:inline-flex;align-items:center;gap:6px;}
   .btn-primary{background:var(--cinnabar);color:#fff;box-shadow:0 6px 16px rgba(178,58,46,.32);}
   .btn-ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line);}
+  /* #342 P1-2 v1：首页 hero 听朗读收 38px 圆形图标位（纯图标，title/aria 兜底） */
+  .btn-icon{width:38px;height:38px;border-radius:50%;background:transparent;border:1px solid var(--line);color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;flex:0 0 auto;}
 
   .section-title{font-family:var(--kai);font-weight:700;font-size:16px;letter-spacing:1px;margin:22px 0 12px;display:flex;align-items:center;gap:8px;}
   .section-title::before{content:"";width:4px;height:16px;background:var(--cinnabar);border-radius:2px;display:inline-block;}
@@ -236,6 +238,9 @@
   .tabs::-webkit-scrollbar{display:none;}
   .tab{flex:0 0 auto;padding:9px 11px;border-radius:var(--r-pill);cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-2);white-space:nowrap;transition:all .2s ease;}
   .tab.active{background:var(--cinnabar);color:#fff;box-shadow:0 4px 12px rgba(178,58,46,.3);}
+  /* #342 P1-1 v2 次级降权：六项全留只分主次，减权重不减项（11px/400/ink-3 = 5.56 AA） */
+  .tab.demoted{font-size:11px;font-weight:400;color:var(--ink-3);padding:9px 8px;}
+  .tabs .sep{flex:0 0 auto;width:1px;height:16px;background:var(--line);margin:0 3px;}
   .panel{display:none;animation:fade .35s ease;}
   .panel.active{display:block;}
   @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
@@ -1328,11 +1333,12 @@
       <div class="original" id="dOriginal"></div>
       <div class="tabs" id="dTabs">
         <div class="tab active" data-tab="tr">解读</div>
-        <div class="tab" data-tab="lecture">串讲</div>
-        <div class="tab" data-tab="viz">动画</div>
         <div class="tab" data-tab="mem">记忆</div>
-        <div class="tab" data-tab="use">场景</div>
-        <div class="tab" data-tab="story">背景</div>
+        <div class="sep" aria-hidden="true"></div>
+        <div class="tab demoted" data-tab="lecture">串讲</div>
+        <div class="tab demoted" data-tab="viz">动画</div>
+        <div class="tab demoted" data-tab="use">场景</div>
+        <div class="tab demoted" data-tab="story">背景</div>
       </div>
       <div class="panel active" id="panel-tr"></div>
       <div class="panel" id="panel-lecture"></div>
@@ -76358,7 +76364,7 @@ function renderHome(){
       <div class="verse">${today.lines.slice(0,4).map(l=>l.o).join("<br>")}</div>
       <div class="actions">
         <button class="btn btn-primary" onclick="openDetail('${today.id}')">开始学习 →</button>
-        <button class="btn btn-ghost" onclick="readPoem('${today.id}')">听朗读</button>
+        <button class="btn-icon" title="听朗读" aria-label="听朗读" onclick="readPoem('${today.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 8a5 5 0 010 8"/></svg></button>
       </div>
       <div class="signoff">每日一诗</div>
       <div class="seal"><svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true"><use href="#seal-yue"/></svg></div>

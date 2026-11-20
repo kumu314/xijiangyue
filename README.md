@@ -20,7 +20,20 @@
 </tr>
 </table>
 
-*纸墨质感 · 朱丝栏竖排手卷 · 霞鹜文楷 · 每一枚完成项都钤一枚朱砂小印*
+*手机版实拍（390×844）· 纸墨质感 · 朱丝栏竖排手卷 · 霞鹜文楷 · 每一枚完成项都钤一枚朱砂小印*
+
+<details>
+<summary><b>桌面适配（宽屏完整体验，作为补充）</b></summary>
+<br>
+手机版为第一形态；网页版在宽屏下同样完整——竖排手卷与六维标签并列排版，更适合成段精读：
+
+<table>
+<tr>
+<td width="50%" align="center"><b>探索 · 首页</b><br><img src="docs/assets/preview-home-desktop.png" width="100%"/></td>
+<td width="50%" align="center"><b>精读 · 竖排手卷 + 六维标签</b><br><img src="docs/assets/preview-detail-desktop.png" width="100%"/></td>
+</tr>
+</table>
+</details>
 
 </div>
 
@@ -66,6 +79,7 @@
 
 ## 视觉与排版
 
+- **手机版为第一形态**：微信小程序与网页手机版是主战场（375–428 宽逐档适配），桌面宽屏作为补充完整适配；
 - **竖排手卷**：正文 `writing-mode` 竖排 + 朱丝栏 + 朱砂题签，译文横排对照；一键竖排 / 横排切换；
 - **霞鹜文楷**（LXGW WenKai）标题诗句，异步加载、断网楷体兜底；
 - **意象场景动画**：月浮 / 雨落 / 花开等九类轻量 CSS 动效，英雄区低透明度衬景，`prefers-reduced-motion` 全量降级；

@@ -54,3 +54,13 @@ Kalliope 德语诗歌档案库逐字核验：https://kalliope.org/en/text/heine2
 
 枯木 2026-11-21 批准执行（对话内「同意」+ 三处分诊方案 ①② 自主核验、③ 保守保留）；
 灵玉对照件 §3 待办就此闭环，回联灵玉重跑对照表。
+
+## 附录：o 订正裁定落地（2026-11-21 枯木裁「订正为坐」）
+
+原报告第三节保留的 w_beihai L1「站/坐」分歧，枯木裁定**订正 o**：「我站在岸边」→「我坐在岸边」。
+同步六处（merge 幂等性要求，批次 o 必须随库内 o 对齐——湘君 醴→澧 o-mismatch 教训）：
+- index.html ×2（o 行 + foreign-expand-01 串讲卡引文）
+- foreign-expand-01.json ×1（串讲卡源批）
+- trans-W1.json ×1（o）、trans-W2.json ×1（o）
+- poems_backfill_candidate_20261120.json ×2（云库回填候选，含卡引文——云库二次导入需带上订正）
+merge 复跑 changed 0（幂等），index.html 工作区恰 2 行改动。

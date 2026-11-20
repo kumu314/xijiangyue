@@ -1,0 +1,115 @@
+{
+ "batch": "trans-W1",
+ "generator": "zcode",
+ "date": "2026-11-05",
+ "task": "xijiangyue-foreign-orig-lookup",
+ "spec": "外国诗原文附注填入（#321 核验补丁 A/A- 类，枯木 2026-11-05 §9 批准）：m=原语种原文附注，o 一字不改；外国诗 m/o 比超 2.2 为原文附注特性（先例 w_prometheus）",
+ "seed": "manual-6",
+ "strata": {
+  "外国诗": 6
+ },
+ "poems": [
+  {
+   "id": "w_liwu",
+   "title": "礼物",
+   "author": "〔波〕米沃什",
+   "category": "外国诗",
+   "level": "拓展",
+   "lines": [
+    {
+     "o": "如此幸福的一天，雾早早散去，我在园中劳作。",
+     "m": "A day so happy. / Fog lifted early, I worked in the garden."
+    },
+    {
+     "o": "我愿无所求，也无愧于人。",
+     "m": "There was no thing on earth I wanted to possess. / I knew no one worth my envying him."
+    }
+   ]
+  },
+  {
+   "id": "w_france",
+   "title": "啊，法兰西的星",
+   "author": "〔美〕惠特曼",
+   "category": "外国诗",
+   "level": "拓展",
+   "lines": [
+    {
+     "o": "啊，法兰西的星！被云雾吞没的星，",
+     "m": "O star of France! / The bright dim smitten star!"
+    },
+    {
+     "o": "难道你的光，再不能照彻长夜？",
+     "m": ""
+    }
+   ]
+  },
+  {
+   "id": "w_taiyang",
+   "title": "太阳石（节选）",
+   "author": "〔墨〕帕斯",
+   "category": "外国诗",
+   "level": "拓展",
+   "lines": [
+    {
+     "o": "一朵燃烧的玫瑰，在大理石上，",
+     "m": "una rosa que se quema en el mármol,"
+    },
+    {
+     "o": "时间，碎成无数个此刻。",
+     "m": ""
+    }
+   ]
+  },
+  {
+   "id": "w_beihai",
+   "title": "北海（节选）",
+   "author": "〔德〕海涅",
+   "category": "外国诗",
+   "level": "拓展",
+   "lines": [
+    {
+     "o": "狂风怒号，白浪滔天，",
+     "m": "Wilder blustered the tide,"
+    },
+    {
+     "o": "我坐在岸边，心向远方。",
+     "m": "And I sat on the shore, and gazed upon the white fleeing waves,"
+    }
+   ]
+  },
+  {
+   "id": "w_guxuan",
+   "title": "希腊古瓮颂",
+   "author": "〔英〕济慈",
+   "category": "外国诗",
+   "level": "拓展",
+   "lines": [
+    {
+     "o": "你这沉默的形体，如永恒一般，",
+     "m": "Thou still unravish'd bride of quietness, / Thou foster-child of silence and slow time, / Sylvan historian, who canst thus express"
+    },
+    {
+     "o": "冷眼旁观，笑看人间悲欢。",
+     "m": "Thou, silent form, dost tease us out of thought / As doth eternity: Cold Pastoral!"
+    }
+   ]
+  },
+  {
+   "id": "w_xin",
+   "title": "我的心略大于宇宙",
+   "author": "〔葡〕佩索阿",
+   "category": "外国诗",
+   "level": "拓展",
+   "lines": [
+    {
+     "o": "我的心略大于宇宙，",
+     "m": "Que é maior e muito mais / Que o universo inteiro"
+    },
+    {
+     "o": "因为我用整个自己，去感受一个黄昏。",
+     "m": ""
+    }
+   ]
+  }
+ ]
+}

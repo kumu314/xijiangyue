@@ -1,0 +1,47 @@
+{
+ "batch": "trans-W2",
+ "generator": "zcode",
+ "date": "2026-11-21",
+ "task": "xijiangyue-foreign-orig-language-upgrade",
+ "spec": "外国诗原文附注语种升级（#321 遗留三处语种口径处置，枯木 2026-11-21 批准执行）：w_liwu/w_beihai 的 m 由英译转引升级为原语种原文（波语/德语），o 一字不改；w_zuiyaoyuan 特例（原诗即中文）m 维持留空、README 特例注记；w_beihai L1 o 的「站/坐」分歧保留待枯木裁定。外国诗 m/o 比超 2.2 为原文附注特性（先例 w_prometheus/trans-W1）",
+ "seed": "manual-2",
+ "strata": {
+  "外国诗": 2
+ },
+ "poems": [
+  {
+   "id": "w_liwu",
+   "title": "礼物",
+   "author": "〔波〕米沃什",
+   "category": "外国诗",
+   "level": "拓展",
+   "lines": [
+    {
+     "o": "如此幸福的一天，雾早早散去，我在园中劳作。",
+     "m": "Dzień taki szczęśliwy. / Mgła opadła wcześnie, pracowałem w ogrodzie."
+    },
+    {
+     "o": "我愿无所求，也无愧于人。",
+     "m": "Nie było na ziemi rzeczy, którą chciałbym mieć. / Nie znałem nikogo, komu warto byłoby zazdrościć."
+    }
+   ]
+  },
+  {
+   "id": "w_beihai",
+   "title": "北海（节选）",
+   "author": "〔德〕海涅",
+   "category": "外国诗",
+   "level": "拓展",
+   "lines": [
+    {
+     "o": "狂风怒号，白浪滔天，",
+     "m": "Wilder toste die Flut,"
+    },
+    {
+     "o": "我坐在岸边，心向远方。",
+     "m": "Und ich saß am Strand, und schaute zu / Dem weißen Tanz der Wellen"
+    }
+   ]
+  }
+ ]
+}

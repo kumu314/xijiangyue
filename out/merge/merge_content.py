@@ -114,6 +114,11 @@ SRC = [
     ("out/content_production/mem-v2-b3.json",    "v2_batch"),  # 记忆卡 v2 b3 50 首 105 卡
     ("out/content_production/mem-v2-b4.json",    "v2_batch"),  # 记忆卡 v2 b4 50 首 99 卡
     ("out/content_production/mem-v2-b5.json",    "v2_batch"),  # 记忆卡 v2 b5 收官 38 首 80 卡
+    # ---- merge-13（外国诗原文附注语种升级 trans-W2；2026-11-21 枯木批 #321 遗留三处语种口径处置）----
+    # w_liwu/w_beihai 四行 m 由英译转引升级为原语种原文（波语双源互证/德语 Kalliope 逐字）；
+    # w_zuiyaoyuan 特例（原诗即中文）m 维持留空+README 注记；w_beihai L1 o 站/坐分歧保留待裁。
+    # 报告 out/review-trans-W2.md（PASS，含来源 URL 与勘误：灵玉旧引 Nie chcę nic posiadać 不符实际诗行）。
+    ("out/content_production/trans-W2.json",   "trans"),      # lines[].m（外国诗 2 首 4 行，原语种升级）
 ]
 if INCLUDE_TRANS02 or INCLUDE_TRANS03:
     SRC.append(("out/content_production/trans-02.json", "trans"))
@@ -155,6 +160,8 @@ GATE_ALIASES = {                      # 报告文件名不合 out/review-<批名
     "mem-v2-b3": "out/review-memv2-all.md",
     "mem-v2-b4": "out/review-memv2-all.md",
     "mem-v2-b5": "out/review-memv2-all.md",
+    # merge-13（zcode，2026-11-21）：trans-W2 语种升级核验报告
+    "trans-W2": "out/review-trans-W2.md",
 }
 GATE_EXEMPT = {                       # 门闸生效前已合入、且无独立报告文件的历史批（只减不增）
     "pilot-01": "门闸建立前已合入；LEDGER 记「灵玉 PASS（#46）」，无独立报告文件",

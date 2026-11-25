@@ -93,8 +93,11 @@
   .btn{border:none;cursor:pointer;font-family:var(--sans);font-weight:600;border-radius:var(--r-pill);padding:10px 18px;font-size:13px;display:inline-flex;align-items:center;gap:6px;}
   .btn-primary{background:var(--cinnabar);color:#fff;box-shadow:0 6px 16px rgba(178,58,46,.32);}
   .btn-ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line);}
-  /* #342 P1-2 v1：首页 hero 听朗读收 38px 圆形图标位（纯图标，title/aria 兜底） */
-  .btn-icon{width:38px;height:38px;border-radius:50%;background:transparent;border:1px solid var(--line);color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;flex:0 0 auto;}
+  /* #342 P1-2 v2：首页 hero 听朗读 ghost 降权（去框 / 12.5px / 保文字不降可发现性）。
+     色值原定 ink-3：纯纸底查表 5.56 AA，但 hero 有 15% 意象底，像素实测仅 4.04 AA；
+     枯木 2026-11-26 拍板上提为 ink-2（像素实测 5.4 / 最暗 4.78 AA），其余 v2 参数不变。 */
+  .btn-quiet{background:transparent;border:none;color:var(--ink-2);font-weight:500;font-size:12.5px;padding:10px 8px;white-space:nowrap;flex:0 0 auto;cursor:pointer;}
+  .btn-quiet svg{display:block;flex:none;}
 
   .section-title{font-family:var(--kai);font-weight:700;font-size:16px;letter-spacing:1px;margin:22px 0 12px;display:flex;align-items:center;gap:8px;}
   .section-title::before{content:"";width:4px;height:16px;background:var(--cinnabar);border-radius:2px;display:inline-block;}
@@ -76364,7 +76367,7 @@ function renderHome(){
       <div class="verse">${today.lines.slice(0,4).map(l=>l.o).join("<br>")}</div>
       <div class="actions">
         <button class="btn btn-primary" onclick="openDetail('${today.id}')">开始学习 →</button>
-        <button class="btn-icon" title="听朗读" aria-label="听朗读" onclick="readPoem('${today.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 8a5 5 0 010 8"/></svg></button>
+        <button class="btn-quiet" onclick="readPoem('${today.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 8a5 5 0 010 8"/></svg>听朗读</button>
       </div>
       <div class="signoff">每日一诗</div>
       <div class="seal"><svg class="sealsvg" viewBox="0 0 100 100" aria-hidden="true"><use href="#seal-yue"/></svg></div>

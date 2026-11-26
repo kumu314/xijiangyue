@@ -4,7 +4,7 @@
 
 枯木 11-27 松口拍板④「web 本期不动」， permissive 到 **只补这一处**：`index.html` 的 `reviewable()` 补 `category==='外国诗'` 排除，与小程序 `isForeign()` 拉回同构。改前红 **10/9**，改后 **19/19 PASS**，反向注入（改回旧版）复红 **10/9**；r7 回归 85/0/3 SKIP、r8 回归 32/0，无回归。
 
-**未 commit、未 push**（按约定含 `index.html` 的入远程须枯木明确批准）。
+**已 commit / push `bc302c9`**（枯木 11-27 批准；现值 `origin/main == HEAD == bc302c9`，逐 blob sha 4/4 与远端一致）。下方流程状态段保留施工时点原文存证。
 
 ## 一、问题与口径（分母与切法）
 
@@ -60,11 +60,11 @@ function reviewable(p){ return !!p && p.category!=="外国诗" && !(p.orig_lang 
 - **真机验证**：微信开发者工具里实际点「温」打卡后的队列（属 #352，本次仅浏览器层断言）。
 - **云端 16 首**：本次只改网页判定逻辑，云库 7523 首数据未动；云端那 15 首缺 lang 的外国诗是否已被导入、导入后网页是否已能取到，需在云端 Upsert 实操后另验。
 - **存量误入队数据**：`xjy_review` localStorage 里若已有外国诗条目，修复后 `reviewDueList` 会过滤掉但不清键——残留数据无害，未做主动清理（避免动用户本地数据）。
-- **r9 测试脚本 git 归属**：`tests/r9-reviewable-test.mjs` 目前未入 git（与 `tests/_probe-reviewable-foreign.mjs` 一样是工作区新文件），待枯木批准 push 时一并 add。
+- **r9 测试脚本 git 归属**：`tests/r9-reviewable-test.mjs` 已于 `bc302c9` 随本次一并 add 入 git。`tests/_probe-reviewable-foreign.mjs`（临时探针）未入 git，属工作区辅助文件，不影响交付。
 
 ## 六、状态与交接
 
 - #347 卡维持 **60%**（阶段二待 1.0.2 过审窗口，本次只做 §三-1 补修，不越权推阶段二）。
 - §三-1 决策（上一轮 `board_decision`）由本次施工闭合，结论：松口、已补、待复验。
 - 已请灵玉独立复核（不采信自报）：复跑 r9 改后 19/19、反向注入 10/9、r7/r8 回归、对照备份只变 `reviewable` 一处。
-- 未 commit / 未 push。
+- **现值（2026-11-27 枯木批准后）**：commit `bc302c9` 已 push，`origin/main == HEAD`，逐 blob sha 4/4 一致（index.html / r9 断言 / 本报告 / #342 报告）。施工时点原文「未 commit / 未 push」已被本次提交闭合。

@@ -78259,7 +78259,11 @@ function localDay(d){ d=d||new Date(); return d.getFullYear()+"-"+String(d.getMo
 function getReview(){ try{ return JSON.parse(localStorage.getItem(LS_REVIEW)||"{}"); }catch(e){ return {}; } }
 function saveReview(r){ try{ localStorage.setItem(LS_REVIEW,JSON.stringify(r)); }catch(e){} }
 function reviewSteps(n){ return (n>=8?REVIEW_STEPS_LONG:REVIEW_STEPS); }
-function reviewable(p){ return !!p && !(p.orig_lang && p.orig_lang!=="zh"); }
+/* #347 §三-1 拉回同构（枯木 11-27 松口拍板④）：与小程序 isForeign() 一致——
+   category==='外国诗' 或 orig_lang 非 zh 任一命中即不可温故。
+   补前仅看 orig_lang：云数据 117 首外国诗中 15 首缺该字段 + 1 首标 zh 漏挡；
+   网页 1025 首中漏挡 1 首 w_zuiyaoyuan（orig_lang=zh）。非外国诗 orig_lang 非 zh 为 0，无误伤。 */
+function reviewable(p){ return !!p && p.category!=="外国诗" && !(p.orig_lang && p.orig_lang!=="zh"); }
 function touchReview(p){
   if(!reviewable(p)) return;
   const r=getReview(); if(r[p.id]) return;

@@ -60,3 +60,25 @@ _bak_*/
 out/r7-ju/preview.html
 out/r7-ju/pick.html
 out/r7-ju/_ju_index_backup.html
+
+# ── 施工前备份的「文件形态」（2026-11-27 补，依据 out/untracked-triage-20261127.md）──
+# 上方 _bak_*/ 只管目录形态；index.html.bak-* 这类同层逐字节副本（两个共 9.38MB）同样是
+# 「回滚路径第一要素、但不该进 git」——git 自身能回溯版本，仓库体积不该背 4.6MB × N。
+*.bak-*
+
+# Python 编译缓存（可重生成）。
+# 注：out/tools/__pycache__/chuanjiang_lib.cpython-312.pyc 是历史误入库，已跟踪状态不受本
+#     规则影响；退库需单独 `git rm --cached`（2026-11-27 已登记，待枯木另行拍板）。
+__pycache__/
+*.pyc
+
+# 分类训练/评测的中间检查点（可重跑再生）
+*.ckpt
+
+# 一次性运行日志：只写精确路径，**不要用 `*.log` 一刀切**——
+# out/tools/selftest/*.log 与 out/dup_scan_post_merge08.log 是刻意固化的自检证据（已入库）。
+out/foreign-orig-*.log
+out/_*.log
+
+# 可重跑的预览页（同上方 out/r7-ju/preview.html 先例）
+out/viz-*preview*.html
